@@ -10,22 +10,22 @@ const Sidebar = ({ }) => {
                 <SibedarItem
                     Icon={UserGroupIcon}
                     label="Tandas"
-                    href="/batches"
+                    href="/dashboard/batches"
                 />
                 <SibedarItem
                     Icon={CreditCardIcon}
                     label="Balance"
-                    href="/balance"
+                    href="/dashboard/balance"
                 />
                 <SibedarItem
                     Icon={QuestionMarkCircleIcon}
                     label="Ayuda"
-                    href="/help"
+                    href="/dashboard/help"
                 />
                 <SibedarItem
                     Icon={Cog6ToothIcon}
                     label="Configuración"
-                    href="/settings"
+                    href="/dashboard/settings"
                 />
                 <SibedarItem
                     Icon={ArrowLeftEndOnRectangleIcon}
