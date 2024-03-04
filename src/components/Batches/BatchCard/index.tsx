@@ -1,7 +1,10 @@
 "use client"
 
-import { BatchCardProps } from "../_types";
 import { EllipsisVerticalIcon, ShareIcon } from "@heroicons/react/24/outline";
+
+export type BatchCardProps = {
+    batchName: string
+}
 
 import {
     DropdownMenu,

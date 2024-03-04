@@ -1,12 +1,15 @@
 "use client"
 
-import { Cog6ToothIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon, ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import SibedarItem from "./SidebarItem";
+import { signOut } from "next-auth/react"
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const Sidebar = ({ }) => {
     return (
-        <nav className="flex w-full h-full">
-            <ul className="flex flex-col w-full">
+        <nav className="flex w-full h-full flex-col gap-4">
+            <ul className="flex flex-col w-full h-full">
                 <SibedarItem
                     Icon={UserGroupIcon}
                     label="Tandas"
@@ -22,17 +25,17 @@ const Sidebar = ({ }) => {
                     label="Ayuda"
                     href="/dashboard/help"
                 />
-                <SibedarItem
-                    Icon={Cog6ToothIcon}
-                    label="Configuración"
-                    href="/dashboard/settings"
-                />
-                <SibedarItem
-                    Icon={ArrowLeftEndOnRectangleIcon}
-                    label="Salir"
-                    href="/logout"
-                />
             </ul>
+            <div className="flex flex-row gap-2 justify-between items-center w-full">
+                <div className="flex flex-row items-center gap-2">
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <p className="text-whiteMain text-xs truncate max-w-32">Rams Pantoja mas largo para!</p>
+                </div>
+                <Button className=" h-8 w-8 p-0 hover:bg-blackMain" variant='ghost' size='icon' onClick={() => signOut({ callbackUrl: '/sign_in' })}><Cog6ToothIcon className="w-4 h-4 text-whiteMain" /></Button>
+            </div>
         </nav>
     )
 }

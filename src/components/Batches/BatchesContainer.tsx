@@ -1,6 +1,5 @@
-import BatchCard from "./BatchCard";
+import BatchCard, { type BatchCardProps } from "./BatchCard";
 import BatchMenubar from "./BatchMenubar";
-import { BatchCardProps } from "./_types";
 
 const batches: BatchCardProps[] = [{ batchName: "Mi primera tanda" }, { batchName: "Otra tanda" }, { batchName: "Rams tanda" }];
 
