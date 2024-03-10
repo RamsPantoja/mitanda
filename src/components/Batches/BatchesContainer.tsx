@@ -1,3 +1,5 @@
+"use client"
+
 import BatchCard, { type BatchCardProps } from "./BatchCard";
 import BatchMenubar from "./BatchMenubar";
 

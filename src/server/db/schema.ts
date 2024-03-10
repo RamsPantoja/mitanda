@@ -2,13 +2,16 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  numeric,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   text,
   timestamp,
-  varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { z } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -19,37 +22,51 @@ import { type AdapterAccount } from "next-auth/adapters";
 export const createTable = pgTableCreator((name) => name);
 
 export const users = createTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
+  id: uuid("id").notNull().primaryKey().defaultRandom(),
+  name: text("name"),
+  email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
   }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 }),
+  image: text("image"),
+  createdAt: timestamp('createdAt', {
+    mode: 'date'
+  }).defaultNow(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date'
+  }).defaultNow()
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  usersToContracts: many(usersToContracts),
+  batches: many(batches)
 }));
 
 export const accounts = createTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 })
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
-    type: varchar("type", { length: 255 })
+    type: text("type")
       .$type<AdapterAccount["type"]>()
       .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
     expires_at: integer("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
+    token_type: text("token_type"),
+    scope: text("scope"),
     id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
+    session_state: text("session_state"),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow()
   },
   (account) => ({
     compoundKey: primaryKey({
@@ -66,10 +83,10 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = createTable(
   "session",
   {
-    sessionToken: varchar("sessionToken", { length: 255 })
+    sessionToken: text("sessionToken")
       .notNull()
       .primaryKey(),
-    userId: varchar("userId", { length: 255 })
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
     expires: timestamp("expires", { mode: "date" }).notNull(),
@@ -86,11 +103,90 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const verificationTokens = createTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   })
 );
+
+export const frequencyEnum = pgEnum('frequency', ['WEEKLY', 'MONTHLY', 'BIWEEKLY']);
+
+export const batches = createTable(
+  "batch",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    name: text("name"),
+    contributionAmount: numeric('contributionAmount'),
+    seats: integer('seats'),
+    frequency: frequencyEnum('frequency'),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.id)
+  },
+)
+
+export const batchesRelations = relations(batches, ({ one }) => ({
+  contract: one(contracts, {
+    fields: [batches.contractId],
+    references: [contracts.id]
+  }),
+  user: one(users, {
+    fields: [batches.userId],
+    references: [users.id]
+  })
+}));
+
+export const contracts = createTable(
+  "contract",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    contributionAmount: numeric('contributionAmount'),
+    frequency: frequencyEnum('frequency'),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
+  },
+)
+
+export const contractsRelations = relations(contracts, ({ many }) => ({
+  usersToContracts: many(usersToContracts)
+}));
+
+export const usersToContracts = createTable(
+  "users_to_contracts",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.id)
+  }
+)
+
+
+export const usersToContractsRelations = relations(usersToContracts, ({ one }) => ({
+  contract: one(contracts, {
+    fields: [usersToContracts.contractId],
+    references: [contracts.id],
+  }),
+  user: one(users, {
+    fields: [usersToContracts.userId],
+    references: [users.id],
+  }),
+}));

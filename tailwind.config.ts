@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { nextui } from "@nextui-org/theme"
 
 const config = {
   darkMode: ["class"],
@@ -7,7 +8,8 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+    "./node_modules/@nextui-org/theme/dist/components/slider.js"
+  ],
   prefix: "",
   theme: {
     container: {
@@ -20,12 +22,12 @@ const config = {
     extend: {
       colors: {
         whiteMain: '#FFFFFF',
-				whiteLigth: '#F7F7F7',
-				grayMain: '#B3B3B3',
-				blackMain: '#000000',
+        whiteLigth: '#F7F7F7',
+        grayMain: '#B3B3B3',
+        blackMain: '#000000',
         blackNormal: "#181818",
-				blackLigth: '#0f0f0f',
-				greenMain: '#C1FF72',
+        blackLigth: '#0f0f0f',
+        greenMain: '#C1FF72',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -81,7 +83,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), nextui()],
 } satisfies Config
 
 export default config

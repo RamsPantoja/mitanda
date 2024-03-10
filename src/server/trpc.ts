@@ -11,7 +11,21 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { getServerAuthSession } from "@/server/auth";
-import { db } from "./db";
+import { db, type DrizzleSchema } from "./db";
+import { type NeonDatabase } from "drizzle-orm/neon-serverless";
+import { type Session } from "next-auth";
+import Services, { type ServicesContext } from "./services";
+
+export type TRPCContext = {
+  db: NeonDatabase<DrizzleSchema>
+  session: Session | null
+  services: ServicesContext
+  opts: Options
+}
+
+type Options = {
+  headers: Headers
+}
 
 /**
  * 1. CONTEXT
@@ -25,13 +39,16 @@ import { db } from "./db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async (opts: Options): Promise<TRPCContext> => {
   const session = await getServerAuthSession();
 
   return {
     db,
     session,
-    ...opts,
+    services: Services({ db, session }),
+    opts: {
+      ...opts
+    }
   };
 };
 

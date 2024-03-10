@@ -6,9 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import BatchForm from "../BatchForm";
+import { api } from "@/trpc/react";
+import { MitandaButton } from "@/components/common/MitandaButton";
 
 
 const BatchMenubar = ({ }) => {
+    const { mutate: createBatchMutation, isLoading } = api.batch.create.useMutation({
+        onSuccess: (data) => {
+            console.log(data);
+        },
+        onError: (error) => {
+            console.log(error.message);
+        }
+    })
+
+    const onCreateBatch = () => {
+        createBatchMutation({
+            name: "Hola mundo"
+        });
+    }
+
     return (
         <TooltipProvider delayDuration={300}>
             <div className="flex flex-row flex-wrap gap-4 items-center justify-between">
@@ -28,7 +45,11 @@ const BatchMenubar = ({ }) => {
                 </div>
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button size='sm' variant='default' className="text-blackMain bg-greenMain hover:bg-greenMain"><PlusIcon className="h-4 w-4 text-blackMain mr-2" />Crear</Button>
+                        <MitandaButton
+                            size='sm'
+                            variant='default'
+                            startIcon={<PlusIcon className="h-4 w-4 text-blackMain" />}
+                        >Crear</MitandaButton>
                     </DialogTrigger>
                     <DialogContent
                         onEscapeKeyDown={(e) => {
@@ -50,11 +71,11 @@ const BatchMenubar = ({ }) => {
                         <BatchForm />
                         <DialogFooter className="flex flex-row items-center justify-between gap-2">
                             <DialogClose asChild>
-                                <Button size='sm' type="button" variant="secondary">
+                                <Button disabled={isLoading} size='sm' type="button" variant="secondary">
                                     Descartar
                                 </Button>
                             </DialogClose>
-                            <Button size='sm' variant='default' className="text-blackMain bg-greenMain hover:bg-greenMain">Crear tanda</Button>
+                            <MitandaButton onClick={onCreateBatch} size='sm' variant='default' isLoading={isLoading}>Crear tanda</MitandaButton>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

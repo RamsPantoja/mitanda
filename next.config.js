@@ -6,16 +6,16 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
-    async redirects() {
-        return [
-            // Basic redirect
-            {
-                source: '/',
-                destination: '/dashboard',
-                permanent: true,
-            },
-        ]
-    },
+    // async redirects() {
+    //     return [
+    //         // Basic redirect
+    //         {
+    //             source: '/',
+    //             destination: '/',
+    //             permanent: true,
+    //         },
+    //     ]
+    // },
 };
 
 export default config;

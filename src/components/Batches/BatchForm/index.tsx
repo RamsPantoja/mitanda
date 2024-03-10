@@ -3,12 +3,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Slider } from "@nextui-org/slider";
 
 const BatchForm = () => {
     return (
         <div className="flex flex-col gap-3">
             <Input type="email" placeholder="Nombre de la tanda" />
-            <Input type="email" placeholder="Cantidad de contribución (MXN)" />
+            <Slider
+                size='md'
+                step={100}
+                color="primary"
+                label="Cantidad de contribución"
+                showSteps={true}
+                maxValue={1000}
+                minValue={100}
+                radius='full'
+                defaultValue={50}
+                className="max-w-md"
+                formatOptions={{ style: "currency", currency: "MXN" }}
+            />
             <Input type="email" placeholder="Asientos (máximo 10)" />
             <div className="flex flex-col gap-2">
                 <p className="text-blackMain font-bold text-sm">Frecuencia</p>
@@ -28,7 +41,6 @@ const BatchForm = () => {
                 </RadioGroup>
             </div>
             <div className="flex flex-col gap-2 mt-4 w-full">
-                <p className="text-blackMain text-sm font-bold">Contrato</p>
                 <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <span className="text-xs text-blackMain font-bold">Cantidad y Frecuencia:</span>
                     <ul className="list-disc p-4 text-xs">
