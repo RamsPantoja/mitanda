@@ -1,6 +1,5 @@
 import { type NeonDatabase } from "drizzle-orm/neon-serverless";
 import BatchService from "./batch";
-import { type Session } from "next-auth";
 import { type DrizzleSchema } from "../db";
 import UserService from "./user";
 import AccountService from "./account";
@@ -17,16 +16,15 @@ export type ServicesContext = {
 
 export type ServicesConfig = {
     db: NeonDatabase<DrizzleSchema>
-    session: Session | null
 }
 
-const Services = ({ db, session }: ServicesConfig): ServicesContext => {
+const Services = ({ db }: ServicesConfig): ServicesContext => {
     return {
-        batchService: new BatchService({ db, session }),
-        usersService: new UserService({ db, session }),
-        accountService: new AccountService({ db, session }),
-        contractService: new ContractService({ db, session }),
-        sessionService: new SessionService({ db, session })
+        batchService: new BatchService({ db }),
+        usersService: new UserService({ db }),
+        accountService: new AccountService({ db }),
+        contractService: new ContractService({ db }),
+        sessionService: new SessionService({ db })
     }
 }
 export default Services;

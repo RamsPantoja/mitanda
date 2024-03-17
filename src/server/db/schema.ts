@@ -11,7 +11,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { z } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -118,10 +117,10 @@ export const batches = createTable(
   "batch",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
-    name: text("name"),
-    contributionAmount: numeric('contributionAmount'),
-    seats: integer('seats'),
-    frequency: frequencyEnum('frequency'),
+    name: text("name").notNull(),
+    contributionAmount: numeric('contributionAmount').notNull(),
+    seats: integer('seats').notNull(),
+    frequency: frequencyEnum('frequency').notNull(),
     userId: uuid("userId")
       .notNull()
       .references(() => users.id),
@@ -152,8 +151,8 @@ export const contracts = createTable(
   "contract",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
-    contributionAmount: numeric('contributionAmount'),
-    frequency: frequencyEnum('frequency'),
+    contributionAmount: numeric('contributionAmount').notNull(),
+    frequency: frequencyEnum('frequency').notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).defaultNow(),

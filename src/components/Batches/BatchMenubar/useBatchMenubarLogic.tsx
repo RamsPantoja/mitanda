@@ -1,7 +1,11 @@
 import { api } from "@/trpc/react";
+import useBatchFormLogic, { type BatchValidationSchema } from "../BatchForm/useBatchFormLogic";
 
+const useBatchMenubarLogic = () => {
+    const {
+        useFormBatch
+    } = useBatchFormLogic();
 
-const useBatchMenubarLogic = ({ }) => {
     const { mutate: createBatchMutation, isLoading: createBatchLoading } = api.batch.create.useMutation({
         onSuccess: (data) => {
             console.log(data);
@@ -11,15 +15,21 @@ const useBatchMenubarLogic = ({ }) => {
         }
     })
 
-    const onCreateBatch = (data: number) => {
+    const onCreateBatch = (data: BatchValidationSchema) => {
         createBatchMutation({
-            name: "Hola mundo"
+            batchInput: {
+                name: data.name,
+                contributionAmount: data.contributionAmount,
+                seats: data.seats,
+                frequency: data.frequency
+            }
         });
     }
 
     return {
         createBatchLoading,
-        onCreateBatch
+        onCreateBatch,
+        useFormBatch
     }
 }
 

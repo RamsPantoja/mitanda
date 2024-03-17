@@ -6,25 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import BatchForm from "../BatchForm";
-import { api } from "@/trpc/react";
 import { MitandaButton } from "@/components/common/MitandaButton";
-
+import useBatchMenubarLogic from "./useBatchMenubarLogic";
 
 const BatchMenubar = ({ }) => {
-    const { mutate: createBatchMutation, isLoading } = api.batch.create.useMutation({
-        onSuccess: (data) => {
-            console.log(data);
-        },
-        onError: (error) => {
-            console.log(error.message);
-        }
-    })
-
-    const onCreateBatch = () => {
-        createBatchMutation({
-            name: "Hola mundo"
-        });
-    }
+    const {
+        createBatchLoading,
+        onCreateBatch,
+        useFormBatch
+    } = useBatchMenubarLogic();
 
     return (
         <TooltipProvider delayDuration={300}>
@@ -68,14 +58,16 @@ const BatchMenubar = ({ }) => {
                                 Completa los campos para crear tu nueva tanda y comenzar a ahorrar!
                             </DialogDescription>
                         </DialogHeader>
-                        <BatchForm />
+                        <BatchForm
+                            useFormBatch={useFormBatch}
+                        />
                         <DialogFooter className="flex flex-row items-center justify-between gap-2">
                             <DialogClose asChild>
-                                <Button disabled={isLoading} size='sm' type="button" variant="secondary">
+                                <Button disabled={createBatchLoading} size='sm' type="button" variant="secondary">
                                     Descartar
                                 </Button>
                             </DialogClose>
-                            <MitandaButton onClick={onCreateBatch} size='sm' variant='default' isLoading={isLoading}>Crear tanda</MitandaButton>
+                            <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isLoading={createBatchLoading}>Crear tanda</MitandaButton>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

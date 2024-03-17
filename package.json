@@ -18,6 +18,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^0.7.0",
     "@heroicons/react": "^2.1.1",
+    "@hookform/resolvers": "^3.3.4",
     "@neondatabase/serverless": "^0.9.0",
     "@nextui-org/slider": "^2.2.6",
     "@nextui-org/system": "^2.0.15",
@@ -48,6 +49,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.50.1",
+    "react-number-format": "^5.3.3",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.2.1",
@@ -69,6 +71,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
+    "ts-to-zod": "^3.7.3",
     "typescript": "^5.3.3"
   },
   "ct3aMetadata": {

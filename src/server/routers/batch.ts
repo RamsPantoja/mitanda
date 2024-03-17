@@ -1,16 +1,13 @@
-import { z } from "zod";
-
 import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/server/trpc";
+import { createBatchInputSchema } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({
-      name: z.string().min(1)
-    }))
+    .input(createBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services.batchService.create(5, input.name);
+      return await ctx.services.batchService.create(input, ctx.session);
     }),
 });

@@ -1,17 +1,13 @@
 import { frequencyEnum } from "@/server/db/schema";
-import { z, type ZodType } from "zod";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-export type FormData = {
-    name: string;
-    contributionAmount: number;
-    seats: number;
-    frequency: string;
-    agreeTerms: boolean;
-};
-
-export const batchSchema: ZodType<FormData> = z
+const batchValidationSchema = z
     .object({
-        name: z.string(),
+        name: z.string({
+            required_error: "Campo requerido"
+        }).min(1, "Campo requerido"),
         contributionAmount: z
             .number({
                 required_error: "Campo requerido",
@@ -28,7 +24,28 @@ export const batchSchema: ZodType<FormData> = z
             .enum(frequencyEnum.enumValues, {
                 required_error: "Frecuencia requerida"
             }),
-        agreeTerms: z.boolean({
-            required_error: "Acepta los terminos y condiciones para continuar"
-        })
+        agreeTerms: z.literal<boolean>(true, { errorMap: () => ({ message: "Acepta los terminos y condiciones para continuar" }) })
     })
+
+
+
+export type BatchValidationSchema = z.infer<typeof batchValidationSchema>
+
+const useBatchFormLogic = () => {
+    const useFormBatch = useForm<BatchValidationSchema>({
+        resolver: zodResolver(batchValidationSchema),
+        defaultValues: {
+            name: '',
+            contributionAmount: 100,
+            seats: 1,
+            frequency: "BIWEEKLY",
+            agreeTerms: false
+        }
+    });
+
+    return {
+        useFormBatch
+    }
+}
+
+export default useBatchFormLogic;
