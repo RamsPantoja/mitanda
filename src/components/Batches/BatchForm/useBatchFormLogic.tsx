@@ -33,6 +33,7 @@ const batchValidationSchema = z
 export type BatchValidationSchema = z.infer<typeof batchValidationSchema>
 
 const useBatchFormLogic = () => {
+    const utils = api.useUtils();
     const [displayBatchForm, setDisplayBatchForm] = useState<boolean>(false);
     const useFormBatch = useForm<BatchValidationSchema>({
         resolver: zodResolver(batchValidationSchema),
@@ -46,14 +47,16 @@ const useBatchFormLogic = () => {
     });
 
     const { mutate: createBatchMutation, isLoading: createBatchLoading } = api.batch.create.useMutation({
-        onSuccess: () => {
+        onSuccess: async () => {
             useFormBatch.reset();
             setDisplayBatchForm(false);
-            toast.success('Tanda creada!')
+            toast.success('Tanda creada!');
+            await utils.batch.ownUserBatches.invalidate();
         },
         onError: (error) => {
             console.log(error.message);
-        }
+        },
+
     })
 
     const onCreateBatch = (data: BatchValidationSchema) => {

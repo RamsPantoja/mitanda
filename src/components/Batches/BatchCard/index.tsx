@@ -4,6 +4,7 @@ import { EllipsisVerticalIcon, ShareIcon } from "@heroicons/react/24/outline";
 
 export type BatchCardProps = {
     batchName: string
+    seats: number
 }
 
 import {
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/tooltip"
 
 
-const BatchCard = ({ batchName }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats }: BatchCardProps) => {
     return (
         <TooltipProvider delayDuration={300}>
             <div className="p-4 rounded-md bg-blackNormal max-w-40 min-w-40 min-h-48 max-h-48 flex flex-col gap-1">
@@ -58,7 +59,7 @@ const BatchCard = ({ batchName }: BatchCardProps) => {
                             <p className="text-whiteMain">{batchName}</p>
                         </TooltipContent>
                     </Tooltip>
-                    <p className="text-grayMain text-xs truncate w-fit max-w-full">4 participantes</p>
+                    <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="flex flex-col">

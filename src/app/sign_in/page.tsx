@@ -14,7 +14,7 @@ const getUserSession = async () => {
     }
 
     if (session !== null) {
-        redirect(`/`) // Navigate to the new post page
+        redirect(`/dasboard`) // Navigate to the new post page
     }
 }
 

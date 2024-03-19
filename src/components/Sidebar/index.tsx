@@ -1,12 +1,17 @@
 "use client"
 
-import { Cog6ToothIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import SibedarItem from "./SidebarItem";
 import { signOut } from "next-auth/react"
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { type Session } from "next-auth";
 
-const Sidebar = ({ }) => {
+type SidebarProps = {
+    session: Session
+}
+
+const Sidebar = ({ session }: SidebarProps) => {
     return (
         <nav className="flex w-full h-full flex-col gap-4">
             <ul className="flex flex-col w-full h-full">
@@ -29,12 +34,12 @@ const Sidebar = ({ }) => {
             <div className="flex flex-row gap-2 justify-between items-center w-full">
                 <div className="flex flex-row items-center gap-2">
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarImage src={session.user.image!} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    <p className="text-whiteMain text-xs truncate max-w-32">Rams Pantoja mas largo para!</p>
+                    <p className="text-whiteMain text-xs truncate max-w-32">{session.user.name}</p>
                 </div>
-                <Button className=" h-8 w-8 p-0 hover:bg-blackMain" variant='ghost' size='icon' onClick={() => signOut({ callbackUrl: '/sign_in' })}><Cog6ToothIcon className="w-4 h-4 text-whiteMain" /></Button>
+                <Button className=" h-8 w-8 p-0 hover:bg-blackMain" variant='ghost' size='icon' onClick={() => signOut({ callbackUrl: '/sign_in' })}><ArrowLeftEndOnRectangleIcon className="w-4 h-4 text-whiteMain" /></Button>
             </div>
         </nav>
     )

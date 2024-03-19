@@ -1,18 +1,16 @@
 "use client"
 
 import { api } from "@/trpc/react";
-import BatchCard, { type BatchCardProps } from "./BatchCard";
+import BatchCard from "./BatchCard";
 import BatchMenubar from "./BatchMenubar";
 import { mapSkeletons } from "@/lib/utils";
 import BatchCardSkeleton from "./BatchCard/BatchCardSkeleton";
 import { Fragment } from "react";
 
-const batches: BatchCardProps[] = [{ batchName: "Mi primera tanda" }, { batchName: "Otra tanda" }, { batchName: "Rams tanda" }];
-
 const BatchesContainer = ({ }) => {
-    const { data, isLoading, error } = api.batch.ownUserBatches.useQuery({
+    const { data, isLoading } = api.batch.ownUserBatches.useQuery({
         where: {
-            name: 'Rams'
+            name: ''
         }
     })
 
@@ -33,9 +31,13 @@ const BatchesContainer = ({ }) => {
                     })
                 }
                 {
-                    batches.map((batch, index) => {
+                    data && data.length > 0 && data.map((batch) => {
                         return (
-                            <BatchCard key={index} batchName={batch.batchName} />
+                            <BatchCard
+                                key={batch.id}
+                                batchName={batch.name}
+                                seats={batch.seats}
+                            />
                         )
                     })
                 }

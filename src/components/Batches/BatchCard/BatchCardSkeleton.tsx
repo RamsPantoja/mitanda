@@ -2,11 +2,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 const BatchCardSkeleton = () => {
     return (
-        <div className="flex flex-col space-y-3">
-            <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="p-4 rounded-md bg-blackNormal flex flex-col gap-3 max-w-40 min-w-40 min-h-48 max-h-48">
             <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-16" />
+            </div>
+            <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-16" />
             </div>
         </div>
     )
