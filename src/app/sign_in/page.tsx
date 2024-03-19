@@ -1,24 +1,7 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/server/auth";
 import SignInForm from "@/components/SignIn/SignInForm";
-import { redirect } from 'next/navigation'
-import { type Session } from "next-auth";
+import { getUserSession } from "./actions";
 
-const getUserSession = async () => {
-    let session: Session | null = null;
-
-    try {
-        session = await getServerSession(authOptions);
-    } catch (error) {
-        throw new Error('Failed to create task')
-    }
-
-    if (session !== null) {
-        redirect(`/dasboard`) // Navigate to the new post page
-    }
-}
-
-const SignIn = async ({ }) => {
+const SignIn = async () => {
     await getUserSession();
     
     return (
