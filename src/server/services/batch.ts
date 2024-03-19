@@ -3,7 +3,7 @@ import { db, type DrizzleSchema } from "../db";
 import { batches, contracts, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
-import { type createBatchInputSchema } from "../schema/batch";
+import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 
 type BatchServiceContructor = {
@@ -11,8 +11,10 @@ type BatchServiceContructor = {
 }
 
 export type NewBatch = typeof batches.$inferInsert;
+export type Batch = typeof batches.$inferSelect;
 
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
+type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 
 class BatchService {
     db: NeonDatabase<DrizzleSchema>
@@ -56,6 +58,17 @@ class BatchService {
         }
 
         return batche
+    }
+
+    async ownUserBatches(whereInput: WhereInputBatch, user: Session): Promise<Batch[]> {
+        return await this.db.query.batches.findMany({
+            where: (batches, { eq, and, like }) => {
+                return and(
+                    eq(batches.userId, user.user.id),
+                    like(batches.name, `${whereInput.name}%`)
+                )
+            }
+        })
     }
 }
 

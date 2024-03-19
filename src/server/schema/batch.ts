@@ -9,3 +9,11 @@ export const createBatchInputSchema = z.object({
     frequency: z.enum(frequencyEnum.enumValues)
   })
 })
+
+export const whereInputBatchSchema = z.object({
+  name: z.string()
+})
+
+export const ownBatchesInputSchema = z.object({
+  where: whereInputBatchSchema
+})

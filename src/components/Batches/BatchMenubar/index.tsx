@@ -1,21 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import BatchForm from "../BatchForm";
-import { MitandaButton } from "@/components/common/MitandaButton";
-import useBatchMenubarLogic from "./useBatchMenubarLogic";
 
 const BatchMenubar = ({ }) => {
-    const {
-        createBatchLoading,
-        onCreateBatch,
-        useFormBatch
-    } = useBatchMenubarLogic();
-
     return (
         <TooltipProvider delayDuration={300}>
             <div className="flex flex-row flex-wrap gap-4 items-center justify-between">
@@ -32,45 +23,8 @@ const BatchMenubar = ({ }) => {
                             <p className="text-whiteMain">Filtros</p>
                         </TooltipContent>
                     </Tooltip>
+                    <BatchForm />
                 </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <MitandaButton
-                            size='sm'
-                            variant='default'
-                            startIcon={<PlusIcon className="h-4 w-4 text-blackMain" />}
-                        >Crear</MitandaButton>
-                    </DialogTrigger>
-                    <DialogContent
-                        onEscapeKeyDown={(e) => {
-                            e.preventDefault();
-                        }}
-                        onCloseAutoFocus={(e) => {
-                            e.preventDefault();
-                        }}
-                        onInteractOutside={(e) => {
-                            e.preventDefault();
-                        }}
-                    >
-                        <DialogHeader>
-                            <DialogTitle>Tu nueva tanda</DialogTitle>
-                            <DialogDescription>
-                                Completa los campos para crear tu nueva tanda y comenzar a ahorrar!
-                            </DialogDescription>
-                        </DialogHeader>
-                        <BatchForm
-                            useFormBatch={useFormBatch}
-                        />
-                        <DialogFooter className="flex flex-row items-center justify-between gap-2">
-                            <DialogClose asChild>
-                                <Button disabled={createBatchLoading} size='sm' type="button" variant="secondary">
-                                    Descartar
-                                </Button>
-                            </DialogClose>
-                            <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isLoading={createBatchLoading}>Crear tanda</MitandaButton>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
             </div>
         </TooltipProvider>
     )
