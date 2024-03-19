@@ -45,7 +45,7 @@ export const createTRPCContext = async (opts: Options): Promise<TRPCContext> => 
   return {
     db,
     session,
-    services: Services({ db, session }),
+    services: Services({ db }),
     opts: {
       ...opts
     }
