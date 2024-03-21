@@ -1,27 +1,24 @@
 "use client"
 
-import { api } from "@/trpc/react";
 import BatchCard from "./BatchCard";
 import BatchMenubar from "./BatchMenubar";
-import { mapSkeletons } from "@/lib/utils";
-import BatchCardSkeleton from "./BatchCard/BatchCardSkeleton";
 import { Fragment } from "react";
+import useBatchesLogic from "./useBatchesLogic";
 
 const BatchesContainer = ({ }) => {
-    const { data, isLoading } = api.batch.ownUserBatches.useQuery({
-        where: {
-            name: ''
-        }
-    })
 
-    const skeletons = mapSkeletons({
-        numberOfSkeletons: 10,
-        skeleton: <BatchCardSkeleton />
-    })
-
+    const {
+        data,
+        isLoading,
+        skeletons,
+        onSearchBatch,
+    } = useBatchesLogic();
+    
     return (
         <div className="flex flex-col gap-6 w-full">
-            <BatchMenubar />
+            <BatchMenubar 
+                onSearch={onSearchBatch}
+            />
             <div className="flex flex-row gap-4 flex-wrap overflow-auto">
                 {
                     isLoading && skeletons.map((skeleton, index) => {

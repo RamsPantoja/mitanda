@@ -65,7 +65,7 @@ class BatchService {
             where: (batches, { eq, and, like }) => {
                 return and(
                     eq(batches.userId, user.user.id),
-                    like(batches.name, `${whereInput.name}%`)
+                    like(batches.name, `%${whereInput.name}%`)
                 )
             }
         })

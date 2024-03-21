@@ -39,7 +39,8 @@ export const users = createTable("user", {
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   usersToContracts: many(usersToContracts),
-  batches: many(batches)
+  batches: many(batches),
+  billings: many(billings),
 }));
 
 export const accounts = createTable(
@@ -178,7 +179,6 @@ export const usersToContracts = createTable(
   }
 )
 
-
 export const usersToContractsRelations = relations(usersToContracts, ({ one }) => ({
   contract: one(contracts, {
     fields: [usersToContracts.contractId],
@@ -188,4 +188,52 @@ export const usersToContractsRelations = relations(usersToContracts, ({ one }) =
     fields: [usersToContracts.userId],
     references: [users.id],
   }),
+}));
+
+export const usersToBatches = createTable(
+  "users_to_batches",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    batchId: uuid("batchId")
+      .notNull()
+      .references(() => batches.id)
+  }
+);
+
+export const usersToBatchesRelations = relations(usersToBatches, ({ one }) => ({
+  batche: one(batches, {
+    fields: [usersToBatches.batchId],
+    references: [batches.id],
+  }),
+  user: one(users, {
+    fields: [usersToBatches.userId],
+    references: [users.id],
+  }),
+}));
+
+export const billings = createTable(
+  "billings",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    firstName: text("firstName").notNull(),
+    lastName: text("lastName").notNull(),
+    address: text("address").notNull(),
+    country: text("country").notNull(),
+    city: text("city").notNull(),
+    state: text("state").notNull(),
+    postalCode: text("postalCode").notNull(),
+    clabe: text("clabe").notNull()
+  }
+);
+
+export const billingsRelations = relations(billings, ({ one }) => ({
+  user: one(users, {
+    fields: [billings.userId],
+    references: [users.id]
+  })
 }));

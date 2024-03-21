@@ -18,7 +18,7 @@ const Billing = () => {
                             <span className="text-whiteMain text-sm font-medium">BBVA BANCOMER, S.A.</span>
                         </div>
                         <div className="flex flex-row gap-2 flex-wrap">
-                            <span className="text-grayMain text-xs basis-32">Número de cuenta (CLABEA)</span>
+                            <span className="text-grayMain text-xs basis-32">Número de cuenta (CLABE)</span>
                             <span className="text-whiteMain text-sm font-medium">012424340293719111</span>
                         </div>
                         <div className="flex flex-row gap-2 flex-wrap">
