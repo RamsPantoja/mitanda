@@ -223,7 +223,7 @@ export const billings = createTable(
     firstName: text("firstName").notNull(),
     lastName: text("lastName").notNull(),
     address: text("address").notNull(),
-    country: text("country").notNull(),
+    country: text("country").notNull().default("MX"),
     city: text("city").notNull(),
     state: text("state").notNull(),
     postalCode: text("postalCode").notNull(),

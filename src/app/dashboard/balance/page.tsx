@@ -1,12 +1,8 @@
-import Billing from "@/components/Balance/Billing";
-import CurrentBalance from "@/components/Balance/CurrentBalance";
+import BalanceContainer from "@/components/Balance";
 
 const Balance = () => {
     return (
-        <div className="flex flex-col gap-4 w-full">
-            <CurrentBalance />
-            <Billing />
-        </div>
+        <BalanceContainer />
     )
 }
 

@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const Billing = () => {
     return (
         <div className='flex flex-col gap-2'>
             <p className="text-sm text-whiteMain font-bold">Información de facturación</p>
-            <Button size='sm' variant='outline' className="w-fit bg">Agregar</Button>
             <Card className="w-fit">
                 <div className="flex flex-row gap-4">
                     <div className="flex flex-col gap-4">
