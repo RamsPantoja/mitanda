@@ -2,7 +2,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/server/trpc";
-import { createBatchInputSchema, ownBatchesInputSchema } from "../schema/batch";
+import { batchesInputSchema, createBatchInputSchema, ownBatchesInputSchema } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
   create: protectedProcedure
@@ -10,9 +10,14 @@ export const batchRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services.batchService.create(input, ctx.session)
     }),
-  ownUserBatches: protectedProcedure
+  ownBatches: protectedProcedure
     .input(ownBatchesInputSchema)
     .query(async ({ ctx, input }) => {
-      return await ctx.services.batchService.ownUserBatches(input.where, ctx.session)
+      return await ctx.services.batchService.ownBatches(input.where, ctx.session)
+    }),
+  batches: protectedProcedure
+    .input(batchesInputSchema)
+    .query(async ({ ctx, input }) => {
+      return await ctx.services.batchService.batches(input.where, ctx.session)
     })
 });

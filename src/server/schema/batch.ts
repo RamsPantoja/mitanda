@@ -17,3 +17,7 @@ export const whereInputBatchSchema = z.object({
 export const ownBatchesInputSchema = z.object({
   where: whereInputBatchSchema
 })
+
+export const batchesInputSchema = z.object({
+  where: whereInputBatchSchema
+})

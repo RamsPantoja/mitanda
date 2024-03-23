@@ -26,7 +26,7 @@ export default async function DashboardLayout({
         </div>
         <div className="flex w-full h-full">
           <div className="w-full h-full rounded-md p-4 flex overflow-auto bg-blackLigth">
-            {children}
+              {children}
           </div>
         </div>
       </div>

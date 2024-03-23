@@ -49,7 +49,7 @@ const useBillingFormLogic = () => {
         }
     });
 
-    // const { mutate: createBatchMutation, isLoading: createBatchLoading } = api.batch.create.useMutation({
+    // const { mutate: createBatchMutation, isLoading: createBatchIsPending } = api.batch.create.useMutation({
     //     onSuccess: async () => {
     //         useBillingForm.reset();
     //         setDisplayBillingForm(false);

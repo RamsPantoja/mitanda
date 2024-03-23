@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 const BatchForm = () => {
     const {
         useFormBatch,
-        createBatchLoading,
+        createBatchMutationIsPending,
         onCreateBatch,
         displayBatchForm,
         setDisplayBatchForm
@@ -236,11 +236,11 @@ const BatchForm = () => {
                 </div>
                 <DialogFooter className="flex flex-row items-center justify-between gap-2">
                     <DialogClose asChild>
-                        <Button onClick={() => reset()} disabled={createBatchLoading} size='sm' type="button" variant="secondary">
+                        <Button onClick={() => reset()} disabled={createBatchMutationIsPending} size='sm' type="button" variant="secondary">
                             Descartar
                         </Button>
                     </DialogClose>
-                    <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isLoading={createBatchLoading}>Crear tanda</MitandaButton>
+                    <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isLoading={createBatchMutationIsPending}>Crear tanda</MitandaButton>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

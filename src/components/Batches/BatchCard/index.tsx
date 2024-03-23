@@ -1,10 +1,12 @@
 "use client"
 
-import { EllipsisVerticalIcon, ShareIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, ShareIcon, KeyIcon } from "@heroicons/react/24/outline";
 
 export type BatchCardProps = {
     batchName: string
     seats: number
+    contributionAmount: string
+    ownerId: string
 }
 
 import {
@@ -22,13 +24,36 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { numericFormatter } from "react-number-format";
+import { useSession } from "next-auth/react";
 
 
-const BatchCard = ({ batchName, seats }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId }: BatchCardProps) => {
+    const { data: session } = useSession();
+
+    const contributionAmountFormatted = numericFormatter(contributionAmount, {
+        thousandSeparator: ','
+    });
+
     return (
         <TooltipProvider delayDuration={300}>
             <div className="p-4 rounded-md bg-blackNormal max-w-40 min-w-40 min-h-48 max-h-48 flex flex-col gap-1">
-                <div className="flex w-full justify-end">
+                <div className="flex w-full items-center justify-between gap-2">
+                    <div>
+                        {
+                            ownerId === session?.user.id &&
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className=" flex items-center justify-center">
+                                        <KeyIcon className="h-4 w-4 text-greenMain" />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent className=" bg-blackMain border-none">
+                                    <p className="text-whiteMain">Esta tanda te pertenece</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        }
+                    </div>
                     <DropdownMenu>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -60,6 +85,7 @@ const BatchCard = ({ batchName, seats }: BatchCardProps) => {
                         </TooltipContent>
                     </Tooltip>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
+                    <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="flex flex-col">

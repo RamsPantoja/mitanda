@@ -1,8 +1,13 @@
 import BatchesContainer from "@/components/Batches/BatchesContainer";
+import { getUserSession } from "../actions";
 
-const Batches = () => {
+const Batches = async () => {
+    const session = await getUserSession();
+
     return (
-        <BatchesContainer />
+        <BatchesContainer
+            session={session}
+        />
     )
 }
 

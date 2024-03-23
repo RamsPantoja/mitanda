@@ -46,12 +46,12 @@ const useBatchFormLogic = () => {
         }
     });
 
-    const { mutate: createBatchMutation, isLoading: createBatchLoading } = api.batch.create.useMutation({
+    const { mutate: createBatchMutation, isPending: createBatchMutationIsPending } = api.batch.create.useMutation({
         onSuccess: async () => {
             useFormBatch.reset();
             setDisplayBatchForm(false);
             toast.success('Tanda creada!');
-            await utils.batch.ownUserBatches.invalidate();
+            await utils.batch.ownBatches.invalidate();
         },
         onError: (error) => {
             console.log(error.message);
@@ -71,11 +71,11 @@ const useBatchFormLogic = () => {
     }
 
     return {
-        createBatchLoading,
         onCreateBatch,
         useFormBatch,
         displayBatchForm,
-        setDisplayBatchForm
+        setDisplayBatchForm,
+        createBatchMutationIsPending,
     }
 }
 

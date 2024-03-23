@@ -131,6 +131,9 @@ export const batches = createTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
     }).defaultNow(),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date'
+    }),
     contractId: uuid("contractId")
       .notNull()
       .references(() => contracts.id)
@@ -176,7 +179,13 @@ export const usersToContracts = createTable(
     contractId: uuid("contractId")
       .notNull()
       .references(() => contracts.id)
-  }
+  },
+  (t) => ({
+    pk: primaryKey({
+      name: "userId_contractId",
+      columns: [t.userId, t.contractId]
+    }),
+  })
 )
 
 export const usersToContractsRelations = relations(usersToContracts, ({ one }) => ({
@@ -199,11 +208,17 @@ export const usersToBatches = createTable(
     batchId: uuid("batchId")
       .notNull()
       .references(() => batches.id)
-  }
+  },
+  (t) => ({
+    pk: primaryKey({
+      name: "userId_batchId",
+      columns: [t.userId, t.batchId]
+    }),
+  })
 );
 
 export const usersToBatchesRelations = relations(usersToBatches, ({ one }) => ({
-  batche: one(batches, {
+  batch: one(batches, {
     fields: [usersToBatches.batchId],
     references: [batches.id],
   }),

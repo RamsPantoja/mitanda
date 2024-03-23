@@ -1,10 +1,11 @@
 import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { db, type DrizzleSchema } from "../db";
-import { batches, contracts, usersToContracts } from "../db/schema";
+import { type DrizzleSchema } from "../db";
+import { batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
+import { and, eq, like } from "drizzle-orm";
 
 type BatchServiceContructor = {
     db: NeonDatabase<DrizzleSchema>
@@ -24,43 +25,52 @@ class BatchService {
     }
 
     async create(createBatchInput: CreateBatchInput, user: Session): Promise<NewBatch> {
-        const [contract] = await db.insert(contracts).values({
-            contributionAmount: createBatchInput.batchInput.contributionAmount.toString(),
-            frequency: createBatchInput.batchInput.frequency
-        }).returning()
+        const batch = await this.db.transaction(async (tx) => {
+            const [contract] = await tx.insert(contracts).values({
+                contributionAmount: createBatchInput.batchInput.contributionAmount.toString(),
+                frequency: createBatchInput.batchInput.frequency
+            }).returning()
 
-        if (!contract) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'Contract not created',
+            if (!contract) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Contract not created',
+                });
+            }
+
+            const [batch] = await tx.insert(batches).values({
+                name: createBatchInput.batchInput.name,
+                contributionAmount: createBatchInput.batchInput.contributionAmount.toString(),
+                seats: createBatchInput.batchInput.seats,
+                frequency: createBatchInput.batchInput.frequency,
+                userId: user.user.id,
+                contractId: contract.id
+            }).returning()
+
+            if (!batch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not created',
+                });
+            }
+
+            await tx.insert(usersToContracts).values({
+                userId: user.user.id,
+                contractId: contract.id
             });
-        }
 
-        const [batche] = await this.db.insert(batches).values({
-            name: createBatchInput.batchInput.name,
-            contributionAmount: createBatchInput.batchInput.contributionAmount.toString(),
-            seats: createBatchInput.batchInput.seats,
-            frequency: createBatchInput.batchInput.frequency,
-            userId: user.user.id,
-            contractId: contract.id
-        }).returning()
+            await tx.insert(usersToBatches).values({
+                userId: user.user.id,
+                batchId: batch.id
+            });
 
-        await this.db.insert(usersToContracts).values({
-            userId: user.user.id,
-            contractId: contract.id
+            return batch;
         })
 
-        if (!batche) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'Batche not created',
-            });
-        }
-
-        return batche
+        return batch;
     }
 
-    async ownUserBatches(whereInput: WhereInputBatch, user: Session): Promise<Batch[]> {
+    async ownBatches(whereInput: WhereInputBatch, user: Session): Promise<Batch[]> {
         return await this.db.query.batches.findMany({
             where: (batches, { eq, and, like }) => {
                 return and(
@@ -69,6 +79,19 @@ class BatchService {
                 )
             }
         })
+    }
+
+    async batches(whereInput: WhereInputBatch, user: Session) {
+        const sqBatches = this.db.select().from(batches).as("batch");
+        const queryResult = await this.db.select()
+            .from(usersToBatches)
+            .rightJoin(sqBatches, eq(usersToBatches.batchId, sqBatches.id))
+            .where(and(
+                eq(usersToBatches.userId, user.user.id),
+                like(sqBatches.name, `%${whereInput.name}%`)
+            ))
+
+        return queryResult;
     }
 }
 
