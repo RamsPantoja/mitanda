@@ -93,6 +93,41 @@ class BatchService {
 
         return queryResult;
     }
+
+    async delete(batchId: string, user: Session): Promise<Batch | undefined> {
+        const deletedBatch = await this.db.transaction(async (tx) => {
+            const batchAboutToDelete = await tx.query.batches.findFirst({
+                where: (batches, { eq }) => {
+                    return and(
+                        eq(batches.id, batchId),
+                        eq(batches.userId, user.user.id),
+                    )
+                }
+            });
+
+            if (!batchAboutToDelete) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not found',
+                });
+            }
+
+            if (batchAboutToDelete.status !== "NOT_STARTED") {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'You can not delete this batch',
+                });
+            }
+
+            await tx.delete(usersToBatches).where(eq(usersToBatches.batchId, batchId));
+            await tx.delete(usersToContracts).where(eq(usersToContracts.contractId, batchAboutToDelete.contractId));
+            await tx.delete(contracts).where(eq(contracts.id, batchAboutToDelete.contractId));
+            const [batch] = await tx.delete(batches).where(eq(batches.id, batchId)).returning();
+            return batch;
+        })
+
+        return deletedBatch;
+    }
 }
 
 export default BatchService;

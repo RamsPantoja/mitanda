@@ -113,6 +113,7 @@ export const verificationTokens = createTable(
 );
 
 export const frequencyEnum = pgEnum('frequency', ['WEEKLY', 'MONTHLY', 'BIWEEKLY']);
+export const batchStatusEnum = pgEnum('status', ["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINALIZED']);
 
 export const batches = createTable(
   "batch",
@@ -122,6 +123,7 @@ export const batches = createTable(
     contributionAmount: numeric('contributionAmount').notNull(),
     seats: integer('seats').notNull(),
     frequency: frequencyEnum('frequency').notNull(),
+    status: batchStatusEnum('status').notNull().default("NOT_STARTED"),
     userId: uuid("userId")
       .notNull()
       .references(() => users.id),

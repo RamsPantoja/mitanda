@@ -1,7 +1,12 @@
-import { frequencyEnum } from "@/server/db/schema";
+import { batchStatusEnum, frequencyEnum } from "@/server/db/schema";
 import { z } from "zod";
 
-export const Frequency = z.enum(frequencyEnum.enumValues).Enum;
+const frequency = z.enum(frequencyEnum.enumValues);
+export type Frequency = z.infer<typeof frequency>
+
+const batchStatus = z.enum(batchStatusEnum.enumValues);
+export type BatchStatus = z.infer<typeof batchStatus>;
+
 export enum TranslatedFrequency {
     WEEKLY = "Semanalmente",
     BIWEEKLY = "Quincenalmente",

@@ -1,20 +1,10 @@
 "use client"
 
 import { EllipsisVerticalIcon, ShareIcon, KeyIcon } from "@heroicons/react/24/outline";
-
-export type BatchCardProps = {
-    batchName: string
-    seats: number
-    contributionAmount: string
-    ownerId: string
-}
-
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
@@ -26,14 +16,26 @@ import {
 } from "@/components/ui/tooltip"
 import { numericFormatter } from "react-number-format";
 import { useSession } from "next-auth/react";
+import useBatchCardLogic from "./useBatchCardLogic";
+import { type BatchStatus } from "@/lib/enum";
+
+export type BatchCardProps = {
+    batchName: string
+    seats: number
+    contributionAmount: string
+    ownerId: string
+    status: BatchStatus
+}
 
 
-const BatchCard = ({ batchName, seats, contributionAmount, ownerId }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status }: BatchCardProps) => {
     const { data: session } = useSession();
 
     const contributionAmountFormatted = numericFormatter(contributionAmount, {
         thousandSeparator: ','
     });
+
+    const {} = useBatchCardLogic();
 
     return (
         <TooltipProvider delayDuration={300}>
@@ -66,12 +68,9 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId }: BatchCardP
                             </TooltipContent>
                         </Tooltip>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Billing</DropdownMenuItem>
-                            <DropdownMenuItem>Team</DropdownMenuItem>
-                            <DropdownMenuItem>Subscription</DropdownMenuItem>
+                            {
+                                status === 'NOT_STARTED' && <DropdownMenuItem onSelect={(e) => { console.log(e) }}>Eliminar</DropdownMenuItem>
+                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
