@@ -1,6 +1,6 @@
 "use client"
 
-import { EllipsisVerticalIcon, ShareIcon, KeyIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, ShareIcon, KeyIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,7 +41,10 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
         onDelete,
         deleteBatchMutationIsPending,
         displayDeleteBatchAlert,
-        setDisplayDeleteBatchAlert
+        setDisplayDeleteBatchAlert,
+        handleCopyInviteLink,
+        inviteLinkCopied,
+        setInviteLinkCopied
     } = useBatchCardLogic();
 
     return (
@@ -123,7 +126,22 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                     </div>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant='ghost' className=" h-8 w-8 p-0 hover:bg-blackMain"><ShareIcon className="h-4 w-4 text-whiteMain" /></Button>
+                            <Button
+                                variant='ghost'
+                                className=" h-8 w-8 p-0 hover:bg-blackMain"
+                                onClick={() => handleCopyInviteLink('Link de invitación')}
+                                onMouseLeave={() => {
+                                    if (inviteLinkCopied) {
+                                        setTimeout(() => {
+                                            setInviteLinkCopied(false);
+                                        }, 1000);
+                                    }
+                                }}
+                            >
+                                {
+                                    inviteLinkCopied ? <CheckIcon className="h-4 w-4 text-whiteMain" /> : <ShareIcon className="h-4 w-4 text-whiteMain" />
+                                }
+                            </Button>
                         </TooltipTrigger>
                         <TooltipContent className=" bg-blackMain border-none">
                             <p className="text-whiteMain">Link de invitación</p>

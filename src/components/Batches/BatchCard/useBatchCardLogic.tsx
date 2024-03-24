@@ -1,11 +1,15 @@
 import { api } from "@/trpc/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCopyToClipboard } from 'usehooks-ts'
 
 
 const useBatchCardLogic = () => {
     const utils = api.useUtils();
     const [displayDeleteBatchAlert, setDisplayDeleteBatchAlert] = useState<boolean>(false);
+    const [copiedText, copy] = useCopyToClipboard();
+    const [inviteLinkCopied, setInviteLinkCopied] = useState<boolean>(false);
+
 
     const { mutate: deleteBatchMutation, isPending: deleteBatchMutationIsPending } = api.batch.delete.useMutation({
         onSuccess: async (data) => {
@@ -25,11 +29,20 @@ const useBatchCardLogic = () => {
         });
     }
 
+    const handleCopyInviteLink = async (text: string) => {
+        const copied = await copy(text);
+        setInviteLinkCopied(copied);
+    }
+
     return {
         onDelete,
         deleteBatchMutationIsPending,
         displayDeleteBatchAlert,
-        setDisplayDeleteBatchAlert
+        setDisplayDeleteBatchAlert,
+        handleCopyInviteLink,
+        inviteLinkCopied,
+        setInviteLinkCopied,
+        copiedText
     }
 }
 
