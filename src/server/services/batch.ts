@@ -121,8 +121,8 @@ class BatchService {
 
             await tx.delete(usersToBatches).where(eq(usersToBatches.batchId, batchId));
             await tx.delete(usersToContracts).where(eq(usersToContracts.contractId, batchAboutToDelete.contractId));
-            await tx.delete(contracts).where(eq(contracts.id, batchAboutToDelete.contractId));
             const [batch] = await tx.delete(batches).where(eq(batches.id, batchId)).returning();
+            await tx.delete(contracts).where(eq(contracts.id, batchAboutToDelete.contractId));
             return batch;
         })
 

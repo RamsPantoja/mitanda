@@ -1,6 +1,6 @@
 "use client"
 
-import { EllipsisVerticalIcon, ShareIcon, KeyIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, ShareIcon, KeyIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,6 +18,7 @@ import { numericFormatter } from "react-number-format";
 import { useSession } from "next-auth/react";
 import useBatchCardLogic from "./useBatchCardLogic";
 import { type BatchStatus } from "@/lib/enum";
+import CustomAlertDialog from "@/components/common/AlertDialog";
 
 export type BatchCardProps = {
     batchName: string
@@ -25,20 +26,40 @@ export type BatchCardProps = {
     contributionAmount: string
     ownerId: string
     status: BatchStatus
+    id: string
 }
 
 
-const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }: BatchCardProps) => {
     const { data: session } = useSession();
 
     const contributionAmountFormatted = numericFormatter(contributionAmount, {
         thousandSeparator: ','
     });
 
-    const {} = useBatchCardLogic();
+    const {
+        onDelete,
+        deleteBatchMutationIsPending,
+        displayDeleteBatchAlert,
+        setDisplayDeleteBatchAlert
+    } = useBatchCardLogic();
 
     return (
         <TooltipProvider delayDuration={300}>
+            <CustomAlertDialog
+                cancelText="Cancelar"
+                actionText="Eliminar"
+                title="Eliminar tanda"
+                description={`Estás a punto de eliminar la tanda <<${batchName}>>. Puedes cancelar esta operación si así lo deseas.`}
+                onCancel={() => {
+                    setDisplayDeleteBatchAlert(false);
+                }}
+                onAction={() => {
+                    onDelete(id);
+                }}
+                isPending={deleteBatchMutationIsPending}
+                open={displayDeleteBatchAlert}
+            />
             <div className="p-4 rounded-md bg-blackNormal max-w-40 min-w-40 min-h-48 max-h-48 flex flex-col gap-1">
                 <div className="flex w-full items-center justify-between gap-2">
                     <div>
@@ -67,9 +88,18 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status }: Ba
                                 <p className="text-whiteMain">Más opciones</p>
                             </TooltipContent>
                         </Tooltip>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent
+                        >
                             {
-                                status === 'NOT_STARTED' && <DropdownMenuItem onSelect={(e) => { console.log(e) }}>Eliminar</DropdownMenuItem>
+                                status === 'NOT_STARTED' &&
+                                <DropdownMenuItem
+                                    onSelect={() => {
+                                        setDisplayDeleteBatchAlert(true);
+                                    }}
+                                >
+                                    <TrashIcon className="mr-2 h-4 w-4" />
+                                    Eliminar
+                                </DropdownMenuItem>
                             }
                         </DropdownMenuContent>
                     </DropdownMenu>

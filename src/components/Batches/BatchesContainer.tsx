@@ -49,6 +49,7 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
                                     contributionAmount={batch.contributionAmount}
                                     ownerId={batch.userId}
                                     status={batch.status}
+                                    id={batch.id}
                                 />
                             )
                         })
@@ -63,6 +64,7 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
                                     contributionAmount={batch.batch.contributionAmount}
                                     ownerId={batch.batch.userId}
                                     status={batch.batch.status}
+                                    id={batch.batch.id}
                                 />
                             )
                         })

@@ -240,7 +240,7 @@ const BatchForm = () => {
                             Descartar
                         </Button>
                     </DialogClose>
-                    <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isLoading={createBatchMutationIsPending}>Crear tanda</MitandaButton>
+                    <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isPending={createBatchMutationIsPending}>Crear tanda</MitandaButton>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -87,7 +87,7 @@ const BillingForm = ({ }) => {
                             Descartar
                         </Button>
                     </DialogClose>
-                    <MitandaButton onClick={handleSubmit(onCreateBilling)} size='sm' variant='default' isLoading={false}>Guardar</MitandaButton>
+                    <MitandaButton onClick={handleSubmit(onCreateBilling)} size='sm' variant='default' isPending={false}>Guardar</MitandaButton>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

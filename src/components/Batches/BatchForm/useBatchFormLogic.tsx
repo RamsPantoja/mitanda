@@ -52,11 +52,11 @@ const useBatchFormLogic = () => {
             setDisplayBatchForm(false);
             toast.success('Tanda creada!');
             await utils.batch.ownBatches.invalidate();
+            await utils.batch.batches.invalidate();
         },
         onError: (error) => {
-            console.log(error.message);
-        },
-
+            toast.error(error.message);
+        }
     })
 
     const onCreateBatch = (data: BatchValidationSchema) => {
