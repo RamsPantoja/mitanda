@@ -17,3 +17,7 @@ export const whereInputBatchSchema = z.object({
 export const ownBatchesInputSchema = z.object({
   where: whereInputBatchSchema
 })
+
+export const stripeTestInputSchema = z.object({
+  name: z.string()
+})

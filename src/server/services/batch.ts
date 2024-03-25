@@ -3,7 +3,7 @@ import { db, type DrizzleSchema } from "../db";
 import { batches, contracts, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
-import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
+import { type stripeTestInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 
 type BatchServiceContructor = {
@@ -15,6 +15,7 @@ export type Batch = typeof batches.$inferSelect;
 
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
+type stripeTestInput = z.infer<typeof stripeTestInputSchema>
 
 class BatchService {
     db: NeonDatabase<DrizzleSchema>
@@ -69,6 +70,10 @@ class BatchService {
                 )
             }
         })
+    }
+
+    async stripeTest(name: stripeTestInput): Promise<stripeTestInput> {
+        return  name
     }
 }
 
