@@ -9,7 +9,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-primary text-primary-foreground hover:bg-primary/90 text-blackMain bg-greenMain hover:bg-greenMain",
+                default: "text-blackMain bg-greenMain hover:bg-greenMain",
                 destructive:
                     "bg-destructive text-destructive-foreground hover:bg-destructive/90",
                 outline:
@@ -36,34 +36,34 @@ const buttonVariants = cva(
 export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-    isLoading?: boolean
+    isPending?: boolean
     children: string
     startIcon?: JSX.Element
     endIcon?: JSX.Element
 }
 
 const MitandaButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, isLoading, children, endIcon, startIcon, ...props }, ref) => {
+    ({ className, variant, size, isPending, children, endIcon, startIcon, ...props }, ref) => {
         const Comp = "button";
 
         return (
             <Comp
                 className={cn(buttonVariants({ variant, size, className }))}
                 ref={ref}
-                disabled={isLoading}
+                disabled={isPending}
                 {...props}
             >
                 {
-                    isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 }
                 {
-                    !isLoading && startIcon
+                    !isPending && startIcon
                 }
                 {
-                    isLoading ? "Espera" : children
+                    isPending ? "Espera" : children
                 }
                 {
-                    !isLoading && endIcon
+                    !isPending && endIcon
                 }
             </Comp>
         )

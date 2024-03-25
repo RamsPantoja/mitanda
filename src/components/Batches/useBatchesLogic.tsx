@@ -5,12 +5,29 @@ import { useState } from "react"
 
 const useBatchesLogic = () => {
     const [searchBatchName, setSearchBatchName] = useState<string>('')
+    const [displayOnlyOwnBatches, setDisplayOnlyOwnBatches] = useState<boolean>(false);
 
-    const { data, isLoading } = api.batch.ownUserBatches.useQuery({
-        where: {
-            name: searchBatchName
+    const { data: ownBatchesData, isLoading: ownBatchesIsLoading } = api.batch.ownBatches.useQuery(
+        {
+            where: {
+                name: searchBatchName
+            }
+        },
+        {
+            enabled: displayOnlyOwnBatches
         }
-    })
+    );
+
+    const { data: batchesData, isLoading: batchesIsLoading } = api.batch.batches.useQuery(
+        {
+            where: {
+                name: searchBatchName
+            }
+        },
+        {
+            enabled: !displayOnlyOwnBatches
+        }
+    );
 
     const skeletons = mapSkeletons({
         numberOfSkeletons: 10,
@@ -21,12 +38,20 @@ const useBatchesLogic = () => {
         setSearchBatchName(value);
     }
 
+    const onOwnBatches = (pressed: boolean) => {
+        setDisplayOnlyOwnBatches(pressed);
+    }
+
     return {
-        data,
-        isLoading,
+        ownBatchesData,
+        ownBatchesIsLoading,
         skeletons,
         onSearchBatch,
-        searchBatchName
+        searchBatchName,
+        displayOnlyOwnBatches,
+        onOwnBatches,
+        batchesData,
+        batchesIsLoading
     }
 }
 
