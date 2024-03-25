@@ -29,17 +29,23 @@ export const env = createEnv({
       process.env.VERCEL ? z.string() : z.string().url()
     ),
     GOOGLE_CLIENT_ID: z
-    .string()
-    .refine(
-      (str) => !str.includes("YOUR_GOOGLE_CLIENT_ID_HERE"),
-      "You forgot to add the google client ID"
-    ),
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_GOOGLE_CLIENT_ID_HERE"),
+        "You forgot to add the google client ID"
+      ),
     GOOGLE_CLIENT_SECRET: z
-    .string()
-    .refine(
-      (str) => !str.includes("YOUR_GOOGLE_CLIENT_SECRET"),
-      "You forgot to add the google client secret"
-    ),
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_GOOGLE_CLIENT_SECRET"),
+        "You forgot to add the google client secret"
+      ),
+    INVITE_LINK_SECRET: z
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_INVITE_LINK_SECRET"),
+        "You forgot to add the invite link client secret"
+      )
   },
 
   /**
@@ -48,7 +54,18 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_INVITE_LINK_SECRET: z
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_INVITE_LINK_SECRET"),
+        "You forgot to add the invite link client secret"
+      ),
+    NEXT_PUBLIC_BASE_URL: z
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_BASE_URL"),
+        "You forgot to add the base url client"
+      ),
   },
 
   /**
@@ -61,7 +78,10 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    NEXT_PUBLIC_INVITE_LINK_SECRET: process.env.NEXT_PUBLIC_INVITE_LINK_SECRET,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    INVITE_LINK_SECRET: process.env.INVITE_LINK_SECRET
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

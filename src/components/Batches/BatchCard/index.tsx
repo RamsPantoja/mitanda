@@ -129,7 +129,11 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                             <Button
                                 variant='ghost'
                                 className=" h-8 w-8 p-0 hover:bg-blackMain"
-                                onClick={() => handleCopyInviteLink('Link de invitación')}
+                                onClick={async () => {
+                                    await handleCopyInviteLink({
+                                        batchId: id
+                                    });
+                                }}
                                 onMouseLeave={() => {
                                     if (inviteLinkCopied) {
                                         setTimeout(() => {
