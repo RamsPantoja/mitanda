@@ -60,12 +60,6 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_INVITE_LINK_SECRET"),
         "You forgot to add the invite link client secret"
       ),
-    NEXT_PUBLIC_BASE_URL: z
-      .string()
-      .refine(
-        (str) => !str.includes("YOUR_BASE_URL"),
-        "You forgot to add the base url client"
-      ),
   },
 
   /**
@@ -80,7 +74,6 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NEXT_PUBLIC_INVITE_LINK_SECRET: process.env.NEXT_PUBLIC_INVITE_LINK_SECRET,
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     INVITE_LINK_SECRET: process.env.INVITE_LINK_SECRET
   },
   /**

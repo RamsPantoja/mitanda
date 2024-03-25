@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useCopyToClipboard } from 'usehooks-ts';
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
+import { getPublicBaseUrl } from "@/lib/utils";
 
 type BatchInviteLinkData = {
     batchId: string
@@ -36,7 +37,7 @@ const useBatchCardLogic = () => {
 
     const handleCopyInviteLink = async (batchData: BatchInviteLinkData) => {
         const token = jwt.sign(batchData, env.NEXT_PUBLIC_INVITE_LINK_SECRET, { expiresIn: "1h" });
-        const copied = await copy(`${env.NEXT_PUBLIC_BASE_URL}/invite_link/${token}`);
+        const copied = await copy(`${getPublicBaseUrl()}/invite_link/${token}`);
         setInviteLinkCopied(copied);
     }
 
