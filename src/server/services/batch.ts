@@ -6,6 +6,7 @@ import { type z } from "zod";
 import { type stripeTestInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
+const stripe = require('stripe')(process.env.PRIVATE_STRIPE_KEY)
 
 type BatchServiceContructor = {
     db: NeonDatabase<DrizzleSchema>
@@ -130,8 +131,24 @@ class BatchService {
         return deletedBatch;
     }
 
-    async stripeTest(name: stripeTestInput): Promise<stripeTestInput> {
-        return  name
+    async stripeTest(name: string): Promise<unknown> {
+        try {
+            const account = await stripe.accounts.create({
+                type: 'express'
+            })
+    
+            const accountLink = await stripe.accountLinks.create({
+                account: account.id,
+                refresh_url: 'https://example.com/reauth',
+                return_url: 'https://example.com/return',
+                type: 'account_onboarding',
+            });
+    
+            return {account, accountLink}
+        } catch (error) {
+            console.log(error)
+        }
+       
     }
 }
 

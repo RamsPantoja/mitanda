@@ -4,7 +4,7 @@ import { toast } from "sonner"
 
 const useStripeLogic = () => {
 
-  const { mutate: stripeMutation, isLoading: stripeLoading } = api.batch.stripeTest.useMutation({
+  const { mutate: stripeMutation, isPending: stripeIsLoading } = api.batch.stripeTest.useMutation({
     onSuccess: async () => {
       toast.success('mutation succeful')
     },
@@ -14,13 +14,11 @@ const useStripeLogic = () => {
   })
 
   const onCreateStripeAccount = (name: string) => {
-    stripeMutation({
-      name: name
-    })
+    stripeMutation({ name })
   }
 
   return {
-    onCreateStripeAccount,
+    onCreateStripeAccount, //TODO preguntar sobre el error del any que lanza ts
   }
 }
 

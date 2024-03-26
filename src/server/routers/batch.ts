@@ -8,7 +8,7 @@ export const batchRouter = createTRPCRouter({
   stripeTest: protectedProcedure
     .input(stripeTestInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services.batchService.stripeTest(input)
+      return await ctx.services.batchService.stripeTest(input.name)
     }),
   create: protectedProcedure
     .input(createBatchInputSchema)

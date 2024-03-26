@@ -59,6 +59,7 @@
     "react-number-format": "^5.3.3",
     "server-only": "^0.0.1",
     "sonner": "^1.4.3",
+    "stripe": "^14.22.0",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
