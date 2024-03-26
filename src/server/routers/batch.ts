@@ -2,9 +2,14 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/server/trpc";
-import { batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema } from "../schema/batch";
+import { batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema, stripeTestInputSchema } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
+  stripeTest: protectedProcedure
+    .input(stripeTestInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.services.batchService.stripeTest(input.name)
+    }),
   create: protectedProcedure
     .input(createBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
