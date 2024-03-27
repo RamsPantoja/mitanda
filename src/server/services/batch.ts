@@ -7,6 +7,7 @@ import { type stripeTestInputSchema, type createBatchInputSchema, type whereInpu
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { Stripe } from 'stripe'
+import { env } from "@/env";
 
 type BatchServiceContructor = {
     db: NeonDatabase<DrizzleSchema>
@@ -132,22 +133,26 @@ class BatchService {
     }
 
     async stripeTest(name: string): Promise<object | undefined> {
-        const stripe = new Stripe(process.env.PRIVATE_STRIPE_KEY!)
+        const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
         try {
-            const account = await stripe.accounts.create({
-                type: 'express'
-            })
+            // const account = await stripe.accounts.create({
+            //     type: 'express'
+            // })
 
-            const accountLink = await stripe.accountLinks.create({
-                account: account.id,
-                refresh_url: 'https://example.com/reauth',
-                return_url: 'https://example.com/return',
-                type: 'account_onboarding',
-            });
-            console.log(account, accountLink)
+            // const accountLink = await stripe.accountLinks.create({
+            //     account: account.id,
+            //     refresh_url: 'https://example.com/reauth',
+            //     return_url: 'https://example.com/return',
+            //     type: 'account_onboarding',
+            // });
 
-            return { account, accountLink }
+            // return { account, accountLink }
+
+
+            const loginLink = await stripe.accounts.createLoginLink("acct_1OykpFQkopk0C1Ac");
+
+            return loginLink;
         } catch (error) {
             console.log(error)
         }

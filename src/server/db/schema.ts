@@ -36,11 +36,12 @@ export const users = createTable("user", {
   }).defaultNow()
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   usersToContracts: many(usersToContracts),
   batches: many(batches),
   billings: many(billings),
+  stripeAccounts: one(stripeAccounts)
 }));
 
 export const accounts = createTable(
@@ -254,3 +255,14 @@ export const billingsRelations = relations(billings, ({ one }) => ({
     references: [users.id]
   })
 }));
+
+export const stripeAccounts = createTable(
+  "stripeAccounts",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    accountId: text("accountId").notNull(),
+  }
+);
