@@ -40,8 +40,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   usersToContracts: many(usersToContracts),
   batches: many(batches),
-  billings: many(billings),
-  stripeAccounts: one(stripeAccounts)
+  stripeAccount: one(stripeAccounts)
 }));
 
 export const accounts = createTable(
@@ -231,31 +230,6 @@ export const usersToBatchesRelations = relations(usersToBatches, ({ one }) => ({
   }),
 }));
 
-export const billings = createTable(
-  "billings",
-  {
-    id: uuid("id").notNull().primaryKey().defaultRandom(),
-    userId: uuid("userId")
-      .notNull()
-      .references(() => users.id),
-    firstName: text("firstName").notNull(),
-    lastName: text("lastName").notNull(),
-    address: text("address").notNull(),
-    country: text("country").notNull().default("MX"),
-    city: text("city").notNull(),
-    state: text("state").notNull(),
-    postalCode: text("postalCode").notNull(),
-    clabe: text("clabe").notNull()
-  }
-);
-
-export const billingsRelations = relations(billings, ({ one }) => ({
-  user: one(users, {
-    fields: [billings.userId],
-    references: [users.id]
-  })
-}));
-
 export const stripeAccounts = createTable(
   "stripeAccounts",
   {
@@ -266,3 +240,10 @@ export const stripeAccounts = createTable(
     accountId: text("accountId").notNull(),
   }
 );
+
+export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
+  user: one(users, {
+    fields: [stripeAccounts.userId],
+    references: [users.id]
+  })
+}))
