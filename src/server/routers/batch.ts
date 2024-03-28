@@ -2,14 +2,9 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/server/trpc";
-import { batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema, stripeTestInputSchema } from "../schema/batch";
+import { batchByIdInputSchema, batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
-  stripeTest: protectedProcedure
-    .input(stripeTestInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.services.batchService.stripeTest(input.name)
-    }),
   create: protectedProcedure
     .input(createBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -29,5 +24,10 @@ export const batchRouter = createTRPCRouter({
     .input(deleteBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.services.batchService.delete(input.batchId, ctx.session);
+    }),
+  batchById: protectedProcedure
+    .input(batchByIdInputSchema)
+    .query(async ({ ctx, input }) => {
+      return await ctx.services.batchService.batchById(input.batchId, ctx.session);
     })
 });

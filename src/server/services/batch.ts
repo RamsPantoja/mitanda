@@ -3,11 +3,9 @@ import { type DrizzleSchema } from "../db";
 import { batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
-import { type stripeTestInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
+import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
-import { Stripe } from 'stripe'
-import { env } from "@/env";
 
 type BatchServiceContructor = {
     db: NeonDatabase<DrizzleSchema>
@@ -18,7 +16,6 @@ export type Batch = typeof batches.$inferSelect;
 
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
-type stripeTestInput = z.infer<typeof stripeTestInputSchema>
 
 class BatchService {
     db: NeonDatabase<DrizzleSchema>
@@ -132,31 +129,39 @@ class BatchService {
         return deletedBatch;
     }
 
-    async stripeTest(name: string): Promise<object | undefined> {
-        const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+    async batchById(batchId: string, user: Session): Promise<Batch> {
+        const areYouInBatch = await this.db.query.usersToBatches.findFirst({
+            where: (usersToBatches, { eq }) => {
+                return and(
+                    eq(usersToBatches.userId, user.user.id),
+                    eq(usersToBatches.batchId, batchId),
+                )
+            }
+        });
 
-        try {
-            // const account = await stripe.accounts.create({
-            //     type: 'express'
-            // })
-
-            // const accountLink = await stripe.accountLinks.create({
-            //     account: account.id,
-            //     refresh_url: 'https://example.com/reauth',
-            //     return_url: 'https://example.com/return',
-            //     type: 'account_onboarding',
-            // });
-
-            // return { account, accountLink }
-
-
-            const loginLink = await stripe.accounts.createLoginLink("acct_1OykpFQkopk0C1Ac");
-
-            return loginLink;
-        } catch (error) {
-            console.log(error)
+        if (!areYouInBatch) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'You can not see this information...',
+            });
         }
 
+        const batch = await this.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return and(
+                    eq(batches.id, batchId)
+                )
+            }
+        });
+
+        if (!batch) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'Batch not found',
+            });
+        }
+
+        return batch;
     }
 }
 

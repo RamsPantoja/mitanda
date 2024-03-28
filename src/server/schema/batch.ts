@@ -28,6 +28,8 @@ export const deleteBatchInputSchema = z.object({
   })
 });
 
-export const stripeTestInputSchema = z.object({
-  name: z.string()
-})
+export const batchByIdInputSchema = z.object({
+  batchId: z.string({
+    required_error: "BatchId is required"
+  })
+});

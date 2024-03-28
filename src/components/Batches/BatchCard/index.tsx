@@ -110,7 +110,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                 <div className="flex flex-col gap-1 h-full">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <p className="text-whiteMain font-bold text-sm truncate w-fit max-w-full">{batchName}</p>
+                            <a href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm truncate w-fit max-w-full underline">{batchName}</a>
                         </TooltipTrigger>
                         <TooltipContent className=" bg-blackMain border-none">
                             <p className="text-whiteMain">{batchName}</p>
