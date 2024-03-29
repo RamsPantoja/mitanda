@@ -129,10 +129,10 @@ export const batches = createTable(
       .references(() => users.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date'
     }),

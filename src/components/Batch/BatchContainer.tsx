@@ -1,6 +1,7 @@
 "use client"
 
 import BatchInformation from "./BatchInformation";
+import ContributionProgress from "./ContributionProgress";
 import useBatchContainerLogic from "./useBatchContainerLogic";
 
 
@@ -15,6 +16,10 @@ const BatchContainer = () => {
             <BatchInformation 
                 isLoading={batchIsLoading}
                 batch={batchData}
+            />
+            <ContributionProgress
+                batch={batchData}
+                isLoading={batchIsLoading}
             />
         </div>
     )

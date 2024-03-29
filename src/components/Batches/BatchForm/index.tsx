@@ -236,9 +236,9 @@ const BatchForm = () => {
                 </div>
                 <DialogFooter className="flex flex-row items-center justify-between gap-2">
                     <DialogClose asChild>
-                        <Button onClick={() => reset()} disabled={createBatchMutationIsPending} size='sm' type="button" variant="secondary">
+                        <MitandaButton onClick={() => reset()} disabled={createBatchMutationIsPending} size='sm' type="button" variant="secondary">
                             Descartar
-                        </Button>
+                        </MitandaButton>
                     </DialogClose>
                     <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isPending={createBatchMutationIsPending}>Crear tanda</MitandaButton>
                 </DialogFooter>
