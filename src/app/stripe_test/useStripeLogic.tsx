@@ -4,22 +4,27 @@ import { toast } from "sonner"
 
 const useStripeLogic = () => {
 
-  const { mutate: stripeMutation, isPending: stripeIsLoading } = api.batch.stripeTest.useMutation({
+   const { mutate: stripeMutation, isPending: stripeIsLoading } = api.stripe.create.useMutation({
     onSuccess: async () => {
       toast.success('mutation succeful')
     },
     onError: (error) => {
       console.log(error.message)
     }
-  })
+  });
 
-  const onCreateStripeAccount = (name: string) => {
-    stripeMutation({ name })
+  const {data: relationData, isLoading: relationLoading} = api.stripe.find.useQuery()
+
+  const onCreateStripeAccount = (accountId: string) => {
+    stripeMutation({ accountId })
   }
 
   return {
-    onCreateStripeAccount, //TODO preguntar sobre el error del any que lanza ts
+     onCreateStripeAccount,
+     stripeIsLoading,
+     relationData
   }
 }
 
 export default useStripeLogic
+

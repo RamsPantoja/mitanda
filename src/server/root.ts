@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "@/server/trpc";
 import { batchRouter } from "./routers/batch";
+import { stripeRouter } from "./routers/stripe";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { batchRouter } from "./routers/batch";
  */
 export const appRouter = createTRPCRouter({
   batch: batchRouter,
+  stripe: stripeRouter
 });
 
 // export type definition of API

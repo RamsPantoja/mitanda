@@ -5,13 +5,15 @@ import UserService from "./user";
 import AccountService from "./account";
 import ContractService from "./contract";
 import SessionService from "./session";
+import StripeService from "./stripe";
 
 export type ServicesContext = {
     batchService: BatchService
     usersService: UserService
     accountService: AccountService
     contractService: ContractService
-    sessionService: SessionService
+    sessionService: SessionService,
+    stripeService: StripeService
 }
 
 export type ServicesConfig = {
@@ -24,7 +26,8 @@ const Services = ({ db }: ServicesConfig): ServicesContext => {
         usersService: new UserService({ db }),
         accountService: new AccountService({ db }),
         contractService: new ContractService({ db }),
-        sessionService: new SessionService({ db })
+        sessionService: new SessionService({ db }),
+        stripeService: new StripeService({ db })
     }
 }
 export default Services;
