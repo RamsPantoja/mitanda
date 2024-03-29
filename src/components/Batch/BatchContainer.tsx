@@ -1,9 +1,10 @@
 "use client"
 
 import BatchInformation from "./BatchInformation";
+import ContributionHistory from "./ContributionHistory";
 import ContributionProgress from "./ContributionProgress";
+import ContributionRegister from "./ContributionRegister";
 import useBatchContainerLogic from "./useBatchContainerLogic";
-
 
 const BatchContainer = () => {
     const {
@@ -12,7 +13,7 @@ const BatchContainer = () => {
     } = useBatchContainerLogic();
 
     return (
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-2 w-full">
             <BatchInformation 
                 isLoading={batchIsLoading}
                 batch={batchData}
@@ -21,6 +22,8 @@ const BatchContainer = () => {
                 batch={batchData}
                 isLoading={batchIsLoading}
             />
+            <ContributionRegister />
+            <ContributionHistory />
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import Contributors from "@/components/Batch/Contributors";
 import Chat from "@/components/Chat";
 import type { Metadata } from "next";
 
@@ -13,10 +14,15 @@ export default async function BatchLayout({
 }) {
     return (
         <div className="flex w-full">
-            <div className="grid grid-cols-[minmax(0,_1fr)_350px] grid-rows-1 gap-2 w-full h-full">
+            <div className="grid grid-cols-[minmax(0,_1fr)_300px_350px] grid-rows-1 gap-2 w-full h-full">
                 <div className="flex w-full h-full">
                     <div className="w-full h-full rounded-md flex overflow-auto bg-blackLigth">
                         {children}
+                    </div>
+                </div>
+                <div className="w-full h-full flex flex-col">
+                    <div className="w-full h-full rounded-md p-4 flex flex-col bg-blackNormal">
+                        <Contributors />
                     </div>
                 </div>
                 <div className="w-full h-full flex flex-col">

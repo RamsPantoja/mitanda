@@ -49,8 +49,13 @@ const ContributionProgress = ({ batch, isLoading }: ContributionProgressProps) =
                     filler: "bg-gradient-to-r from-greenMain to-greenMain",
                     label: "text-whiteMain",
                     value: "text-whiteMain font-bold",
+                    thumb: [
+                        "transition-size",
+                        "bg-gradient-to-r from-blackMain to-blackMain",
+                        "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
+                        "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                    ],
                 }}
-
                 formatOptions={{ style: "currency", currency: "MXN" }}
                 showTooltip={true}
 

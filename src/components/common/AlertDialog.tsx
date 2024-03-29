@@ -1,5 +1,7 @@
 import {
     AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
@@ -40,12 +42,16 @@ const CustomAlertDialog = ({ trigger, title, description, cancelText, actionText
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <MitandaButton variant='secondary' disabled={isPending} onClick={onCancel}>
-                        {cancelText}
-                    </MitandaButton>
-                    <MitandaButton isPending={isPending} onClick={onAction}>
-                        {actionText}
-                    </MitandaButton>
+                    <AlertDialogCancel asChild>
+                        <MitandaButton variant='secondary' disabled={isPending} onClick={onCancel}>
+                            {cancelText}
+                        </MitandaButton>
+                    </AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                        <MitandaButton isPending={isPending} onClick={onAction}>
+                            {actionText}
+                        </MitandaButton>
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
