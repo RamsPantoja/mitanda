@@ -231,7 +231,7 @@ export const usersToBatchesRelations = relations(usersToBatches, ({ one }) => ({
 }));
 
 export const stripeAccounts = createTable(
-  "stripeAccounts",
+  "stripe_account",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
     userId: uuid("userId")

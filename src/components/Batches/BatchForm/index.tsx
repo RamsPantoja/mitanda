@@ -92,6 +92,19 @@ const BatchForm = () => {
                                     onChangeEnd={(value) => {
                                         field.onChange(value);
                                     }}
+                                    classNames={{
+                                        track: "border-s-whiteMain",
+                                        filler: "bg-gradient-to-r from-whiteMain to-whiteMain",
+                                        label: "text-whiteMain",
+                                        value: "text-whiteMain",
+                                        step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50",
+                                        thumb: [
+                                            "transition-size",
+                                            "bg-gradient-to-r from-blackMain to-blackMain",
+                                            "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
+                                            "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                                        ],
+                                    }}
                                     ref={field.ref}
                                 />
                             )}
@@ -121,6 +134,19 @@ const BatchForm = () => {
                                     onChangeEnd={(value) => {
                                         field.onChange(value);
                                     }}
+                                    classNames={{
+                                        track: "border-s-whiteMain",
+                                        filler: "bg-gradient-to-r from-whiteMain to-whiteMain",
+                                        label: "text-whiteMain",
+                                        value: "text-whiteMain",
+                                        step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50",
+                                        thumb: [
+                                            "transition-size",
+                                            "bg-gradient-to-r from-blackMain to-blackMain",
+                                            "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
+                                            "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                                        ],
+                                    }}
                                     ref={field.ref}
                                 />
                             )}
@@ -130,7 +156,7 @@ const BatchForm = () => {
                         }
                     </div>
                     <div className="flex flex-col gap-2">
-                        <p className="text-blackMain font-bold text-sm">Frecuencia</p>
+                        <p className="font-bold text-sm text-whiteMain">Frecuencia</p>
                         <div className="flex flex-col gap-1">
                             <Controller
                                 name="frequency"
@@ -146,15 +172,15 @@ const BatchForm = () => {
                                     >
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="WEEKLY" id="r1" />
-                                            <Label htmlFor="r1">Semanal</Label>
+                                            <Label className="text-whiteMain" htmlFor="r1">Semanal</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="BIWEEKLY" id="r2" />
-                                            <Label htmlFor="r2">Quincenal</Label>
+                                            <Label className="text-whiteMain" htmlFor="r2">Quincenal</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="MONTHLY" id="r3" />
-                                            <Label htmlFor="r3">Mensual</Label>
+                                            <Label className="text-whiteMain" htmlFor="r3">Mensual</Label>
                                         </div>
                                     </RadioGroup>
                                 )}
@@ -165,45 +191,45 @@ const BatchForm = () => {
                         </div>
                     </div>
                     <div className="flex flex-col gap-2 mt-4 w-full">
-                        <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                            <span className="text-xs text-blackMain font-bold">Cantidad y Frecuencia:</span>
-                            <ul className="list-disc p-4 text-xs">
+                        <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-grayStrong">
+                            <span className="text-xs text-whiteMain font-bold">Cantidad y Frecuencia:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>La cantidad de la contribución será <b>${contributionAmountFormatted} MXN</b>.</li>
                                 <li>Las contribuciones se realizarán <b>{TranslatedFrequency[watcher.frequency]}</b> apartir del inicio de la tanda.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Duración:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Duración:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>La tanda durará segun el numero de participantes, hasta que todos hayan recibido su tanda.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Orden de Beneficiario:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Orden de Beneficiario:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>El orden de beneficiario se determinará mediante sorteo y se establecerá al principio de la tanda.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Método de Pago:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Método de Pago:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>Las contribuciones se realizarán a través de transferencia bancaria ó tarjeta de crédito/débito.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Registro:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Registro:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>Un registro detallado de las contribuciones y los pagos se mantendrá y estará disponible para todos los participantes.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Consecuencias por Incumplimiento:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Consecuencias por Incumplimiento:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>En caso de que un participante no realice su contribución en la fecha acordada, [especificar las consecuencias, como una multa o la exclusión de futuras tandas].</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Finalización Anticipada:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Finalización Anticipada:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>La tanda puede ser terminada anticipadamente por consentimiento mutuo de todos los participantes.</li>
                             </ul>
 
-                            <span className="text-xs text-blackMain font-bold">Disputas:</span>
-                            <ul className="list-disc p-4 text-xs">
+                            <span className="text-xs text-whiteMain font-bold">Disputas:</span>
+                            <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>Las disputas serán resueltas a través de [mediación/arbitraje/tribunal, según sea necesario]</li>
                             </ul>
                         </ScrollArea>
@@ -224,7 +250,7 @@ const BatchForm = () => {
                             />
                             <label
                                 htmlFor="terms"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-whiteMain"
                             >
                                 Aceptar terminos y condiciones de la tanda
                             </label>
