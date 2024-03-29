@@ -9,13 +9,13 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "text-blackMain bg-greenMain hover:bg-greenMain",
+                default: "text-blackMain bg-greenMain hover:bg-greenMain/80",
                 destructive:
                     "bg-destructive text-destructive-foreground hover:bg-destructive/90",
                 outline:
                     "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
                 secondary:
-                    "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+                    "bg-blackMain text-whiteMain hover:bg-blackMain/80",
                 ghost: "hover:bg-accent hover:text-accent-foreground",
                 link: "text-primary underline-offset-4 hover:underline",
             },
@@ -54,7 +54,7 @@ const MitandaButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {...props}
             >
                 {
-                    isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin bg-blackLigth" />
                 }
                 {
                     !isPending && startIcon

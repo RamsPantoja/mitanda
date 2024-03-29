@@ -13,7 +13,6 @@ import { numericFormatter } from 'react-number-format';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MitandaButton } from "@/components/common/MitandaButton";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/button";
 
 const BatchForm = () => {
     const {
