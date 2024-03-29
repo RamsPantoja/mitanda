@@ -32,7 +32,7 @@ const ContributionProgress = ({ batch, isLoading }: ContributionProgressProps) =
     }
 
     return (
-        <Card className="flex items-center bg-blackNormal justify-end max-w-xl p-4">
+        <Card className="flex items-center bg-blackNormal justify-end p-4">
             <Slider
                 size='md'
                 step={1}

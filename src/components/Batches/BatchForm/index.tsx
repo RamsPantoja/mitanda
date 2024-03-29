@@ -190,7 +190,7 @@ const BatchForm = () => {
                         </div>
                     </div>
                     <div className="flex flex-col gap-2 mt-4 w-full">
-                        <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-grayStrong">
+                        <ScrollArea className="h-[300px] w-full rounded-md border border-blackMain p-4 bg-grayStrong">
                             <span className="text-xs text-whiteMain font-bold">Cantidad y Frecuencia:</span>
                             <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>La cantidad de la contribución será <b>${contributionAmountFormatted} MXN</b>.</li>
