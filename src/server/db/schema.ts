@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  date,
   index,
   integer,
   numeric,
@@ -40,7 +41,10 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   usersToContracts: many(usersToContracts),
   batches: many(batches),
-  stripeAccount: one(stripeAccounts)
+  stripeAccount: one(stripeAccounts, {
+    fields: [users.id],
+    references: [stripeAccounts.userId]
+  }),
 }));
 
 export const accounts = createTable(
@@ -142,7 +146,7 @@ export const batches = createTable(
   },
 )
 
-export const batchesRelations = relations(batches, ({ one }) => ({
+export const batchesRelations = relations(batches, ({ one, many }) => ({
   contract: one(contracts, {
     fields: [batches.contractId],
     references: [contracts.id]
@@ -150,7 +154,8 @@ export const batchesRelations = relations(batches, ({ one }) => ({
   user: one(users, {
     fields: [batches.userId],
     references: [users.id]
-  })
+  }),
+  batchRegisters: many(batchRegisters)
 }));
 
 export const contracts = createTable(
@@ -246,4 +251,26 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
     fields: [stripeAccounts.userId],
     references: [users.id]
   })
-}))
+}));
+
+export const batchRegisterStatusEnum = pgEnum('status', ["NOT_STARTED", 'FINALIZED']);
+
+export const batchRegisters = createTable(
+  "batch_register", 
+  {
+    id:  uuid("id").notNull().primaryKey().defaultRandom(),
+    batchId: uuid("batchId")
+    .notNull()
+    .references(() => batches.id),
+    frequency: frequencyEnum("frequency").notNull(),
+    status: batchRegisterStatusEnum("status").notNull().default("NOT_STARTED"),
+    startDate: date("startDate").notNull(),
+    endDate: date("endDate").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
+  }
+);
