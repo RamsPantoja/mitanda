@@ -265,12 +265,12 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
 export const batchRegisterStatusEnum = pgEnum('status', ["NOT_STARTED", 'FINALIZED']);
 
 export const batchRegisters = createTable(
-  "batch_register", 
+  "batch_register",
   {
-    id:  uuid("id").notNull().primaryKey().defaultRandom(),
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
     batchId: uuid("batchId")
-    .notNull()
-    .references(() => batches.id),
+      .notNull()
+      .references(() => batches.id),
     frequency: frequencyEnum("frequency").notNull(),
     status: batchRegisterStatusEnum("status").notNull().default("NOT_STARTED"),
     startDate: date("startDate").notNull(),
@@ -283,6 +283,13 @@ export const batchRegisters = createTable(
     }).defaultNow(),
   }
 );
+
+export const batchRegistersRelations = relations(batchRegisters, ({ one }) => ({
+  batch: one(batches, {
+    fields: [batchRegisters.batchId],
+    references: [batches.id]
+  })
+}));
 
 export const payments = createTable(
   "payment",
