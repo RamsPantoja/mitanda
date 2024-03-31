@@ -39,8 +39,11 @@ export const users = createTable("user", {
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   usersToContracts: many(usersToContracts),
+  usersToBatches: many(usersToBatches),
   batches: many(batches),
-  stripeAccount: one(stripeAccounts)
+  stripeAccount: one(stripeAccounts),
+  payments: many(payments),
+  contributions: many(contributions)
 }));
 
 export const accounts = createTable(
@@ -238,6 +241,12 @@ export const stripeAccounts = createTable(
       .notNull()
       .references(() => users.id),
     accountId: text("accountId").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
   }
 );
 
@@ -247,3 +256,61 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
     references: [users.id]
   })
 }))
+
+export const payments = createTable(
+  "payment",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    checkoutSessionId: text("checkoutSessionId").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
+  }
+);
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  user: one(users, {
+    fields: [payments.userId],
+    references: [users.id]
+  })
+}));
+
+export const contributionEnum = pgEnum('frequency', ["BATCH", "CROWDFUNDING"]);
+
+export const contributions = createTable(
+  "contribution",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    amount: numeric('amount').notNull(),
+    type: contributionEnum('type').notNull(),
+    paymentId: uuid("paymentId")
+      .notNull()
+      .references(() => payments.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).defaultNow(),
+  }
+);
+
+export const contributionsRelations = relations(contributions, ({ one }) => ({
+  user: one(users, {
+    fields: [contributions.userId],
+    references: [users.id]
+  }),
+  payment: one(payments, {
+    fields: [contributions.paymentId],
+    references: [payments.id]
+  })
+}));
