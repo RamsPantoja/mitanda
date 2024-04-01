@@ -11,13 +11,17 @@ import {
 } from "@/components/ui/card"
 import Image from "next/image";
 
-const SignInForm = ({ }) => {
+type SignInFormProps = {
+    callbackUrl?: string
+}
+
+const SignInForm = ({ callbackUrl }: SignInFormProps) => {
     const onSignInWithGoogle = async () => {
-        await signIn("google")
+        await signIn("google", { callbackUrl });
     }
 
     return (
-        <Card className=" bg-blackNormal max-w-72 border-none">
+        <Card className="bg-blackNormal max-w-72 border-none">
             <CardHeader>
                 <CardTitle>
                     <div className="flex items-center justify-center flex-col gap-4">
@@ -29,7 +33,6 @@ const SignInForm = ({ }) => {
                             width={60}
                             height={60}
                         />
-
                         <p className="text-whiteMain">miTanda</p>
                     </div>
                 </CardTitle>

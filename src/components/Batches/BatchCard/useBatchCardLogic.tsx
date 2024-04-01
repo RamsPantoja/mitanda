@@ -37,7 +37,7 @@ const useBatchCardLogic = () => {
 
     const handleCopyInviteLink = async (batchData: BatchInviteLinkData) => {
         const token = jwt.sign(batchData, env.NEXT_PUBLIC_INVITE_LINK_SECRET, { expiresIn: "1h" });
-        const copied = await copy(`${getPublicBaseUrl()}/invite_link/${token}`);
+        const copied = await copy(`${getPublicBaseUrl()}/api/invite_link/${token}`);
         setInviteLinkCopied(copied);
     }
 

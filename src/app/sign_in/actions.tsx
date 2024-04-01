@@ -8,6 +8,6 @@ export const getUserSession = async () => {
     const session = await getServerSession(authOptions);
 
     if (session !== null) {
-        redirect(`/dashboard`) // Navigate to the new post page
+        redirect(`/dashboard`)
     }
 }
