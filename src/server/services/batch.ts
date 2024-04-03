@@ -163,6 +163,59 @@ class BatchService {
 
         return batch;
     }
+
+    async addUserToBatch(batchId: string, user: Session) {
+        const userToBatchQuery = await this.db.query.usersToBatches.findFirst({
+            where: (usersToBatches, { eq }) => {
+                return and(
+                    eq(usersToBatches.batchId, batchId),
+                    eq(usersToBatches.userId, user.user.id),
+                )
+            }
+        });
+
+        if (userToBatchQuery) {
+            return userToBatchQuery;
+        }
+
+        const newUserToBatch = await this.db.transaction(async (tx) => {
+            const batchQuery = await tx.query.batches.findFirst({
+                where: (batches, { eq }) => {
+                    return and(
+                        eq(batches.id, batchId),
+                    )
+                }
+            });
+
+            if (!batchQuery) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not found',
+                });
+            };
+
+            await tx.insert(usersToContracts).values({
+                contractId: batchQuery.contractId,
+                userId: user.user.id
+            });
+
+            const [userToBatch] = await tx.insert(usersToBatches).values({
+                batchId,
+                userId: user.user.id
+            }).returning();
+
+            if (!userToBatch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Failed to add user to batch',
+                });
+            }
+
+            return userToBatch;
+        });
+
+        return newUserToBatch;
+    }
 }
 
 export default BatchService;
