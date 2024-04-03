@@ -80,32 +80,35 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                             </Tooltip>
                         }
                     </div>
-                    <DropdownMenu>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant='ghost' className=" h-8 w-8 p-0 hover:bg-blackMain"><EllipsisVerticalIcon className="h-6 w-6 text-whiteMain" /></Button>
-                                </DropdownMenuTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent className=" bg-blackMain border-none">
-                                <p className="text-whiteMain">Más opciones</p>
-                            </TooltipContent>
-                        </Tooltip>
-                        <DropdownMenuContent
-                        >
-                            {
-                                status === 'NOT_STARTED' &&
-                                <DropdownMenuItem
-                                    onSelect={() => {
-                                        setDisplayDeleteBatchAlert(true);
-                                    }}
-                                >
-                                    <TrashIcon className="mr-2 h-4 w-4" />
-                                    Eliminar
-                                </DropdownMenuItem>
-                            }
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    {
+                        ownerId === session?.user.id &&
+                        <DropdownMenu>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant='ghost' className=" h-8 w-8 p-0 hover:bg-blackMain"><EllipsisVerticalIcon className="h-6 w-6 text-whiteMain" /></Button>
+                                    </DropdownMenuTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent className=" bg-blackMain border-none">
+                                    <p className="text-whiteMain">Más opciones</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <DropdownMenuContent
+                            >
+                                {
+                                    status === 'NOT_STARTED' &&
+                                    <DropdownMenuItem
+                                        onSelect={() => {
+                                            setDisplayDeleteBatchAlert(true);
+                                        }}
+                                    >
+                                        <TrashIcon className="mr-2 h-4 w-4" />
+                                        Eliminar
+                                    </DropdownMenuItem>
+                                }
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    }
                 </div>
                 <div className="flex flex-col gap-1 h-full">
                     <Tooltip>

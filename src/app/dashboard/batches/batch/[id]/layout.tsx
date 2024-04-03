@@ -1,4 +1,4 @@
-import Contributors from "@/components/Batch/Contributors";
+import Participants from "@/components/Batch/Participants";
 import Chat from "@/components/Chat";
 import type { Metadata } from "next";
 
@@ -22,7 +22,9 @@ export default async function BatchLayout({
                 </div>
                 <div className="w-full h-full flex flex-col">
                     <div className="w-full h-full rounded-md p-4 flex flex-col bg-blackNormal">
-                        <Contributors />
+                        <Participants 
+                            
+                        />
                     </div>
                 </div>
                 <div className="w-full h-full flex flex-col">

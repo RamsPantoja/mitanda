@@ -1,6 +1,7 @@
 import { type TRPCContext, createCallerFactory, createTRPCRouter } from "@/server/trpc";
 import { batchRouter } from "./routers/batch";
 import { stripeRouter } from "./routers/stripe";
+import { userToBatchRouter } from "./routers/userToBatch";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +10,8 @@ import { stripeRouter } from "./routers/stripe";
  */
 export const appRouter = createTRPCRouter({
   batch: batchRouter,
-  stripe: stripeRouter
+  stripe: stripeRouter,
+  userToBatch: userToBatchRouter
 });
 
 export const createCaller = (ctx: TRPCContext) => {
