@@ -5,6 +5,6 @@ export const userToBatchRouter = createTRPCRouter({
     getParticipantsFromBatch: protectedProcedure
         .input(getParticipantsFromBatchInputSchema)
         .query(async ({ ctx, input }) => {
-            return await ctx.services.userToBatch.getParticipantsFromBatch(input.batchId);
+            return await ctx.services({ ctx }).userToBatch.getParticipantsFromBatch(input.batchId);
         }),
 });

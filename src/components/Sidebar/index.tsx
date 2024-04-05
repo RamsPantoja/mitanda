@@ -32,12 +32,12 @@ const Sidebar = ({ session }: SidebarProps) => {
                 />
             </ul>
             <div className="flex flex-row gap-2 justify-between items-center w-full">
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-2 overflow-hidden">
                     <Avatar>
                         <AvatarImage src={session.user.image!} />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarFallback>Tú</AvatarFallback>
                     </Avatar>
-                    <p className="text-whiteMain text-xs truncate max-w-32">{session.user.name}</p>
+                    <p className="text-whiteMain text-xs truncate">{session.user.name}</p>
                 </div>
                 <Button className=" h-8 w-8 p-0 hover:bg-blackMain" variant='ghost' size='icon' onClick={() => signOut({ callbackUrl: '/sign_in' })}><ArrowLeftEndOnRectangleIcon className="w-4 h-4 text-whiteMain" /></Button>
             </div>

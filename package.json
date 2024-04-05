@@ -8,6 +8,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "build": "next build",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
@@ -84,7 +86,8 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "ts-to-zod": "^3.7.3",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.4.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.28.0"

@@ -1,12 +1,11 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
 import BatchService from "./batch";
-import { type DrizzleSchema } from "../db";
 import UserService from "./user";
 import AccountService from "./account";
 import ContractService from "./contract";
 import SessionService from "./session";
 import StripeService from "./stripe";
 import UserToBatchService from "./userToBatch";
+import { type TRPCContext } from "../trpc";
 
 export type ServicesContext = {
     batchService: BatchService
@@ -19,18 +18,18 @@ export type ServicesContext = {
 }
 
 export type ServicesConfig = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
-const Services = ({ db }: ServicesConfig): ServicesContext => {
+const Services = ({ ctx }: ServicesConfig): ServicesContext => {
     return {
-        batchService: new BatchService({ db }),
-        usersService: new UserService({ db }),
-        accountService: new AccountService({ db }),
-        contractService: new ContractService({ db }),
-        sessionService: new SessionService({ db }),
-        stripeService: new StripeService({ db }),
-        userToBatch: new UserToBatchService({ db })
+        batchService: new BatchService({ ctx }),
+        usersService: new UserService({ ctx }),
+        accountService: new AccountService({ ctx }),
+        contractService: new ContractService({ ctx }),
+        sessionService: new SessionService({ ctx }),
+        stripeService: new StripeService({ db: ctx.db }),
+        userToBatch: new UserToBatchService({ ctx })
     }
 }
 export default Services;

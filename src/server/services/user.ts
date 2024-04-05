@@ -1,18 +1,17 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { type DrizzleSchema } from "../db";
 import { type users } from "../db/schema";
+import { type TRPCContext } from "../trpc";
 
 type UserServiceContructor = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
 export type User = typeof users.$inferSelect;
 
 class UserService {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 
-    constructor({ db }: UserServiceContructor) {
-        this.db = db;
+    constructor({ ctx }: UserServiceContructor) {
+        this.ctx = ctx;
     }
 
     async create(data: number) {

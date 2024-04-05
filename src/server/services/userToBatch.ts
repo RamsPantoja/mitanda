@@ -1,19 +1,19 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { type DrizzleSchema } from "../db";
+
+import { type TRPCContext } from "../trpc";
 
 type UserToBatchServiceContructor = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
 class UserToBatchService {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 
-    constructor({ db }: UserToBatchServiceContructor) {
-        this.db = db;
+    constructor({ ctx }: UserToBatchServiceContructor) {
+        this.ctx = ctx;
     }
 
     async getParticipantsFromBatch(batchId: string) {
-        return await this.db.query.usersToBatches.findMany({
+        return await this.ctx.db.query.usersToBatches.findMany({
             where: (usersToBatches, { eq }) => {
                 return eq(usersToBatches.batchId, batchId)
             },
