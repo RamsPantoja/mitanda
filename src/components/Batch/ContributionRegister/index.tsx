@@ -3,8 +3,8 @@
 import { Card } from "@/components/ui/card";
 import useContributionRegisterLogic from "./useContributionRegisterLogic";
 import { Fragment } from "react";
-import ParticipantSkeleton from "../Participants/ParticipantSkeleton";
 import ContributionRegisterCard from "./ContributionRegisterCard";
+import ContributionRegisterSkeleton from "./ContributionRegisterSkeleton";
 
 const ContributionRegister = () => {
     const {
@@ -21,12 +21,12 @@ const ContributionRegister = () => {
                 {
                     participantsIsLoading &&
                     <Fragment>
-                        <ParticipantSkeleton />
-                        <ParticipantSkeleton />
-                        <ParticipantSkeleton />
-                        <ParticipantSkeleton />
-                        <ParticipantSkeleton />
-                        <ParticipantSkeleton />
+                        <ContributionRegisterSkeleton />
+                        <ContributionRegisterSkeleton />
+                        <ContributionRegisterSkeleton />
+                        <ContributionRegisterSkeleton />
+                        <ContributionRegisterSkeleton />
+                        <ContributionRegisterSkeleton />
                     </Fragment>
                 }
                 {

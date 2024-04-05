@@ -9,25 +9,25 @@ export const stripeRouter = createTRPCRouter({
   create: protectedProcedure
     .input(stripeRelationIdInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services.stripeService.createStripeAccount(input, ctx.session)
+      return await ctx.services({ ctx }).stripeService.createStripeAccount(input, ctx.session)
     }),
   find: protectedProcedure
     .query(async ({ ctx }) => {
-      return await ctx.services.stripeService.stripeAccountByUserId(ctx.session)
+      return await ctx.services({ ctx }).stripeService.stripeAccountByUserId(ctx.session)
     }),
   createStripeAccount: protectedProcedure
     .mutation(async ({ ctx }) => {
-      return await ctx.services.stripeService.stripeAccountFlow(ctx.session)
+      return await ctx.services({ ctx }).stripeService.stripeAccountFlow(ctx.session)
     }),
   newAccountLink: protectedProcedure
     .input(stripeRelationIdInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services.stripeService.newAccountLink(input.accountId)
+      return await ctx.services({ ctx }).stripeService.newAccountLink(input.accountId)
     }),
   updateOnboarding: publicProcedure
-  .input(stripeRelationIdInputSchema)
+    .input(stripeRelationIdInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services.stripeService.updateOnboarding(input.accountId)
+      return await ctx.services({ ctx }).stripeService.updateOnboarding(input.accountId)
     })
 
 })
