@@ -11,10 +11,10 @@ const ParticipantCard = ({ user }: ParticipantCardProps) => {
         <Card className="flex gap-2 items-center w-full p-2">
             <Avatar>
                 <AvatarImage src={user.image!} />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback>P</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col gap-1 w-full">
-                <p className="text-whiteMain text-xs truncate font-bold">{user.name}</p>
+            <div className="flex flex-col gap-1 w-full overflow-hidden">
+                <p className="text-whiteMain text-sm truncate font-bold">{user.name}</p>
                 <p className=" text-grayMain text-xs truncate">{user.email}</p>
             </div>
         </Card>

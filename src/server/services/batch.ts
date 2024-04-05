@@ -1,14 +1,13 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { type DrizzleSchema } from "../db";
 import { batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
+import { type TRPCContext } from "../trpc";
 
 type BatchServiceContructor = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
 export type NewBatch = typeof batches.$inferInsert;
@@ -18,14 +17,14 @@ type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 
 class BatchService {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 
-    constructor({ db }: BatchServiceContructor) {
-        this.db = db;
+    constructor({ ctx }: BatchServiceContructor) {
+        this.ctx = ctx;
     }
 
     async create(createBatchInput: CreateBatchInput, user: Session): Promise<NewBatch> {
-        const batch = await this.db.transaction(async (tx) => {
+        const batch = await this.ctx.db.transaction(async (tx) => {
             const [contract] = await tx.insert(contracts).values({
                 contributionAmount: createBatchInput.batchInput.contributionAmount.toString(),
                 frequency: createBatchInput.batchInput.frequency
@@ -71,7 +70,7 @@ class BatchService {
     }
 
     async ownBatches(whereInput: WhereInputBatch, user: Session): Promise<Batch[]> {
-        return await this.db.query.batches.findMany({
+        return await this.ctx.db.query.batches.findMany({
             where: (batches, { eq, and, like }) => {
                 return and(
                     eq(batches.userId, user.user.id),
@@ -82,8 +81,8 @@ class BatchService {
     }
 
     async batches(whereInput: WhereInputBatch, user: Session) {
-        const sqBatches = this.db.select().from(batches).as("batch");
-        const queryResult = await this.db.select()
+        const sqBatches = this.ctx.db.select().from(batches).as("batch");
+        const queryResult = await this.ctx.db.select()
             .from(usersToBatches)
             .rightJoin(sqBatches, eq(usersToBatches.batchId, sqBatches.id))
             .where(and(
@@ -95,7 +94,7 @@ class BatchService {
     }
 
     async delete(batchId: string, user: Session): Promise<Batch | undefined> {
-        const deletedBatch = await this.db.transaction(async (tx) => {
+        const deletedBatch = await this.ctx.db.transaction(async (tx) => {
             const batchAboutToDelete = await tx.query.batches.findFirst({
                 where: (batches, { eq }) => {
                     return and(
@@ -130,7 +129,7 @@ class BatchService {
     }
 
     async batchById(batchId: string, user: Session): Promise<Batch> {
-        const areYouInBatch = await this.db.query.usersToBatches.findFirst({
+        const areYouInBatch = await this.ctx.db.query.usersToBatches.findFirst({
             where: (usersToBatches, { eq }) => {
                 return and(
                     eq(usersToBatches.userId, user.user.id),
@@ -146,7 +145,7 @@ class BatchService {
             });
         }
 
-        const batch = await this.db.query.batches.findFirst({
+        const batch = await this.ctx.db.query.batches.findFirst({
             where: (batches, { eq }) => {
                 return and(
                     eq(batches.id, batchId)
@@ -165,7 +164,7 @@ class BatchService {
     }
 
     async addUserToBatch(batchId: string, user: Session) {
-        const userToBatchQuery = await this.db.query.usersToBatches.findFirst({
+        const userToBatchQuery = await this.ctx.db.query.usersToBatches.findFirst({
             where: (usersToBatches, { eq }) => {
                 return and(
                     eq(usersToBatches.batchId, batchId),
@@ -178,7 +177,7 @@ class BatchService {
             return userToBatchQuery;
         }
 
-        const newUserToBatch = await this.db.transaction(async (tx) => {
+        const newUserToBatch = await this.ctx.db.transaction(async (tx) => {
             const batchQuery = await tx.query.batches.findFirst({
                 where: (batches, { eq }) => {
                     return and(

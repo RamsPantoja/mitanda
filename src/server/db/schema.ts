@@ -275,6 +275,8 @@ export const batchRegisters = createTable(
     status: batchRegisterStatusEnum("status").notNull().default("NOT_STARTED"),
     startDate: date("startDate").notNull(),
     endDate: date("endDate").notNull(),
+    batchNumber: integer('batchNumber').notNull(),
+    contributionAmount: numeric('contributionAmount').notNull().default("0"),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).defaultNow(),
@@ -347,4 +349,33 @@ export const contributionsRelations = relations(contributions, ({ one }) => ({
     fields: [contributions.paymentId],
     references: [payments.id]
   })
+}));
+
+export const batchRegistersToContributions = createTable(
+  "batch_registers_to_contributions",
+  {
+    batchRegisterId: uuid("batchRegisterId")
+      .notNull()
+      .references(() => batchRegisters.id),
+    contributionId: uuid("contributionId")
+      .notNull()
+      .references(() => contributions.id)
+  },
+  (t) => ({
+    pk: primaryKey({
+      name: "batchRegisterId_contributionId",
+      columns: [t.batchRegisterId, t.contributionId]
+    }),
+  })
+);
+
+export const batchRegistersToContributionsRelations = relations(batchRegistersToContributions, ({ one }) => ({
+  batchRegister: one(batchRegisters, {
+    fields: [batchRegistersToContributions.batchRegisterId],
+    references: [batchRegisters.id],
+  }),
+  contribution: one(contributions, {
+    fields: [batchRegistersToContributions.contributionId],
+    references: [contributions.id],
+  }),
 }));

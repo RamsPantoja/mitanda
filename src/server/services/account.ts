@@ -1,15 +1,14 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { type DrizzleSchema } from "../db";
+import { type TRPCContext } from "../trpc";
 
 type AccountServiceContructor = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
 class AccountService {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 
-    constructor({ db }: AccountServiceContructor) {
-        this.db = db;
+    constructor({ ctx }: AccountServiceContructor) {
+        this.ctx = ctx;
     }
 
     async create(data: number) {

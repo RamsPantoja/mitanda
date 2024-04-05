@@ -1,15 +1,14 @@
-import { type NeonDatabase } from "drizzle-orm/neon-serverless";
-import { type DrizzleSchema } from "../db";
+import { type TRPCContext } from "../trpc";
 
 type SessionServiceContructor = {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 }
 
 class SessionService {
-    db: NeonDatabase<DrizzleSchema>
+    ctx: TRPCContext
 
-    constructor({ db }: SessionServiceContructor) {
-        this.db = db;
+    constructor({ ctx }: SessionServiceContructor) {
+        this.ctx = ctx;
     }
 
     async create(data: number) {

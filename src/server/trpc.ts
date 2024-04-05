@@ -14,12 +14,12 @@ import { getServerAuthSession } from "@/server/auth";
 import { db, type DrizzleSchema } from "./db";
 import { type NeonDatabase } from "drizzle-orm/neon-serverless";
 import { type Session } from "next-auth";
-import Services, { type ServicesContext } from "./services";
+import Services, { type ServicesConfig, type ServicesContext } from "./services";
 
 export type TRPCContext = {
   db: NeonDatabase<DrizzleSchema>
   session: Session | null
-  services: ServicesContext
+  services: (config: ServicesConfig) => ServicesContext
   opts: Options
 }
 
@@ -45,7 +45,7 @@ export const createTRPCContext = async (opts: Options): Promise<TRPCContext> => 
   return {
     db,
     session,
-    services: Services({ db }),
+    services: (config) => Services(config),
     opts: {
       ...opts
     }
