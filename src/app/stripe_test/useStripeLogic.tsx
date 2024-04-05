@@ -12,6 +12,15 @@ const useStripeLogic = () => {
       console.log(error.message)
     }
   });
+  
+  const { mutate: stripeAccount, isPending: stripeAccountIsLoading } = api.stripe.createStripeAccount.useMutation({
+    onSuccess: async () => {
+      toast.success('mutation succeful')
+    },
+    onError: (error) => {
+      console.log(error.message)
+    }
+  });
 
   const {data: relationData, isLoading: relationLoading} = api.stripe.find.useQuery()
 
@@ -22,7 +31,8 @@ const useStripeLogic = () => {
   return {
      onCreateStripeAccount,
      stripeIsLoading,
-     relationData
+     relationData,
+     stripeAccount
   }
 }
 

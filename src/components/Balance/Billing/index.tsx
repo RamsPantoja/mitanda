@@ -1,7 +1,14 @@
 import { MitandaButton } from "@/components/common/MitandaButton";
 import { BuildingLibraryIcon } from "@heroicons/react/24/outline";
+import UseBillingLogic from "./useBillingLogic";
 
 const Billing = () => {
+    const {
+        generateStripeLink,
+        loadingAccountLink,
+        onCreateNewAccount
+    } = UseBillingLogic()
+
     return (
         <div className='flex flex-col gap-2'>
             <p className="text-sm text-whiteMain font-bold">Información de facturación</p>
@@ -9,6 +16,7 @@ const Billing = () => {
                 className=" w-fit"
                 size='sm'
                 variant='secondary'
+                onClick={()=> { onCreateNewAccount() }}
                 startIcon={<BuildingLibraryIcon className="h-4 w-4 text-blackMain" />}
             >Agregar información bancaria</MitandaButton>
         </div>

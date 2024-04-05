@@ -10,6 +10,7 @@ import {
   text,
   timestamp,
   uuid,
+  boolean
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -246,6 +247,7 @@ export const stripeAccounts = createTable(
       .notNull()
       .references(() => users.id),
     accountId: text("accountId").notNull(),
+    onboarding: boolean("onboarding").notNull().default(false),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).defaultNow(),

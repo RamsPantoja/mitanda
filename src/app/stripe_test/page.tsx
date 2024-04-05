@@ -4,11 +4,16 @@ import useStripeLogic  from './useStripeLogic'
 const StripeTestPage = () => {
   const {
      onCreateStripeAccount,
-     relationData
+     relationData,
+     stripeAccount
   } = useStripeLogic()
 
   function create() {
      onCreateStripeAccount('acct_1OykpFQkopk0C1Ac')
+  }
+
+  function stripeTest() {
+    stripeAccount()
   }
 
   function showData() {
@@ -17,7 +22,7 @@ const StripeTestPage = () => {
 
   return (
     <div>
-      <button onClick={showData} className='border-2 bg-green-500 px-4 rounded-full'>test</button>
+      <button onClick={stripeTest} className='border-2 bg-green-500 px-4 rounded-full'>test</button>
     </div>
   )
 }
