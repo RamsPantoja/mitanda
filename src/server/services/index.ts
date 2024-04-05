@@ -28,7 +28,7 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         accountService: new AccountService({ ctx }),
         contractService: new ContractService({ ctx }),
         sessionService: new SessionService({ ctx }),
-        stripeService: new StripeService({ db: ctx.db }),
+        stripeService: new StripeService({ ctx }),
         userToBatch: new UserToBatchService({ ctx })
     }
 }
