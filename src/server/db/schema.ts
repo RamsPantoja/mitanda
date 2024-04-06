@@ -275,8 +275,8 @@ export const batchRegisters = createTable(
       .references(() => batches.id),
     frequency: frequencyEnum("frequency").notNull(),
     status: batchRegisterStatusEnum("status").notNull().default("NOT_STARTED"),
-    startDate: date("startDate").notNull(),
-    endDate: date("endDate").notNull(),
+    startDate: date("startDate", { mode: "date" }).notNull(),
+    endDate: date("endDate", { mode: "date" }).notNull(),
     batchNumber: integer('batchNumber').notNull(),
     contributionAmount: numeric('contributionAmount').notNull().default("0"),
     createdAt: timestamp('createdAt', {

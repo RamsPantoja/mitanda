@@ -14,7 +14,7 @@ const Participants = () => {
 
     return (
         <div className="flex flex-col gap-2 h-full">
-            <p className="text-base font-bold text-whiteMain">Participantes</p>
+            <p className="text-lg font-bold text-whiteMain">Participantes</p>
             <div className="h-full flex flex-col">
                 {
                     participantsIsLoading &&

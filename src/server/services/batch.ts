@@ -1,10 +1,11 @@
-import { batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
+import { type batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
+import { DateTime, type DurationLike } from "luxon";
 
 type BatchServiceContructor = {
     ctx: TRPCContext
@@ -12,6 +13,7 @@ type BatchServiceContructor = {
 
 export type NewBatch = typeof batches.$inferInsert;
 export type Batch = typeof batches.$inferSelect;
+type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
 
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
@@ -214,6 +216,76 @@ class BatchService {
         });
 
         return newUserToBatch;
+    }
+
+    private buildBatchRegisters(batch: Batch) {
+        const registers: BatchRegisterInsert[] = [];
+
+        const getTimeFactor = (): DurationLike => {
+            switch (batch.frequency) {
+                case "WEEKLY":
+                    return {
+                        week: 1
+                    }
+                case "BIWEEKLY":
+                    return {
+                        weeks: 2
+                    }
+                case "MONTHLY":
+                    return {
+                        month: 1
+                    }
+                default:
+                    return {};
+            }
+        }
+
+
+        for (let i = 0; i < batch.seats; i++) {
+            const accumulator: BatchRegisterInsert[] = [...registers];
+            const previousElement = accumulator[i - 1];
+
+            if (previousElement) {
+                registers.push({
+                    batchId: batch.id,
+                    frequency: batch.frequency,
+                    startDate: previousElement.endDate,
+                    endDate: DateTime.fromJSDate(previousElement.endDate).plus(getTimeFactor()).toJSDate(),
+                    batchNumber: i + 1,
+                })
+            } else {
+                registers.push({
+                    batchId: batch.id,
+                    frequency: batch.frequency,
+                    startDate: DateTime.now().toJSDate(),
+                    endDate: DateTime.now().plus(getTimeFactor()).toJSDate(),
+                    batchNumber: i + 1,
+                });
+            }
+        }
+
+        return registers;
+    }
+
+    public async startBatch(batchId: string) {
+        const batch = await this.ctx.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return and(
+                    eq(batches.id, batchId),
+                )
+            }
+        });
+
+        if (!batch) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'Batch not found',
+            });
+        };
+
+        const batchRegisters = this.buildBatchRegisters(batch);
+
+        console.log(batchRegisters);
     }
 }
 

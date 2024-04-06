@@ -39,3 +39,9 @@ export const userToBatchInputSchema = z.object({
     required_error: "BatchId is required"
   })
 });
+
+export const startBatchInputSchema = z.object({
+  batchId: z.string({
+    required_error: "BatchId is required"
+  })
+});

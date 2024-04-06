@@ -1,17 +1,15 @@
 import { type Batch } from "@/server/services/batch"
 import { Slider } from "@nextui-org/slider"
 import { useMemo } from "react"
-import ContributionProgressSkeleton from "./ContributionProgressSkeleton"
 import { Card } from "@/components/ui/card"
 import { numericFormatter } from "react-number-format"
 
 
 type ContributionProgressProps = {
-    batch: Batch | undefined
-    isLoading: boolean
+    batch: Batch
 }
 
-const ContributionProgress = ({ batch, isLoading }: ContributionProgressProps) => {
+const ContributionProgress = ({ batch }: ContributionProgressProps) => {
     const contributionGoal = useMemo(() => {
         if (batch) {
             const contributionAmount = parseFloat(batch.contributionAmount);
@@ -27,17 +25,13 @@ const ContributionProgress = ({ batch, isLoading }: ContributionProgressProps) =
         })
     }, [contributionGoal])
 
-    if (isLoading) {
-        return <ContributionProgressSkeleton />
-    }
-
     return (
-        <Card className="flex items-center bg-blackNormal justify-end p-4">
+        <Card className="flex flex-col bg-blackNormal p-4 gap-2">
             <Slider
                 size='md'
                 step={1}
                 color="primary"
-                label="Progreso de contribuciones"
+                label="Ronda 1"
                 showSteps={false}
                 maxValue={contributionGoal}
                 minValue={0}
@@ -47,7 +41,7 @@ const ContributionProgress = ({ batch, isLoading }: ContributionProgressProps) =
                 classNames={{
                     track: "border-s-greenMain",
                     filler: "bg-gradient-to-r from-greenMain to-greenMain",
-                    label: "text-whiteMain",
+                    label: "text-whiteMain font-bold text-lg",
                     value: "text-whiteMain font-bold",
                     thumb: [
                         "transition-size",
