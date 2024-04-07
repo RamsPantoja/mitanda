@@ -3,13 +3,15 @@ import { Slider } from "@nextui-org/slider"
 import { useMemo } from "react"
 import { Card } from "@/components/ui/card"
 import { numericFormatter } from "react-number-format"
+import { type BatchRegister } from "@/server/services/batchRegister"
 
 
 type ContributionProgressProps = {
     batch: Batch
+    batchRegister: BatchRegister | undefined
 }
 
-const ContributionProgress = ({ batch }: ContributionProgressProps) => {
+const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProps) => {
     const contributionGoal = useMemo(() => {
         if (batch) {
             const contributionAmount = parseFloat(batch.contributionAmount);
@@ -23,7 +25,9 @@ const ContributionProgress = ({ batch }: ContributionProgressProps) => {
         return numericFormatter(contributionGoal.toString(), {
             thousandSeparator: ','
         })
-    }, [contributionGoal])
+    }, [contributionGoal]);
+
+    console.log(contributionGoalFormatted);
 
     return (
         <Card className="flex flex-col bg-blackNormal p-4 gap-2">
@@ -31,12 +35,12 @@ const ContributionProgress = ({ batch }: ContributionProgressProps) => {
                 size='md'
                 step={1}
                 color="primary"
-                label="Ronda 1"
+                label={batchRegister !== undefined ? `Ronda ${batchRegister.batchNumber}` : "Ronda 0"}
                 showSteps={false}
                 maxValue={contributionGoal}
                 minValue={0}
                 radius='full'
-                value={6000}
+                value={batchRegister !== undefined ? parseFloat(batchRegister.contributionAmount) : 0}
                 getValue={() => `MX$${contributionGoalFormatted}`}
                 classNames={{
                     track: "border-s-greenMain",
@@ -52,7 +56,6 @@ const ContributionProgress = ({ batch }: ContributionProgressProps) => {
                 }}
                 formatOptions={{ style: "currency", currency: "MXN" }}
                 showTooltip={true}
-
             />
         </Card>
     )

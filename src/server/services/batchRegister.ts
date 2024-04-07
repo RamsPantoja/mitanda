@@ -1,8 +1,11 @@
+import { type batchRegisters } from "../db/schema";
 import { type TRPCContext } from "../trpc";
 
 type BatchRegisterServiceContructor = {
     ctx: TRPCContext
 }
+
+export type BatchRegister = typeof batchRegisters.$inferSelect;
 
 class BatchRegisterService {
     ctx: TRPCContext

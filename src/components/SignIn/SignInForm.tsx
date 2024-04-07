@@ -34,7 +34,7 @@ const SignInForm = ({ callbackUrl }: SignInFormProps) => {
                             width={60}
                             height={60}
                         />
-                        <p className="text-whiteMain">miTanda</p>
+                        <p className="text-whiteMain">Mitanda</p>
                     </div>
                 </CardTitle>
             </CardHeader>

@@ -1,19 +1,13 @@
 import { api } from "@/trpc/react";
-import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
 const useBatchInformationLogic = () => {
-    const params = useParams()
-
-    const { data: batchData, isLoading: batchIsLoading, isError: batchIsError } = api.batch.batchById.useQuery(
-        {
-            batchId: params.id as string
-        }
-    );
+    const utils = api.useUtils();
 
     const { mutate: startBatchMutation, isPending: startBatchIsPending } = api.batch.startBatch.useMutation({
-        onSuccess: () => {
+        onSuccess: async () => {
             toast.success("Muy bien! La tanda ha comenzado.")
+            await utils.batch.batchById.invalidate();
         },
         onError: (error) => {
             toast.error("Algo salió mal!", {
@@ -29,9 +23,6 @@ const useBatchInformationLogic = () => {
     return {
         startBatchIsPending,
         startBatchMutation,
-        batchData,
-        batchIsLoading,
-        batchIsError
     }
 }
 

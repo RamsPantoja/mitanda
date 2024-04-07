@@ -22,9 +22,7 @@ export default async function BatchLayout({
                 </div>
                 <div className="w-full h-full flex flex-col">
                     <div className="w-full h-full rounded-md p-4 flex flex-col bg-blackNormal">
-                        <Participants 
-                            
-                        />
+                        <Participants />
                     </div>
                 </div>
                 <div className="w-full h-full flex flex-col">

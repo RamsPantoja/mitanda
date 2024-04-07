@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { numericFormatter } from 'react-number-format';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MitandaButton } from "@/components/common/MitandaButton";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 
 const BatchForm = () => {
     const {
@@ -38,9 +38,8 @@ const BatchForm = () => {
         >
             <DialogTrigger asChild>
                 <MitandaButton
-                    size='sm'
                     variant='default'
-                    startIcon={<PlusIcon className="h-4 w-4 text-blackMain" />}
+                    startIcon={<PlusCircleIcon className="h-5 w-5 text-blackMain" />}
                 >Crear</MitandaButton>
             </DialogTrigger>
             <DialogContent

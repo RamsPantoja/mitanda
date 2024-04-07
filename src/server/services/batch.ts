@@ -1,4 +1,4 @@
-import { type batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
+import { batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
@@ -130,7 +130,7 @@ class BatchService {
         return deletedBatch;
     }
 
-    async batchById(batchId: string, user: Session): Promise<Batch> {
+    async batchById(batchId: string, user: Session) {
         const areYouInBatch = await this.ctx.db.query.usersToBatches.findFirst({
             where: (usersToBatches, { eq }) => {
                 return and(
@@ -152,6 +152,9 @@ class BatchService {
                 return and(
                     eq(batches.id, batchId)
                 )
+            },
+            with: {
+                batchRegisters: true
             }
         });
 
@@ -260,6 +263,7 @@ class BatchService {
                     startDate: DateTime.now().toJSDate(),
                     endDate: DateTime.now().plus(getTimeFactor()).toJSDate(),
                     batchNumber: i + 1,
+                    status: "IN_PROGRESS"
                 });
             }
         }
@@ -268,24 +272,52 @@ class BatchService {
     }
 
     public async startBatch(batchId: string) {
-        const batch = await this.ctx.db.query.batches.findFirst({
-            where: (batches, { eq }) => {
-                return and(
-                    eq(batches.id, batchId),
-                )
+        const batch = this.ctx.db.transaction(async (tx) => {
+            const batch = await tx.query.batches.findFirst({
+                where: (batches, { eq }) => {
+                    return and(
+                        eq(batches.id, batchId),
+                    )
+                }
+            });
+
+            if (!batch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not found',
+                });
+            };
+
+            if (batch.status === 'IN_PROGRESS') {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'The batch already has been initialized',
+                });
             }
+
+            const batchRegistersToInsert = this.buildBatchRegisters(batch);
+
+            await tx.insert(batchRegisters).values(batchRegistersToInsert);
+
+            const [updatedBatch] = await tx.update(batches)
+                .set({
+                    status: "IN_PROGRESS",
+                    updatedAt: new Date()
+                })
+                .where(eq(batches.id, batchId))
+                .returning();
+
+            if (!updatedBatch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'The batch may not have started correctly',
+                });
+            }
+
+            return updatedBatch;
         });
 
-        if (!batch) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'Batch not found',
-            });
-        };
-
-        const batchRegisters = this.buildBatchRegisters(batch);
-
-        console.log(batchRegisters);
+        return batch;
     }
 }
 

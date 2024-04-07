@@ -264,7 +264,7 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
   })
 }));
 
-export const batchRegisterStatusEnum = pgEnum('status', ["NOT_STARTED", 'FINALIZED']);
+export const batchRegisterStatusEnum = pgEnum("status", ["NOT_STARTED", "IN_PROGRESS", "FINALIZED"]);
 
 export const batchRegisters = createTable(
   "batch_register",
