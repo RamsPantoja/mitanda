@@ -1,8 +1,11 @@
+import { getUserSession } from "@/app/dashboard/actions";
 import BatchContainer from "@/components/Batch/BatchContainer";
 
-const Batch = () => {
+const Batch = async () => {
+    const session = await getUserSession();
+    
     return (
-        <BatchContainer />
+        <BatchContainer session={session} />
     )
 }
 

@@ -2,10 +2,9 @@ import BatchInformationSkeleton from "./BatchInformationSkeleton"
 import { MitandaButton } from "@/components/common/MitandaButton"
 import useBatchInformationLogic from "./useBatchInformationLogic"
 import FeedbackMessage from "@/components/common/FeedbackMessage"
-import { Fragment, useMemo } from "react"
+import { Fragment } from "react"
 import ContributionProgress from "../ContributionProgress"
 import { Card } from "@/components/ui/card"
-import useBatchStore from "../useBatchStore";
 
 type BatchInformationProps = {
     batchIsLoading: boolean
@@ -16,13 +15,10 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
     const {
         startBatchIsPending,
         startBatchMutation,
+        currentBatchRegister,
+        batch,
+        session
     } = useBatchInformationLogic();
-
-    const { batch } = useBatchStore((state) => state);
-
-    const currentBatchRegister = useMemo(() => {
-        return batch?.batchRegisters.find((register) => register.status === 'IN_PROGRESS');
-    }, [batch]);
 
     if (batchIsLoading) {
         return (
@@ -47,16 +43,28 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
                             <p className=" text-whiteMain text-base font-black">Recuerda que una tanda se basa en la confianza y esfuerzo de los participantes.</p>
                         </div>
-                        <MitandaButton
-                            onClick={() => {
-                                startBatchMutation({
-                                    batchId: batch.id
-                                })
-                            }}
-                            isPending={startBatchIsPending}
-                        >
-                            Iniciar tanda
-                        </MitandaButton>
+                        {
+                            batch.status === "NOT_STARTED" && batch.userId === session?.user.id &&
+                            <MitandaButton
+                                onClick={() => {
+                                    startBatchMutation({
+                                        batchId: batch.id
+                                    })
+                                }}
+                                isPending={startBatchIsPending}
+                            >
+                                Iniciar tanda
+                            </MitandaButton>
+                        }
+                        {
+                            batch.status === "IN_PROGRESS" &&
+                            <MitandaButton
+               
+                                isPending={startBatchIsPending}
+                            >
+                                Dar contribución
+                            </MitandaButton>
+                        }
                     </div>
                     <ContributionProgress
                         batch={batch}

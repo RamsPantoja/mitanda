@@ -27,8 +27,6 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
         })
     }, [contributionGoal]);
 
-    console.log(contributionGoalFormatted);
-
     return (
         <Card className="flex flex-col bg-blackNormal p-4 gap-2">
             <Slider

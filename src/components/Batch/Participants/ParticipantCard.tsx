@@ -1,12 +1,17 @@
+import TruncatedTooltip from "@/components/common/TruncatedTooltip"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { type User } from "@/server/services/user"
+import { KeyIcon } from "@heroicons/react/24/outline"
+import { type Session } from "next-auth"
 
 type ParticipantCardProps = {
     user: User
+    session: Session
+    ownerId: string
 }
 
-const ParticipantCard = ({ user }: ParticipantCardProps) => {
+const ParticipantCard = ({ user, session, ownerId }: ParticipantCardProps) => {
     return (
         <Card className="flex gap-2 items-center w-full p-2">
             <Avatar>
@@ -14,7 +19,18 @@ const ParticipantCard = ({ user }: ParticipantCardProps) => {
                 <AvatarFallback>P</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1 w-full overflow-hidden">
-                <p className="text-whiteMain text-sm truncate font-bold">{user.name}</p>
+                <div className="w-full flex items-center gap-2">
+                    <div className="w-full flex overflow-hidden">
+                        <TruncatedTooltip
+                            tooltipContent={<p className="text-whiteMain">{user.id === session.user.id ? "(Tú)" : ""} {user.name}</p>}
+                            text={`${user.id === session.user.id ? "(Tú)" : ""} ${user.name}`}
+                            className="text-whiteMain text-sm truncate font-bold"
+                        />
+                    </div>
+                    {
+                        ownerId === user.id && <KeyIcon className="h-4 min-w-4 text-greenMain" />
+                    }
+                </div>
                 <p className=" text-grayMain text-xs truncate">{user.email}</p>
             </div>
         </Card>
