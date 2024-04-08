@@ -5,6 +5,8 @@ import FeedbackMessage from "@/components/common/FeedbackMessage"
 import { Fragment } from "react"
 import ContributionProgress from "../ContributionProgress"
 import { Card } from "@/components/ui/card"
+import TimerComponent from "@/components/common/Timer"
+import { DateTime } from "luxon"
 
 type BatchInformationProps = {
     batchIsLoading: boolean
@@ -17,7 +19,9 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         startBatchMutation,
         currentBatchRegister,
         batch,
-        session
+        session,
+        canContribute,
+        setCanContribute
     } = useBatchInformationLogic();
 
     if (batchIsLoading) {
@@ -41,7 +45,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                     <div className="flex gap-2 p-4 justify-between items-center">
                         <div className="flex flex-col gap-2">
                             <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
-                            <p className=" text-whiteMain text-base font-black">Recuerda que una tanda se basa en la confianza y esfuerzo de los participantes.</p>
+                            <p className=" text-grayMain text-base">¡No olvides que en una tanda, todos ponemos confianza y esfuerzo!</p>
                         </div>
                         {
                             batch.status === "NOT_STARTED" && batch.userId === session?.user.id &&
@@ -58,12 +62,24 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                         }
                         {
                             batch.status === "IN_PROGRESS" &&
-                            <MitandaButton
-               
-                                isPending={startBatchIsPending}
-                            >
-                                Dar contribución
-                            </MitandaButton>
+                            <div className="flex flex-col gap-2 items-end">
+                                <MitandaButton
+                                    disabled={!canContribute}
+                                >
+                                    Dar contribución
+                                </MitandaButton>
+                                {
+                                    currentBatchRegister && canContribute &&
+                                    <TimerComponent
+                                        start={currentBatchRegister.startDate}
+                                        end={DateTime.fromJSDate(currentBatchRegister.startDate).plus({ "days": 2 }).toJSDate()}
+                                        onTimerEnds={() => {
+                                            setCanContribute(false);
+                                        }}
+                                    />
+                                }
+                            </div>
+
                         }
                     </div>
                     <ContributionProgress

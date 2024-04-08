@@ -19,6 +19,7 @@ import { useSession } from "next-auth/react";
 import useBatchCardLogic from "./useBatchCardLogic";
 import { type BatchStatus } from "@/lib/enum";
 import CustomAlertDialog from "@/components/common/AlertDialog";
+import TruncatedTooltip from "@/components/common/TruncatedTooltip";
 
 export type BatchCardProps = {
     batchName: string
@@ -111,14 +112,12 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                     }
                 </div>
                 <div className="flex flex-col gap-1 h-full">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <a href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm truncate w-fit max-w-full underline">{batchName}</a>
-                        </TooltipTrigger>
-                        <TooltipContent className=" bg-blackMain border-none">
-                            <p className="text-whiteMain">{batchName}</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <a href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm underline flex max-w-max">
+                        <TruncatedTooltip
+                            tooltipContent={<p className="text-whiteMain font-normal" >{batchName}</p>}
+                            text={batchName}
+                        />
+                    </a>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>

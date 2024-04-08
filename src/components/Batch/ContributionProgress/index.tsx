@@ -55,6 +55,12 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
                 formatOptions={{ style: "currency", currency: "MXN" }}
                 showTooltip={true}
             />
+            {
+                batchRegister &&
+                <div className="flex items-center justify-end">
+                    <span className="text-grayMain text-xs">{batchRegister?.startDate.toDateString()} / {batchRegister?.endDate.toDateString()}</span>
+                </div>
+            }
         </Card>
     )
 }
