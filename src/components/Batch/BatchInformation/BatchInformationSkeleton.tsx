@@ -17,6 +17,9 @@ const BatchInformationSkeleton = () => {
                         <Skeleton className="h-unit-lg w-full max-w-28" />
                     </div>
                     <Skeleton className=" h-unit-md w-full" />
+                    <div className="flex items-center justify-end">
+                        <Skeleton className="max-w-40 h-unit-md w-full" />
+                    </div>
                 </div>
             </div>
         </div>

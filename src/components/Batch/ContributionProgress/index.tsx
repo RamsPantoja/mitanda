@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { Card } from "@/components/ui/card"
 import { numericFormatter } from "react-number-format"
 import { type BatchRegister } from "@/server/services/batchRegister"
+import { DateTime } from "luxon"
 
 
 type ContributionProgressProps = {
@@ -28,7 +29,7 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
     }, [contributionGoal]);
 
     return (
-        <Card className="flex flex-col bg-blackNormal p-4 gap-2">
+        <Card className="flex flex-col bg-blackNormal p-4 gap-1">
             <Slider
                 size='md'
                 step={1}
@@ -58,7 +59,7 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
             {
                 batchRegister &&
                 <div className="flex items-center justify-end">
-                    <span className="text-grayMain text-xs">{batchRegister?.startDate.toDateString()} / {batchRegister?.endDate.toDateString()}</span>
+                    <span className="text-grayMain text-xs">{DateTime.fromJSDate(batchRegister.startDate).toLocaleString(DateTime.DATE_HUGE)} - {DateTime.fromJSDate(batchRegister.endDate).toLocaleString(DateTime.DATE_HUGE)}</span>
                 </div>
             }
         </Card>
