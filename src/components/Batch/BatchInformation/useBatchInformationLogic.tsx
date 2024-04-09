@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import useBatchStore from "../useBatchStore";
 import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getPublicBaseUrl } from "@/lib/utils";
 
 const useBatchInformationLogic = () => {
