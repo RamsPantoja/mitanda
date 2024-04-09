@@ -2,7 +2,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/server/trpc";
-import { batchByIdInputSchema, batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema, startBatchInputSchema, userToBatchInputSchema } from "../schema/batch";
+import { batchByIdInputSchema, batchPaymentLinkInputSchema, batchesInputSchema, createBatchInputSchema, deleteBatchInputSchema, ownBatchesInputSchema, startBatchInputSchema, userToBatchInputSchema } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
   create: protectedProcedure
@@ -40,4 +40,10 @@ export const batchRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).batchService.startBatch(input.batchId);
     }),
+  batchPaymentLink: protectedProcedure
+    .input(batchPaymentLinkInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const services = ctx.services({ ctx });
+      return await services.batchService.batchPaymentLink(input, services.stripeService);
+    })
 });

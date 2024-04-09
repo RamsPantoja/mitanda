@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { frequencyEnum } from "../db/schema";
+import { stripeItemSchema } from "./stripe";
 
 export const createBatchInputSchema = z.object({
   batchInput: z.object({
@@ -43,5 +44,15 @@ export const userToBatchInputSchema = z.object({
 export const startBatchInputSchema = z.object({
   batchId: z.string({
     required_error: "BatchId is required"
+  })
+});
+
+export const batchPaymentLinkInputSchema = z.object({
+  data: z.object({
+    items: z.array(stripeItemSchema),
+    currency: z.string(),
+    cancelUrl: z.string(),
+    successUrl: z.string(),
+    metadata: z.string()
   })
 });

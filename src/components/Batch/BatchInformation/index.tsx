@@ -21,7 +21,9 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         batch,
         session,
         canContribute,
-        setCanContribute
+        setCanContribute,
+        batchPaymentLinkIsPending,
+        onContribute
     } = useBatchInformationLogic();
 
     if (batchIsLoading) {
@@ -64,7 +66,9 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             batch.status === "IN_PROGRESS" &&
                             <div className="flex flex-col gap-2 items-end">
                                 <MitandaButton
-                                    disabled={!canContribute}
+                                    disabled={false}
+                                    isPending={batchPaymentLinkIsPending}
+                                    onClick={onContribute}
                                 >
                                     Dar contribución
                                 </MitandaButton>
