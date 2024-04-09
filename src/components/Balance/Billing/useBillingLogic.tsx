@@ -2,18 +2,10 @@ import { api } from "@/trpc/server"
 import { toast } from "sonner"
 
 const useBillingLogic = () => {
+  //TODO agregar un state para el manejo de los datos de las mutaciones o los errores
 
-  const {mutate: accountLinkMutation, isPending: loadingAccountLink} = api.stripe.newAccountLink.useMutation({
-    onSuccess: async () => {
-      toast.success('link created')
-    },
-    onError: (error) => {
-      console.log(error.message)
-    }
-  })
-
-  const {mutate: stripeFlowMutation, isPending: loadingStripeFlow} =  api.stripe.createStripeAccount.useMutation({
-    onSuccess: async () => {
+  const {mutate: stripeFlowMutation, isPending: loadingStripeFlow} =  api.stripe.stripeAccountFlow.useMutation({
+    onSuccess: async (data) => {
       toast.success('succesfull mutation')
     },
     onError: (error) => {
@@ -21,18 +13,18 @@ const useBillingLogic = () => {
     }
   })
 
-  const generateStripeLink = (accountId: string) => {
-    return accountLinkMutation({accountId})
-  }
-
-  const onCreateNewAccount = () => {
-    stripeFlowMutation()
-  }
+  const {mutate: createOnboardingLink, isPending: linkIsPending} =  api.stripe.newAccountLink.useMutation({
+    onSuccess: async () => {
+      toast.success('Link created successfull')
+    },
+    onError: (error) => {
+      console.log(error.message)
+    }
+  })
 
   return  {
-    onCreateNewAccount,
-    generateStripeLink,
-    loadingAccountLink
+    stripeFlowMutation,
+    createOnboardingLink
   }
 }
 

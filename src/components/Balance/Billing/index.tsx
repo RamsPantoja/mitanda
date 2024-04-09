@@ -4,9 +4,7 @@ import UseBillingLogic from "./useBillingLogic";
 
 const Billing = () => {
     const {
-        generateStripeLink,
-        loadingAccountLink,
-        onCreateNewAccount
+        stripeFlowMutation
     } = UseBillingLogic()
 
     return (
@@ -16,7 +14,7 @@ const Billing = () => {
                 className=" w-fit"
                 size='sm'
                 variant='secondary'
-                onClick={()=> { onCreateNewAccount() }}
+                onClick={() => { stripeFlowMutation() }}
                 startIcon={<BuildingLibraryIcon className="h-4 w-4 text-blackMain" />}
             >Agregar información bancaria</MitandaButton>
         </div>

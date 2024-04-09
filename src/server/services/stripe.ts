@@ -67,22 +67,23 @@ class StripeService {
     }
 
     async newAccountLink(accountId: string): Promise<Stripe.AccountLink> {
-        try {
-            const accountLink = await this.stripe.accountLinks.create({
-                account: accountId,
-                refresh_url: 'http://localhost:3000/api/stripe/connect/refresh_link',
-                return_url: 'http://localhost:3000/dashboard/balance',
-                type: 'account_onboarding',
-            });
+        const accountLink = await this.stripe.accountLinks.create({
+            account: accountId,
+            refresh_url: 'http://localhost:3000/api/stripe/connect/refresh_link',
+            return_url: 'http://localhost:3000/dashboard/balance',
+            type: 'account_onboarding',
+        });
 
-            return accountLink
-        } catch (error) {
+        if (!accountLink) {
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
                 message: 'Internal server error'
             })
         }
+
+        return accountLink
     }
+
 
     async updateOnboarding(accountId: string): Promise<object | undefined> {
         const userStripeAccount = await this.ctx.db.query.stripeAccounts.findFirst({
@@ -103,10 +104,6 @@ class StripeService {
             .where(eq(stripeAccounts.accountId, userStripeAccount?.accountId))
             .returning()
 
-        // const updateOnboarState: { oboarding: boolean }[] = await this.ctx.db.update(stripeAccounts)
-        //     .set({ onboarding: true })
-        //     .where(eq(stripeAccounts.userId, userStripeAccount!.userId))
-        //     .returning({ oboarding: stripeAccounts.onboarding });
         return updateOnboarState
     }
 

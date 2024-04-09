@@ -15,7 +15,7 @@ const handler = async (
     const trpcContext = await createContext(request)
     const caller = createCaller(trpcContext)
 
-    const accountId = await caller.stripe.find()
+    const accountId = await caller.stripe.stripeAccountByUserId()
 
     const newLink = await caller.stripe.newAccountLink(accountId!)
 

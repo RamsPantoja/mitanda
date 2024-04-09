@@ -6,16 +6,16 @@ import {
 import { stripeRelationIdInputSchema } from "../schema/stripe";
 
 export const stripeRouter = createTRPCRouter({
-  create: protectedProcedure
+  createStripeAccount: protectedProcedure
     .input(stripeRelationIdInputSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).stripeService.createStripeAccount(input, ctx.session)
     }),
-  find: protectedProcedure
+    stripeAccountByUserId: protectedProcedure
     .query(async ({ ctx }) => {
       return await ctx.services({ ctx }).stripeService.stripeAccountByUserId(ctx.session)
     }),
-  createStripeAccount: protectedProcedure
+  stripeAccountFlow: protectedProcedure
     .mutation(async ({ ctx }) => {
       return await ctx.services({ ctx }).stripeService.stripeAccountFlow(ctx.session)
     }),
