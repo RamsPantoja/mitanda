@@ -29,5 +29,5 @@ export const stripeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).stripeService.updateOnboarding(input.accountId)
     })
-
+  
 })

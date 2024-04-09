@@ -126,6 +126,13 @@ class StripeService {
             return { generateOnboardingLink }
         }
     }
+
+    async batchPaymentLink() {
+        
+        return {
+
+        }
+    }
 }
 
 export default StripeService;
