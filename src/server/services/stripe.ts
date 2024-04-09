@@ -1,4 +1,4 @@
-import { type stripeRelationIdInputSchema } from "../schema/stripe";
+import { type stripeItemSchema, type stripeRelationIdInputSchema } from "../schema/stripe";
 import { type z } from "zod";
 import { type Session } from "next-auth";
 import { stripeAccounts } from '../db/schema';
@@ -12,7 +12,17 @@ type AccountServiceContructor = {
     ctx: TRPCContext
 }
 
+type PaymentLinkConfig = {
+    items: StripeItem[];
+    currency: string;
+    cancelUrl: string;
+    successUrl: string;
+    metadata: string;
+}
+
+
 export type StripeAccount = typeof stripeAccounts.$inferInsert
+export type StripeItem = z.infer<typeof stripeItemSchema>
 
 type RelationInputSchema = z.infer<typeof stripeRelationIdInputSchema>
 
@@ -127,11 +137,51 @@ class StripeService {
         }
     }
 
-    async batchPaymentLink() {
-        
-        return {
+    private parseStripeItems(items: StripeItem[], currency: string) {
+        return items.map((item: StripeItem) => {
+            return {
+                price_data: {
+                    currency,
+                    unit_amount: parseFloat((item.unitPrice * 100).toFixed(2)),
+                    product_data: {
+                        name: item.concept,
+                    }
+                },
+                quantity: item.quantity,
+            }
+        });
+    }
 
-        }
+    public async createPaymentLink(config: PaymentLinkConfig) {
+        const customer = await this.stripe.customers.create();
+        const listItems = this.parseStripeItems(config.items, config.currency);
+
+        const session = await this.stripe.checkout.sessions.create({
+            line_items: listItems,
+            mode: 'payment',
+            currency: "MXN",
+            customer: customer.id,
+            payment_method_types: ["card", "customer_balance"],
+            payment_method_options: {
+                customer_balance: {
+                    funding_type: 'bank_transfer',
+                    bank_transfer: {
+                        type: 'mx_bank_transfer'
+                    }
+                }
+            },
+            success_url: config.successUrl,
+            cancel_url: config.cancelUrl,
+            phone_number_collection: {
+                enabled: false
+            },
+            locale: 'es',
+            metadata: JSON.parse(config.metadata) as Stripe.MetadataParam
+        });
+
+        return {
+            paymentUrl: session.url
+        };
     }
 }
 

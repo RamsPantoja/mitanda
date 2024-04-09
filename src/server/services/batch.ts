@@ -1,11 +1,12 @@
 import { batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
-import { type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
+import { type batchPaymentLinkInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
 import { DateTime, type DurationLike } from "luxon";
+import type StripeService from "./stripe";
 
 type BatchServiceContructor = {
     ctx: TRPCContext
@@ -15,8 +16,10 @@ export type NewBatch = typeof batches.$inferInsert;
 export type Batch = typeof batches.$inferSelect;
 type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
 
+
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
+type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
 
 class BatchService {
     ctx: TRPCContext
@@ -318,6 +321,13 @@ class BatchService {
         });
 
         return batch;
+    }
+
+    public async batchPaymentLink(input: BatchPaymentLinkInput, stripeService: StripeService) {
+        const { data } = input;
+        const paymentLink = await stripeService.createPaymentLink(data);
+
+        return paymentLink;
     }
 }
 

@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react"
 import {
     Card,
@@ -29,7 +28,6 @@ const SignInForm = ({ callbackUrl }: SignInFormProps) => {
                         <Image
                             src='/mitanda-isotipo.svg'
                             alt="mitanda icon"
-                            unoptimized
                             sizes="100vw"
                             width={60}
                             height={60}

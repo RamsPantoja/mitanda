@@ -4,8 +4,12 @@ import { toast } from "sonner";
 import useBatchStore from "../useBatchStore";
 import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { getPublicBaseUrl } from "@/lib/utils";
 
 const useBatchInformationLogic = () => {
+    const pathname = usePathname();
+    const router = useRouter();
     const utils = api.useUtils();
     const { batch } = useBatchStore((state) => state);
     const { data: session } = useSession();
@@ -32,6 +36,23 @@ const useBatchInformationLogic = () => {
         }
     });
 
+    const { mutate: batchPaymentLinkData, isPending: batchPaymentLinkIsPending } = api.batch.batchPaymentLink.useMutation({
+        onSuccess: async (data) => {
+            if (data.paymentUrl) {
+                router.push(data.paymentUrl);
+            }
+        },
+        onError: (error) => {
+            toast.error("Algo salió mal!", {
+                description: error.message,
+                action: {
+                    label: 'Enviar reporte',
+                    onClick: () => console.log("R")
+                },
+            })
+        }
+    });
+
     useEffect(() => {
         if (currentBatchRegister) {
             const startDate = DateTime.fromJSDate(currentBatchRegister.startDate);
@@ -45,6 +66,29 @@ const useBatchInformationLogic = () => {
         }
     }, [currentBatchRegister]);
 
+    const onContribute = () => {
+        batchPaymentLinkData({
+            data: {
+                items: [{
+                    unitPrice: 1000,
+                    quantity: 1,
+                    concept: "Ronda 1"
+                },
+                {
+                    unitPrice: 1000,
+                    quantity: 1,
+                    concept: "Ronda 2"
+                }],
+                currency: "MXN",
+                cancelUrl: `${getPublicBaseUrl()}${pathname}`,
+                successUrl: `${getPublicBaseUrl()}${pathname}`,
+                metadata: JSON.stringify({
+                    test: 2
+                })
+            }
+        })
+    };
+
     return {
         startBatchIsPending,
         startBatchMutation,
@@ -52,7 +96,10 @@ const useBatchInformationLogic = () => {
         batch,
         session,
         canContribute,
-        setCanContribute
+        setCanContribute,
+        batchPaymentLinkData,
+        batchPaymentLinkIsPending,
+        onContribute
     }
 }
 
