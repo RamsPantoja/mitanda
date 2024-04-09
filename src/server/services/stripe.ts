@@ -107,6 +107,19 @@ class StripeService {
         return updateOnboarState
     }
 
+    async createStripeDshboardLink(session: Session): Promise<Stripe.LoginLink> {
+        const userStripeAccount = await this.stripeAccountByUserId(session)
+
+        if(!userStripeAccount){
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'User not found'
+            })
+        } else {
+            return await this.stripe.accounts.createLoginLink(userStripeAccount.accountId)
+        }        
+    }
+
     async stripeAccountFlow(session: Session): Promise<object> {
         let generateOnboardingLink: Stripe.AccountLink
         let newStripeAccount: Stripe.Account
