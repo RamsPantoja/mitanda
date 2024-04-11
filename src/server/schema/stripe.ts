@@ -15,3 +15,9 @@ export const stripeItemSchema = z.object({
     required_error: "concept is required"
   })
 });
+
+export const stripePaymentProcessInput = z.object({
+  metadata: z.any().nullable(),
+  id: z.string(),
+  amount: z.number().nullable()
+});

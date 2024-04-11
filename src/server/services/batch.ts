@@ -1,4 +1,4 @@
-import { batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
+import { batchRegisters, batchRegistersToContributions, batches, contracts, contributions, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type batchPaymentLinkInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
@@ -20,6 +20,13 @@ type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
+
+type BatchContributionInput = {
+    userId: string
+    paymentId: string
+    amount: number | null
+    batchRegisterId?: string
+}
 
 class BatchService {
     ctx: TRPCContext
@@ -328,6 +335,44 @@ class BatchService {
         const paymentLink = await stripeService.createPaymentLink(data);
 
         return paymentLink;
+    }
+
+    public async batchContribution(input: BatchContributionInput) {
+        await this.ctx.db.transaction(async (tx) => {
+            const {
+                userId,
+                paymentId,
+                amount,
+                batchRegisterId
+            } = input;
+
+
+            const [contribution] = await tx.insert(contributions).values({
+                userId,
+                amount: amount !== null ? amount.toString() : "0",
+                type: "BATCH",
+                paymentId,
+            }).returning();
+
+            if (!contribution) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Contribution batch was not created',
+                });
+            }
+
+            if (!batchRegisterId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchRegister was not provided',
+                });
+            }
+
+            await tx.insert(batchRegistersToContributions).values({
+                batchRegisterId,
+                contributionId: contribution.id
+            });
+        });
     }
 }
 

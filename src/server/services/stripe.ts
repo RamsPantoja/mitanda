@@ -1,11 +1,13 @@
 import { type stripeItemSchema, type stripeRelationIdInputSchema } from "../schema/stripe";
 import { type z } from "zod";
 import { type Session } from "next-auth";
-import { stripeAccounts } from '../db/schema';
+import { payments, stripeAccounts } from '../db/schema';
 import { TRPCError } from "@trpc/server";
 import { Stripe } from 'stripe'
 import { eq } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
+import { type PaymentCase } from "@/lib/enum";
+import type BatchService from "./batch";
 
 
 type AccountServiceContructor = {
@@ -20,6 +22,27 @@ type PaymentLinkConfig = {
     metadata: string;
 }
 
+type ProcessPaymentInput = {
+    data: {
+        metadata: Stripe.Metadata | null,
+        id: string,
+        amount: number | null
+    }
+    batchService: BatchService
+}
+
+type CreatePaymentInput = {
+    userId: string
+    checkoutSessionId: string
+    paymentCase: PaymentCase
+}
+
+type MetadataPayment = {
+    userId?: string
+    batchRegisterId?: string
+    paymentCase?: PaymentCase
+    items?: StripeItem[]
+}
 
 export type StripeAccount = typeof stripeAccounts.$inferInsert
 export type StripeItem = z.infer<typeof stripeItemSchema>
@@ -120,14 +143,14 @@ class StripeService {
     async createStripeDshboardLink(session: Session): Promise<Stripe.LoginLink> {
         const userStripeAccount = await this.stripeAccountByUserId(session)
 
-        if(!userStripeAccount){
+        if (!userStripeAccount) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
                 message: 'User not found'
             })
         } else {
             return await this.stripe.accounts.createLoginLink(userStripeAccount.accountId)
-        }        
+        }
     }
 
     async stripeAccountFlow(session: Session): Promise<object> {
@@ -195,6 +218,69 @@ class StripeService {
         return {
             paymentUrl: session.url
         };
+    }
+
+    private async createPayment(input: CreatePaymentInput) {
+        const [payment] = await this.ctx.db.insert(payments).values({
+            userId: input.userId,
+            checkoutSessionId: input.checkoutSessionId,
+            paymentCase: input.paymentCase,
+        }).returning();
+
+        if (!payment) {
+            throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'Payment was not created'
+            })
+        }
+
+        return payment;
+    }
+
+    public async processPayment(paymentProcessInput: ProcessPaymentInput) {
+        const { data, batchService } = paymentProcessInput;
+
+        const {
+            userId,
+            paymentCase,
+            batchRegisterId
+        } = data.metadata as MetadataPayment;
+
+        if (!userId) {
+            throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'UserId is required'
+            })
+        }
+
+        if (!paymentCase) {
+            throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'PaymentCase is required'
+            })
+        }
+
+        const payment = await this.createPayment({
+            userId: userId,
+            checkoutSessionId: data.id,
+            paymentCase: paymentCase
+        });
+
+        if (paymentCase) {
+            switch (paymentCase) {
+                case "BATCH": {
+                    await batchService.batchContribution({
+                        userId: userId,
+                        paymentId: payment.id,
+                        amount: data.amount,
+                        batchRegisterId
+                    });
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 

@@ -4,8 +4,8 @@ import Participants from "@/components/Batch/Participants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Batch",
-    description: "Batch manager",
+    title: "Tanda",
+    description: "Administrador de tanda",
 };
 
 export default async function BatchLayout({

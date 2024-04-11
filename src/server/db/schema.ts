@@ -304,6 +304,8 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one }) => ({
   })
 }));
 
+export const paymentCaseEnum = pgEnum('frequency', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
+
 export const payments = createTable(
   "payment",
   {
@@ -312,6 +314,7 @@ export const payments = createTable(
       .notNull()
       .references(() => users.id),
     checkoutSessionId: text("checkoutSessionId").notNull(),
+    paymentCase: paymentCaseEnum("paymentCase").notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).defaultNow(),

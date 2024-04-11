@@ -1,8 +1,11 @@
 import { type TRPCContext } from "../trpc";
+import { type contributions } from "../db/schema";
 
 type ContributionServiceContructor = {
     ctx: TRPCContext
 }
+
+export type Contribution = typeof contributions.$inferSelect;
 
 class ContributionService {
     ctx: TRPCContext
