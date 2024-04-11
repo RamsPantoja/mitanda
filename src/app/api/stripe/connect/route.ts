@@ -12,16 +12,14 @@ const createContext = async (req: NextRequest) => {
 const handler = async (
     request: NextRequest,
 ) => {
-    console.log("Logica para escuchar notificaciones webhook de stripe Connect");
-    const trpcContext = await createContext(request)
-    const caller = createCaller(trpcContext)
-    const responseText = await new NextResponse(request.body).text()
-    const response = JSON.parse(responseText) as Stripe.Event
+    const trpcContext = await createContext(request);
+    const caller = createCaller(trpcContext);
+    const event = await request.json() as Stripe.Event; 
     
-    if (response.type === 'account.updated') {
-        if (response.data.object.details_submitted) {
+    if (event.type === 'account.updated') {
+        if (event.data.object.details_submitted) {
             try {
-                await caller.stripe.updateOnboarding({ accountId: response.account! })
+                await caller.stripe.updateOnboarding({ accountId: event.account! })
             } catch (error) {
                 return NextResponse.json({
                     code: 500,
