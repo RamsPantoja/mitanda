@@ -22,6 +22,8 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => name);
 
+export const suscriptionEnum = pgEnum('suscription', ["BASIC", "PREMIUM"]);
+
 export const users = createTable("user", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: text("name"),
@@ -30,6 +32,7 @@ export const users = createTable("user", {
     mode: "date",
   }).default(sql`CURRENT_TIMESTAMP`),
   image: text("image"),
+  suscription: suscriptionEnum("suscription").notNull().default("BASIC"),
   createdAt: timestamp('createdAt', {
     mode: 'date'
   }).defaultNow(),
@@ -279,6 +282,8 @@ export const batchRegisters = createTable(
     endDate: date("endDate", { mode: "date" }).notNull(),
     batchNumber: integer('batchNumber').notNull(),
     contributionAmount: numeric('contributionAmount').notNull().default("0"),
+    recipientId: uuid("recipientId")
+      .references(() => users.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).defaultNow(),
@@ -292,6 +297,10 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one }) => ({
   batch: one(batches, {
     fields: [batchRegisters.batchId],
     references: [batches.id]
+  }),
+  recipient: one(users, {
+    fields: [batchRegisters.recipientId],
+    references: [users.id]
   })
 }));
 
