@@ -11,7 +11,7 @@ export const stripeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).stripeService.createStripeAccount(input, ctx.session)
     }),
-    stripeAccountByUserId: protectedProcedure
+  stripeAccountByUserId: protectedProcedure
     .query(async ({ ctx }) => {
       return await ctx.services({ ctx }).stripeService.stripeAccountByUserId(ctx.session)
     }),
@@ -28,6 +28,10 @@ export const stripeRouter = createTRPCRouter({
     .input(stripeRelationIdInputSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).stripeService.updateOnboarding(input.accountId)
+    }),
+  createStripeDashboardLink: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      return await ctx.services({ctx}).stripeService.createStripeDshboardLink(ctx.session)
     })
   
 })

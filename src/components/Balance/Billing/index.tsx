@@ -4,9 +4,21 @@ import UseBillingLogic from "./useBillingLogic";
 
 const Billing = () => {
     const {
-        stripeFlowMutation
+        stripeFlowMutation,
+        onboardingLink,
+        dashboardLink,
+        createStripeDashboardLink,
+        onboardingStateData,
+        getOnboardingError,
+        loadingOnboardingState,
+        onboardingState,
     } = UseBillingLogic()
 
+    //just for test 
+    if(!loadingOnboardingState && !getOnboardingError){
+        console.log(onboardingState)
+
+    }
     return (
         <div className='flex flex-col gap-2'>
             <p className="text-sm text-whiteMain font-bold">Información de facturación</p>
