@@ -7,6 +7,7 @@ import ContributionRegisterCard from "./ContributionRegisterCard";
 import ContributionRegisterSkeleton from "./ContributionRegisterSkeleton";
 import useBatchStore from "../useBatchStore";
 import FeedbackMessage from "@/components/common/FeedbackMessage";
+import { mapSkeletons } from "@/lib/utils";
 
 type ContributionRegisterProps = {
     batchIsLoading: boolean
@@ -22,15 +23,17 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
 
     const { batch } = useBatchStore((state) => state);
 
+    const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <ContributionRegisterSkeleton /> });
+
     return (
         <Card className="flex flex-col gap-2 flex-[0.5] overflow-hidden">
             <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
             {
-                (participantsIsLoading || batchIsLoading) &&
-                <Fragment>
-                    <ContributionRegisterSkeleton />
-                    <ContributionRegisterSkeleton />
-                </Fragment>
+                (participantsIsLoading || batchIsLoading) && skeletons.map((skeleton, index) => {
+                    return <Fragment key={index}>
+                        {skeleton}
+                    </Fragment>
+                })
             }
             {
                 !batchIsLoading &&

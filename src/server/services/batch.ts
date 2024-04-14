@@ -339,48 +339,44 @@ class BatchService {
     }
 
     public async batchContribution(input: BatchContributionInput) {
-        const contributionData = await this.ctx.db.transaction(async (tx) => {
-            const {
-                userId,
-                paymentId,
-                amount,
-                batchRegisterId,
-                batchId
-            } = input;
+        const {
+            userId,
+            paymentId,
+            amount,
+            batchRegisterId,
+            batchId
+        } = input;
 
-            if (!batchRegisterId) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchRegisterId was not provided',
-                });
-            }
+        if (!batchRegisterId) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'BatchRegisterId was not provided',
+            });
+        }
 
-            if (!batchId) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchId was not provided',
-                });
-            }
+        if (!batchId) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'BatchId was not provided',
+            });
+        }
 
-            const [contribution] = await tx.insert(batchContributions).values({
-                userId,
-                amount: amount !== null ? (amount / 100).toString() : "0",
-                batchRegisterId,
-                paymentId,
-                batchId
-            }).returning();
+        const [batchContribution] = await this.ctx.db.insert(batchContributions).values({
+            userId,
+            amount: amount !== null ? (amount / 100).toString() : "0",
+            batchRegisterId,
+            paymentId,
+            batchId
+        }).returning();
 
-            if (!contribution) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'Contribution batch was not created',
-                });
-            }
+        if (!batchContribution) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'Batch Contribution was not created',
+            });
+        }
 
-            return contribution;
-        });
-
-        return contributionData;
+        return batchContribution;
     }
 }
 

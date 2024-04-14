@@ -35,10 +35,10 @@ export const users = createTable("user", {
   suscription: suscriptionEnum("suscription").notNull().default("BASIC"),
   createdAt: timestamp('createdAt', {
     mode: 'date'
-  }).defaultNow(),
+  }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date'
-  }).defaultNow()
+  }).notNull().defaultNow()
 });
 
 export const usersRelations = relations(users, ({ many, one }) => ({
@@ -74,10 +74,10 @@ export const accounts = createTable(
     session_state: text("session_state"),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow()
+    }).notNull().defaultNow()
   },
   (account) => ({
     compoundKey: primaryKey({
@@ -140,10 +140,10 @@ export const batches = createTable(
       .references(() => users.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).notNull().defaultNow(),
+    }).notNull().notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).notNull().defaultNow(),
+    }).notNull().notNull().defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date'
     }),
@@ -174,10 +174,10 @@ export const contracts = createTable(
     frequency: frequencyEnum('frequency').notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
   },
 )
 
@@ -254,10 +254,10 @@ export const stripeAccounts = createTable(
     onboarding: boolean("onboarding").notNull().default(false),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
   }
 );
 
@@ -288,10 +288,10 @@ export const batchRegisters = createTable(
       .references(() => users.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
   }
 );
 
@@ -320,10 +320,10 @@ export const payments = createTable(
     paymentCase: paymentCaseEnum("paymentCase").notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
   }
 );
 
@@ -353,10 +353,10 @@ export const batchContributions = createTable(
       .references(() => payments.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date'
-    }).defaultNow(),
+    }).notNull().defaultNow(),
   }
 );
 
