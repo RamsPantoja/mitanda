@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type User } from "@/server/services/user";
 import CheckCard from "./CheckCard";
 import useBatchStore from "../useBatchStore";
+import { Card } from "@/components/ui/card";
 
 type ContributionRegisterCardProps = {
     user: User
@@ -11,7 +12,7 @@ const ContributionRegisterCard = ({ user }: ContributionRegisterCardProps) => {
     const { batch } = useBatchStore((state) => state);
 
     return (
-        <div className="flex gap-2 flex-col sm:flex-col md:flex-col lg:flex-row w-full items-start">
+        <Card className="flex gap-2 flex-col sm:flex-col md:flex-col lg:flex-row w-full items-start">
             <div className="flex gap-2 items-center w-full p-2 max-w-40">
                 <Avatar>
                     <AvatarImage src={user.image!} />
@@ -37,7 +38,7 @@ const ContributionRegisterCard = ({ user }: ContributionRegisterCardProps) => {
                     }
                 </div>
             </div>
-        </div>
+        </Card>
     )
 }
 

@@ -1,4 +1,4 @@
-import { batchRegisters, batchRegistersToContributions, batches, contracts, contributions, usersToBatches, usersToContracts } from "../db/schema";
+import { batchContributions, batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import { type batchPaymentLinkInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
@@ -26,6 +26,7 @@ type BatchContributionInput = {
     paymentId: string
     amount: number | null
     batchRegisterId?: string
+    batchId?: string
 }
 
 class BatchService {
@@ -338,20 +339,35 @@ class BatchService {
     }
 
     public async batchContribution(input: BatchContributionInput) {
-        await this.ctx.db.transaction(async (tx) => {
+        const contributionData = await this.ctx.db.transaction(async (tx) => {
             const {
                 userId,
                 paymentId,
                 amount,
-                batchRegisterId
+                batchRegisterId,
+                batchId
             } = input;
 
+            if (!batchRegisterId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchRegisterId was not provided',
+                });
+            }
 
-            const [contribution] = await tx.insert(contributions).values({
+            if (!batchId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchId was not provided',
+                });
+            }
+
+            const [contribution] = await tx.insert(batchContributions).values({
                 userId,
-                amount: amount !== null ? amount.toString() : "0",
-                type: "BATCH",
+                amount: amount !== null ? (amount / 100).toString() : "0",
+                batchRegisterId,
                 paymentId,
+                batchId
             }).returning();
 
             if (!contribution) {
@@ -361,18 +377,10 @@ class BatchService {
                 });
             }
 
-            if (!batchRegisterId) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchRegister was not provided',
-                });
-            }
-
-            await tx.insert(batchRegistersToContributions).values({
-                batchRegisterId,
-                contributionId: contribution.id
-            });
+            return contribution;
         });
+
+        return contributionData;
     }
 }
 

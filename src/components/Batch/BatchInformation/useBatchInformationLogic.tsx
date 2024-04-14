@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
 import { usePathname, useRouter } from "next/navigation";
 import { getPublicBaseUrl } from "@/lib/utils";
+import { type StripeItem } from "@/server/services/stripe";
 
 const useBatchInformationLogic = () => {
     const pathname = usePathname();
@@ -18,7 +19,6 @@ const useBatchInformationLogic = () => {
     const currentBatchRegister = useMemo(() => {
         return batch?.batchRegisters.find((register) => register.status === 'IN_PROGRESS');
     }, [batch]);
-
 
     const { mutate: startBatchMutation, isPending: startBatchIsPending } = api.batch.startBatch.useMutation({
         onSuccess: async () => {
@@ -67,26 +67,29 @@ const useBatchInformationLogic = () => {
     }, [currentBatchRegister]);
 
     const onContribute = () => {
-        batchPaymentLinkData({
-            data: {
-                items: [{
-                    unitPrice: 1000,
-                    quantity: 1,
-                    concept: "Ronda 1"
-                },
-                {
-                    unitPrice: 1000,
-                    quantity: 1,
-                    concept: "Ronda 2"
-                }],
-                currency: "MXN",
-                cancelUrl: `${getPublicBaseUrl()}${pathname}`,
-                successUrl: `${getPublicBaseUrl()}${pathname}`,
-                metadata: JSON.stringify({
-                    test: 2
-                })
-            }
-        })
+        if (batch && currentBatchRegister) {
+            const items: StripeItem[] = [{
+                unitPrice: parseFloat(batch.contributionAmount),
+                quantity: 1,
+                concept: `Ronda ${currentBatchRegister.batchNumber}`
+            }];
+
+            batchPaymentLinkData({
+                data: {
+                    items,
+                    currency: "MXN",
+                    cancelUrl: `${getPublicBaseUrl()}${pathname}`,
+                    successUrl: `${getPublicBaseUrl()}${pathname}`,
+                    metadata: {
+                        userId: session?.user.id,
+                        batchRegisterId: currentBatchRegister.id,
+                        paymentCase: "BATCH",
+                        items,
+                        batchId: batch.id
+                    }
+                }
+            })
+        }
     };
 
     return {

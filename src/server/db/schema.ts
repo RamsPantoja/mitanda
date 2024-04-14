@@ -10,7 +10,7 @@ import {
   text,
   timestamp,
   uuid,
-  boolean
+  boolean,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -51,7 +51,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     references: [stripeAccounts.userId]
   }),
   payments: many(payments),
-  contributions: many(contributions)
+  batchContributions: many(batchContributions)
 }));
 
 export const accounts = createTable(
@@ -162,7 +162,8 @@ export const batchesRelations = relations(batches, ({ one, many }) => ({
     fields: [batches.userId],
     references: [users.id]
   }),
-  batchRegisters: many(batchRegisters)
+  batchRegisters: many(batchRegisters),
+  batchContributions: many(batchContributions)
 }));
 
 export const contracts = createTable(
@@ -282,6 +283,7 @@ export const batchRegisters = createTable(
     endDate: date("endDate", { mode: "date" }).notNull(),
     batchNumber: integer('batchNumber').notNull(),
     contributionAmount: numeric('contributionAmount').notNull().default("0"),
+    withdraw: boolean("withDraw").notNull().default(false),
     recipientId: uuid("recipientId")
       .references(() => users.id),
     createdAt: timestamp('createdAt', {
@@ -293,7 +295,7 @@ export const batchRegisters = createTable(
   }
 );
 
-export const batchRegistersRelations = relations(batchRegisters, ({ one }) => ({
+export const batchRegistersRelations = relations(batchRegisters, ({ one, many }) => ({
   batch: one(batches, {
     fields: [batchRegisters.batchId],
     references: [batches.id]
@@ -301,7 +303,8 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one }) => ({
   recipient: one(users, {
     fields: [batchRegisters.recipientId],
     references: [users.id]
-  })
+  }),
+  batchContributions: many(batchContributions)
 }));
 
 export const paymentCaseEnum = pgEnum('frequency', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
@@ -331,17 +334,20 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
   })
 }));
 
-export const contributionEnum = pgEnum('frequency', ["BATCH", "CROWDFUNDING"]);
-
-export const contributions = createTable(
-  "contribution",
+export const batchContributions = createTable(
+  "batch_contributions",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
     userId: uuid("userId")
       .notNull()
       .references(() => users.id),
+    batchId: uuid("batchId")
+      .notNull()
+      .references(() => batches.id),
+    batchRegisterId: uuid("batchRegisterId")
+      .notNull()
+      .references(() => batchRegisters.id),
     amount: numeric('amount').notNull(),
-    type: contributionEnum('type').notNull(),
     paymentId: uuid("paymentId")
       .notNull()
       .references(() => payments.id),
@@ -354,42 +360,21 @@ export const contributions = createTable(
   }
 );
 
-export const contributionsRelations = relations(contributions, ({ one }) => ({
+export const batchContributionsRelations = relations(batchContributions, ({ one }) => ({
   user: one(users, {
-    fields: [contributions.userId],
+    fields: [batchContributions.userId],
     references: [users.id]
   }),
   payment: one(payments, {
-    fields: [contributions.paymentId],
+    fields: [batchContributions.paymentId],
     references: [payments.id]
-  })
-}));
-
-export const batchRegistersToContributions = createTable(
-  "batch_registers_to_contributions",
-  {
-    batchRegisterId: uuid("batchRegisterId")
-      .notNull()
-      .references(() => batchRegisters.id),
-    contributionId: uuid("contributionId")
-      .notNull()
-      .references(() => contributions.id)
-  },
-  (t) => ({
-    pk: primaryKey({
-      name: "batchRegisterId_contributionId",
-      columns: [t.batchRegisterId, t.contributionId]
-    }),
-  })
-);
-
-export const batchRegistersToContributionsRelations = relations(batchRegistersToContributions, ({ one }) => ({
-  batchRegister: one(batchRegisters, {
-    fields: [batchRegistersToContributions.batchRegisterId],
-    references: [batchRegisters.id],
   }),
-  contribution: one(contributions, {
-    fields: [batchRegistersToContributions.contributionId],
-    references: [contributions.id],
+  batch: one(batches, {
+    fields: [batchContributions.batchId],
+    references: [batches.id]
+  }),
+  batchRegister: one(batchRegisters, {
+    fields: [batchContributions.batchRegisterId],
+    references: [batchRegisters.id]
   }),
 }));

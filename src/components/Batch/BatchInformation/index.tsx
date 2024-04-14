@@ -44,7 +44,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         <Fragment>
             {
                 batch && <Fragment>
-                    <div className="flex gap-2 p-4 justify-between items-center">
+                    <div className="flex gap-2 p-4 justify-between items-center sticky top-0 z-[1] bg-blackLigth">
                         <div className="flex flex-col gap-2">
                             <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
                             <p className=" text-grayMain text-base">¡No olvides que en una tanda, todos ponemos confianza y esfuerzo!</p>

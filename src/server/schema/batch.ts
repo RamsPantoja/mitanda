@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { frequencyEnum } from "../db/schema";
+import { frequencyEnum, paymentCaseEnum } from "../db/schema";
 import { stripeItemSchema } from "./stripe";
 
 export const createBatchInputSchema = z.object({
@@ -47,20 +47,20 @@ export const startBatchInputSchema = z.object({
   })
 });
 
+const metadataSchema = z.object({
+  userId: z.string().optional(),
+  batchRegisterId: z.string(),
+  paymentCase: z.enum(paymentCaseEnum.enumValues),
+  items: z.array(stripeItemSchema).transform((val) => JSON.stringify(val)),
+  batchId: z.string()
+});
+
 export const batchPaymentLinkInputSchema = z.object({
   data: z.object({
     items: z.array(stripeItemSchema),
     currency: z.string(),
     cancelUrl: z.string(),
     successUrl: z.string(),
-    metadata: z.string()
+    metadata: metadataSchema
   })
 });
-
-export const batchContributionInputSchema = z.object({
-  data: z.object({
-    amount: z.number(),
-    metada: z.string(),
-    checkoutSessionId: z.string()
-  })
-})

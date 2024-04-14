@@ -25,7 +25,7 @@ type PaymentLinkConfig = {
     currency: string;
     cancelUrl: string;
     successUrl: string;
-    metadata: string;
+    metadata: MetadataPayment;
 }
 
 type ProcessPaymentInput = {
@@ -43,11 +43,12 @@ type CreatePaymentInput = {
     paymentCase: PaymentCase
 }
 
-type MetadataPayment = {
+export type MetadataPayment = {
     userId?: string
     batchRegisterId?: string
     paymentCase?: PaymentCase
-    items?: StripeItem[]
+    items?: string
+    batchId?: string
 }
 
 export type StripeAccount = typeof stripeAccounts.$inferInsert
@@ -218,7 +219,7 @@ class StripeService {
                 enabled: false
             },
             locale: 'es',
-            metadata: JSON.parse(config.metadata) as Stripe.MetadataParam
+            metadata: config.metadata
         });
 
         return {
@@ -249,7 +250,8 @@ class StripeService {
         const {
             userId,
             paymentCase,
-            batchRegisterId
+            batchRegisterId,
+            batchId
         } = data.metadata as MetadataPayment;
 
         if (!userId) {
@@ -279,7 +281,8 @@ class StripeService {
                         userId: userId,
                         paymentId: payment.id,
                         amount: data.amount,
-                        batchRegisterId
+                        batchRegisterId,
+                        batchId
                     });
                 }
                     break;

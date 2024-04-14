@@ -37,7 +37,6 @@ export const stripeRouter = createTRPCRouter({
   paymentProcess: publicProcedure
     .input(stripePaymentProcessInput)
     .mutation(async ({ ctx, input }) => {
-
       return await ctx.services({ ctx }).stripeService.processPayment({
         data: {
           metadata: input.metadata as Stripe.Metadata,

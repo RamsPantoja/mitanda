@@ -23,7 +23,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
     const { batch } = useBatchStore((state) => state);
 
     return (
-        <Card className="flex flex-col gap-2 max-h-96">
+        <Card className="flex flex-col gap-2 flex-[0.5] overflow-hidden">
             <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
             {
                 (participantsIsLoading || batchIsLoading) &&
@@ -48,7 +48,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
                 !participantsIsLoading &&
                 !participantsIsError &&
                 participantsData &&
-                <div className="h-full flex flex-col overflow-auto gap-4">
+                <div className="h-full flex flex-col overflow-auto">
                     {
                         participantsData?.map((item) => {
                             return (
