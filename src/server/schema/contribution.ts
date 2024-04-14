@@ -1,5 +1,5 @@
 import { z } from "zod";
 
-export const createContributionInputSchema = z.object({
+export const whereContributionInput = z.object({
     
 });

@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const ContributionRegisterSkeleton = () => {
     return (
-        <Card className="flex gap-4 items-start w-full p-2">
+        <Card className="flex gap-4 items-start w-full">
             <div className="flex gap-2 items-center">
                 <Skeleton className="h-10 min-w-10 rounded-full" />
                 <Skeleton className=" h-unit-md max-w-24 min-w-24" />

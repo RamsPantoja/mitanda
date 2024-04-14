@@ -6,7 +6,8 @@ import SessionService from "./session";
 import StripeService from "./stripe";
 import UserToBatchService from "./userToBatch";
 import { type TRPCContext } from "../trpc";
-import ContributionService from "./contribution";
+import BatchContributionService from "./batchContribution";
+
 
 export type ServicesContext = {
     batchService: BatchService
@@ -16,7 +17,7 @@ export type ServicesContext = {
     sessionService: SessionService
     stripeService: StripeService
     userToBatch: UserToBatchService
-    contribution: ContributionService
+    batchContribution: BatchContributionService
 }
 
 export type ServicesConfig = {
@@ -32,7 +33,7 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         sessionService: new SessionService({ ctx }),
         stripeService: new StripeService({ ctx }),
         userToBatch: new UserToBatchService({ ctx }),
-        contribution: new ContributionService({ ctx })
+        batchContribution: new BatchContributionService({ ctx })
     }
 }
 export default Services;
