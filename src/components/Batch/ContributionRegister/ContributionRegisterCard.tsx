@@ -3,6 +3,7 @@ import { type User } from "@/server/services/user";
 import CheckCard from "./CheckCard";
 import useBatchStore from "../useBatchStore";
 import { Card } from "@/components/ui/card";
+import { useMemo } from "react";
 
 type ContributionRegisterCardProps = {
     user: User
@@ -10,6 +11,23 @@ type ContributionRegisterCardProps = {
 
 const ContributionRegisterCard = ({ user }: ContributionRegisterCardProps) => {
     const { batch } = useBatchStore((state) => state);
+
+    const registers = useMemo(() => {
+        if (batch) {
+            const registersWithUserContributions = batch.batchRegisters.map((item) => {
+                return {
+                    ...item,
+                    usersContribution: item.batchContributions.map((contribution) => {
+                        return contribution.userId
+                    })
+                }
+            });
+
+            return registersWithUserContributions;
+        } else {
+            return [];
+        }
+    }, [batch]);
 
     return (
         <Card className="flex gap-2 flex-col sm:flex-col md:flex-col lg:flex-row w-full items-start">
@@ -26,12 +44,12 @@ const ContributionRegisterCard = ({ user }: ContributionRegisterCardProps) => {
                 <span className="text-xs text-grayMain text-nowrap font-bold ml-4 pt-2">Rondas</span>
                 <div className="flex items-center w-full flex-wrap">
                     {
-                        batch?.batchRegisters.map((register) => {
+                        registers.map((register) => {
                             return (
                                 <CheckCard
                                     key={register.id.concat(user.id)}
                                     batchNumber={register.batchNumber}
-                                    status="DEFAULT"
+                                    status={register.usersContribution.includes(user.id) ? "SUCCESS" : "DEFAULT"}
                                 />
                             )
                         })

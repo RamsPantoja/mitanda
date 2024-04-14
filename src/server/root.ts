@@ -3,6 +3,7 @@ import { batchRouter } from "./routers/batch";
 import { stripeRouter } from "./routers/stripe";
 import { userToBatchRouter } from "./routers/userToBatch";
 import { batchContributionRouter } from "./routers/batchContribution";
+import { type inferRouterOutputs } from "@trpc/server";
 
 /**
  * This is the primary router for your server.
@@ -23,3 +24,4 @@ export const createCaller = (ctx: TRPCContext) => {
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
+export type RouterOutput = inferRouterOutputs<AppRouter>;

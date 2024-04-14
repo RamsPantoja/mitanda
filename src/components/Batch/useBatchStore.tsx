@@ -1,12 +1,10 @@
-import { type Batch } from '@/server/services/batch';
-import { type BatchRegister } from '@/server/services/batchRegister';
 import { create } from 'zustand';
-
-type BatchWithBatchRegisters = Batch & { batchRegisters: BatchRegister[] };
+import { type RouterOutput } from '@/server/root';
+type BatchByIdQueryType = RouterOutput["batch"]["batchById"]
 
 type BatchState = {
-    batch: BatchWithBatchRegisters | null
-    setBatch: (batch: BatchWithBatchRegisters) => void
+    batch: BatchByIdQueryType | null
+    setBatch: (batch: BatchByIdQueryType) => void
 }
 
 const useBatchStore = create<BatchState>()((set) => ({

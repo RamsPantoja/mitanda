@@ -165,7 +165,11 @@ class BatchService {
                 )
             },
             with: {
-                batchRegisters: true
+                batchRegisters: {
+                    with: {
+                        batchContributions: true
+                    }
+                }
             }
         });
 
