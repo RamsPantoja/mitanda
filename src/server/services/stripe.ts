@@ -14,6 +14,12 @@ type AccountServiceContructor = {
     ctx: TRPCContext
 }
 
+type StripeFlowObject = {
+    generateOnboardingLink: Stripe.AccountLink,
+    newStripeAccount?: Stripe.Account ,
+    stripeAccountDB?: object
+}
+
 type PaymentLinkConfig = {
     items: StripeItem[];
     currency: string;
@@ -153,7 +159,7 @@ class StripeService {
         }
     }
 
-    async stripeAccountFlow(session: Session): Promise<object> {
+    async stripeAccountFlow(session: Session): Promise<StripeFlowObject> {
         let generateOnboardingLink: Stripe.AccountLink
         let newStripeAccount: Stripe.Account
         let stripeAccountDB: StripeAccount
