@@ -63,7 +63,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             </MitandaButton>
                         }
                         {
-                            batch.status === "IN_PROGRESS" &&
+                            batch.status === "IN_PROGRESS" && currentBatchRegister &&
                             <div className="flex flex-col gap-2 items-end">
                                 <MitandaButton
                                     disabled={!canContribute}
@@ -73,7 +73,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                                     Dar contribución
                                 </MitandaButton>
                                 {
-                                    currentBatchRegister && canContribute &&
+                                    canContribute &&
                                     <TimerComponent
                                         start={currentBatchRegister.startDate}
                                         end={DateTime.fromJSDate(currentBatchRegister.startDate).plus({ "days": 2 }).toJSDate()}
@@ -83,13 +83,15 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                                     />
                                 }
                             </div>
-
                         }
                     </div>
-                    <ContributionProgress
-                        batch={batch}
-                        batchRegister={currentBatchRegister}
-                    />
+                    {
+                        currentBatchRegister &&
+                        <ContributionProgress
+                            batch={batch}
+                            batchRegister={currentBatchRegister}
+                        />
+                    }
                 </Fragment>
             }
         </Fragment>

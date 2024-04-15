@@ -414,6 +414,15 @@ class BatchService {
 
         return contribution;
     }
+
+    public async finish(batchId: string) {
+        await this.ctx.db.update(batches)
+            .set({
+                status: "FINISHED",
+                updatedAt: new Date()
+            })
+            .where(eq(batches.id, batchId));
+    }
 }
 
 export default BatchService;

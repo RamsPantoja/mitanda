@@ -47,6 +47,12 @@ export const startBatchInputSchema = z.object({
   })
 });
 
+export const finishBatchInputSchema = z.object({
+  batchId: z.string({
+    required_error: "BatchId is required"
+  })
+});
+
 const metadataSchema = z.object({
   userId: z.string().optional(),
   batchRegisterId: z.string(),

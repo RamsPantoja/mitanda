@@ -17,12 +17,38 @@ const useBatchInformationLogic = () => {
     const [canContribute, setCanContribute] = useState<boolean>(true);
 
     const currentBatchRegister = useMemo(() => {
-        return batch?.batchRegisters.find((register) => register.status === 'IN_PROGRESS');
+        return batch?.batchRegisters.find((register) => {
+            const startDate = DateTime.fromJSDate(register.startDate);
+            const endDate = DateTime.fromJSDate(register.endDate);
+            const currentDate = DateTime.now();
+
+            if (currentDate > startDate && currentDate < endDate) {
+                return true;
+            } else {
+                return false;
+            }
+        });
     }, [batch]);
 
     const { mutate: startBatchMutation, isPending: startBatchIsPending } = api.batch.startBatch.useMutation({
         onSuccess: async () => {
             toast.success("Muy bien! La tanda ha comenzado.")
+            await utils.batch.batchById.invalidate();
+        },
+        onError: (error) => {
+            toast.error("Algo salió mal!", {
+                description: error.message,
+                action: {
+                    label: 'Enviar reporte',
+                    onClick: () => console.log("R")
+                },
+            })
+        }
+    });
+
+    const { mutate: finishBatchMutation } = api.batch.finishBatch.useMutation({
+        onSuccess: async () => {
+            toast.success("Genial! La tanda ha terminado.")
             await utils.batch.batchById.invalidate();
         },
         onError: (error) => {
@@ -59,7 +85,6 @@ const useBatchInformationLogic = () => {
             const nowDate = DateTime.now()
             const diffInDays = nowDate.diff(startDate, "days").toObject();
 
-
             if (diffInDays.days && diffInDays.days !== undefined && diffInDays.days >= 2) {
                 setCanContribute(false);
             }
@@ -69,6 +94,15 @@ const useBatchInformationLogic = () => {
             }
         }
     }, [currentBatchRegister, session]);
+
+    //Finish the batch if all batch registers have expired and the batch has "InProgress" status
+    useEffect(() => {
+        if (!currentBatchRegister && batch?.status === "IN_PROGRESS") {
+            finishBatchMutation({
+                batchId: batch.id
+            });
+        }
+    }, [currentBatchRegister, batch, finishBatchMutation]);
 
     const onContribute = () => {
         if (batch && currentBatchRegister) {

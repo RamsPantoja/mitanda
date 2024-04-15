@@ -18,7 +18,7 @@ const ContributionList = ({ list, isLoading, isError }: ContributionListProps) =
         <div>
             <div className="flex p-4 justify-between">
                 <div className="flex items-center w-full min-w-40">
-                    <span className="text-grayMain text-xs">Usuario</span>
+                    <span className="text-grayMain text-xs">Participante</span>
                 </div>
                 <div className="flex items-center w-full">
                     <span className="text-grayMain text-xs">Creada en</span>

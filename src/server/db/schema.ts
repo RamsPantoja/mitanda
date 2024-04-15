@@ -124,7 +124,7 @@ export const verificationTokens = createTable(
 );
 
 export const frequencyEnum = pgEnum('frequency', ['WEEKLY', 'MONTHLY', 'BIWEEKLY']);
-export const batchStatusEnum = pgEnum('status', ["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINALIZED']);
+export const batchStatusEnum = pgEnum('status', ["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINISHED']);
 
 export const batches = createTable(
   "batch",
@@ -268,7 +268,7 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
   })
 }));
 
-export const batchRegisterStatusEnum = pgEnum("status", ["NOT_STARTED", "IN_PROGRESS", "FINALIZED"]);
+export const batchRegisterStatusEnum = pgEnum("status", ["NOT_STARTED", "IN_PROGRESS", "FINISHED"]);
 
 export const batchRegisters = createTable(
   "batch_register",

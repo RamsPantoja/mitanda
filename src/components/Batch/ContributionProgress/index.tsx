@@ -6,10 +6,9 @@ import { numericFormatter } from "react-number-format"
 import { type BatchRegister } from "@/server/services/batchRegister"
 import { DateTime } from "luxon"
 
-
 type ContributionProgressProps = {
     batch: Batch
-    batchRegister: BatchRegister | undefined
+    batchRegister: BatchRegister
 }
 
 const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProps) => {
@@ -34,12 +33,12 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
                 size='md'
                 step={1}
                 color="primary"
-                label={batchRegister !== undefined ? `Ronda ${batchRegister.batchNumber}` : "Ronda 0"}
+                label={`Ronda ${batchRegister.batchNumber}`}
                 showSteps={false}
                 maxValue={contributionGoal}
                 minValue={0}
                 radius='full'
-                value={batchRegister !== undefined ? parseFloat(batchRegister.contributionAmount) : 0}
+                value={parseFloat(batchRegister.contributionAmount)}
                 getValue={() => `MX$${contributionGoalFormatted}`}
                 classNames={{
                     track: "border-s-greenMain",
@@ -56,12 +55,9 @@ const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProp
                 formatOptions={{ style: "currency", currency: "MXN" }}
                 showTooltip={true}
             />
-            {
-                batchRegister &&
-                <div className="flex items-center justify-end">
-                    <span className="text-grayMain text-xs">{DateTime.fromJSDate(batchRegister.startDate).toLocaleString(DateTime.DATE_HUGE)} - {DateTime.fromJSDate(batchRegister.endDate).toLocaleString(DateTime.DATE_HUGE)}</span>
-                </div>
-            }
+            <div className="flex items-center justify-end">
+                <span className="text-grayMain text-xs">{DateTime.fromJSDate(batchRegister.startDate).toLocaleString(DateTime.DATE_HUGE)} - {DateTime.fromJSDate(batchRegister.endDate).toLocaleString(DateTime.DATE_HUGE)}</span>
+            </div>
         </Card>
     )
 }
