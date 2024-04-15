@@ -38,7 +38,7 @@ export const batchRouter = createTRPCRouter({
   startBatch: protectedProcedure
     .input(startBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.services({ ctx }).batchService.startBatch(input.batchId);
+      return await ctx.services({ ctx }).batchService.startBatch(input);
     }),
   batchPaymentLink: protectedProcedure
     .input(batchPaymentLinkInputSchema)

@@ -1,7 +1,12 @@
 import { batchContributions, batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
-import { type batchPaymentLinkInputSchema, type createBatchInputSchema, type whereInputBatchSchema } from "../schema/batch";
+import {
+    type startBatchInputSchema,
+    type batchPaymentLinkInputSchema,
+    type createBatchInputSchema,
+    type whereInputBatchSchema
+} from "../schema/batch";
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
@@ -20,6 +25,7 @@ type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
+type StartBatchInput = z.infer<typeof startBatchInputSchema>
 
 type BatchContributionInput = {
     userId: string
@@ -236,8 +242,14 @@ class BatchService {
         return newUserToBatch;
     }
 
-    private buildBatchRegisters(batch: Batch) {
+    private buildBatchRegisters(batch: Batch, participantIds: string[]) {
         const registers: BatchRegisterInsert[] = [];
+
+        const shuffle = (array: string[]) => {
+            return array.sort(() => Math.random() - 0.5);
+        };
+
+        const participantIdsSuffle = shuffle(participantIds);
 
         const getTimeFactor = (): DurationLike => {
             switch (batch.frequency) {
@@ -258,10 +270,17 @@ class BatchService {
             }
         }
 
-
-        for (let i = 0; i < batch.seats; i++) {
+        for (let i = 0; i < participantIdsSuffle.length; i++) {
             const accumulator: BatchRegisterInsert[] = [...registers];
             const previousElement = accumulator[i - 1];
+            const participantId = participantIdsSuffle[i];
+
+            if (!participantId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'ParticipantID not provided',
+                });
+            }
 
             if (previousElement) {
                 registers.push({
@@ -270,7 +289,8 @@ class BatchService {
                     startDate: previousElement.endDate,
                     endDate: DateTime.fromJSDate(previousElement.endDate).plus(getTimeFactor()).toJSDate(),
                     batchNumber: i + 1,
-                })
+                    recipientId: participantId
+                });
             } else {
                 registers.push({
                     batchId: batch.id,
@@ -278,7 +298,7 @@ class BatchService {
                     startDate: DateTime.now().toJSDate(),
                     endDate: DateTime.now().plus(getTimeFactor()).toJSDate(),
                     batchNumber: i + 1,
-                    status: "IN_PROGRESS"
+                    recipientId: participantId
                 });
             }
         }
@@ -286,7 +306,12 @@ class BatchService {
         return registers;
     }
 
-    public async startBatch(batchId: string) {
+    public async startBatch(input: StartBatchInput) {
+        const {
+            batchId,
+            participantIds
+        } = input;
+
         const batch = this.ctx.db.transaction(async (tx) => {
             const batch = await tx.query.batches.findFirst({
                 where: (batches, { eq }) => {
@@ -310,7 +335,7 @@ class BatchService {
                 });
             }
 
-            const batchRegistersToInsert = this.buildBatchRegisters(batch);
+            const batchRegistersToInsert = this.buildBatchRegisters(batch, participantIds);
 
             await tx.insert(batchRegisters).values(batchRegistersToInsert);
 

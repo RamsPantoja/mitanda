@@ -23,7 +23,8 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         canContribute,
         setCanContribute,
         batchPaymentLinkIsPending,
-        onContribute
+        onContribute,
+        participantIds
     } = useBatchInformationLogic();
 
     if (batchIsLoading) {
@@ -50,11 +51,12 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             <p className=" text-grayMain text-base">¡No olvides que en una tanda, todos ponemos confianza y esfuerzo!</p>
                         </div>
                         {
-                            batch.status === "NOT_STARTED" && batch.userId === session?.user.id &&
+                            batch.status === "NOT_STARTED" && batch.userId === session?.user.id && participantIds &&
                             <MitandaButton
                                 onClick={() => {
                                     startBatchMutation({
-                                        batchId: batch.id
+                                        batchId: batch.id,
+                                        participantIds
                                     })
                                 }}
                                 isPending={startBatchIsPending}

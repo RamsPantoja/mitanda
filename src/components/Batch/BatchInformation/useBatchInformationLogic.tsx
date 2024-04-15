@@ -12,7 +12,7 @@ const useBatchInformationLogic = () => {
     const pathname = usePathname();
     const router = useRouter();
     const utils = api.useUtils();
-    const { batch } = useBatchStore((state) => state);
+    const { batch, participantIds } = useBatchStore((state) => state);
     const { data: session } = useSession();
     const [canContribute, setCanContribute] = useState<boolean>(true);
 
@@ -140,7 +140,8 @@ const useBatchInformationLogic = () => {
         setCanContribute,
         batchPaymentLinkData,
         batchPaymentLinkIsPending,
-        onContribute
+        onContribute,
+        participantIds
     }
 }
 

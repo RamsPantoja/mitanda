@@ -283,9 +283,9 @@ export const batchRegisters = createTable(
     endDate: date("endDate", { mode: "date" }).notNull(),
     batchNumber: integer('batchNumber').notNull(),
     contributionAmount: numeric('contributionAmount').notNull().default("0"),
-    withdraw: boolean("withDraw").notNull().default(false),
+    withdraw: boolean("withdraw").notNull().default(false),
     recipientId: uuid("recipientId")
-      .references(() => users.id),
+      .references(() => users.id).notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).notNull().defaultNow(),

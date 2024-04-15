@@ -23,7 +23,7 @@ const Billing = () => {
                         size='sm'
                         variant='secondary'
                         onClick={onboardingState ? () => { createStripeDashboardLink() } : () => { stripeFlowMutation() }}
-                        startIcon={<BuildingLibraryIcon className="h-4 w-4 text-blackMain" />}
+                        startIcon={<BuildingLibraryIcon className="h-4 w-4 text-whiteMain" />}
                     >{onboardingState ? 'Ir a dashboard' : 'Agregar datos bancarios'}</MitandaButton>
                 </>
             }
