@@ -351,36 +351,68 @@ class BatchService {
             batchId
         } = input;
 
-        if (!batchRegisterId) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'BatchRegisterId was not provided',
+        const addNumber = (numberOne: string, numberTwo: string): string => {
+            const parseNumberOne: number = parseFloat(numberOne);
+            const parseNumberTwo: number = parseFloat(numberTwo);
+            const add: number = parseNumberOne + parseNumberTwo;
+
+            return add.toString();
+        };
+
+        const contribution = await this.ctx.db.transaction(async (tx) => {
+            if (!batchRegisterId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchRegisterId was not provided',
+                });
+            }
+
+            if (!batchId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchId was not provided',
+                });
+            }
+
+            const batchRegister = await tx.query.batchRegisters.findFirst({
+                where: (batchRegisters, { eq }) => {
+                    return eq(batchRegisters.id, batchRegisterId)
+                }
             });
-        }
 
-        if (!batchId) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'BatchId was not provided',
-            });
-        }
+            if (!batchRegister) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'BatchRegister not found',
+                });
+            }
 
-        const [batchContribution] = await this.ctx.db.insert(batchContributions).values({
-            userId,
-            amount: amount !== null ? (amount / 100).toString() : "0",
-            batchRegisterId,
-            paymentId,
-            batchId
-        }).returning();
+            const [batchContribution] = await tx.insert(batchContributions).values({
+                userId,
+                amount: amount !== null ? (amount / 100).toString() : "0",
+                batchRegisterId,
+                paymentId,
+                batchId
+            }).returning();
 
-        if (!batchContribution) {
-            throw new TRPCError({
-                code: "CONFLICT",
-                message: 'Batch Contribution was not created',
-            });
-        }
+            if (!batchContribution) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch Contribution was not created',
+                });
+            }
 
-        return batchContribution;
+            await tx.update(batchRegisters)
+                .set({
+                    contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
+                    updatedAt: new Date()
+                })
+                .where(eq(batchRegisters.id, batchRegisterId));
+
+            return batchContribution;
+        });
+
+        return contribution;
     }
 }
 

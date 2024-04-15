@@ -63,8 +63,12 @@ const useBatchInformationLogic = () => {
             if (diffInDays.days && diffInDays.days !== undefined && diffInDays.days >= 2) {
                 setCanContribute(false);
             }
+
+            if (currentBatchRegister.batchContributions.find((item) => item.userId === session?.user.id)) {
+                setCanContribute(false);
+            }
         }
-    }, [currentBatchRegister]);
+    }, [currentBatchRegister, session]);
 
     const onContribute = () => {
         if (batch && currentBatchRegister) {

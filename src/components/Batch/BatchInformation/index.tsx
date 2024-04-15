@@ -66,7 +66,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             batch.status === "IN_PROGRESS" &&
                             <div className="flex flex-col gap-2 items-end">
                                 <MitandaButton
-                                    disabled={false}
+                                    disabled={!canContribute}
                                     isPending={batchPaymentLinkIsPending}
                                     onClick={onContribute}
                                 >
