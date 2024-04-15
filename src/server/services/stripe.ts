@@ -16,7 +16,7 @@ type AccountServiceContructor = {
 
 type StripeFlowObject = {
     generateOnboardingLink: Stripe.AccountLink,
-    newStripeAccount?: Stripe.Account ,
+    newStripeAccount?: Stripe.Account,
     stripeAccountDB?: object
 }
 
@@ -80,14 +80,18 @@ class StripeService {
         return stripeAccount;
     }
 
-    async stripeAccountByUserId(session: Session): Promise<StripeAccount | undefined> {
+    async stripeAccountByUserId(session: Session): Promise<StripeAccount | null> {
         const accountFound = await this.ctx.db.query.stripeAccounts.findFirst({
             where: (stripeAccounts, { eq }) => {
                 return eq(stripeAccounts.userId, session.user.id)
             }
         })
 
-        return accountFound
+        if (accountFound) {// return null make the error whit query returning undefinded disappear
+            return accountFound
+        } else {
+            return null
+        }
     }
 
     async createStripeConnectAccount(): Promise<Stripe.Account> {

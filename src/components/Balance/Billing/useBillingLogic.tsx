@@ -1,12 +1,9 @@
 import { api } from "@/trpc/server"
-import { redirect } from "next/navigation"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { accounts } from '../../../server/db/schema';
 
 const useBillingLogic = () => {
-  const [flowData, setFlowData] = useState<object>() 
+  const [flowData, setFlowData] = useState<object>()
   const [dashboardLink, setOndashboardLink] = useState<string>()
   const [onboardingState, setOnboardingState] = useState<boolean>(false)
   const router = useRouter()

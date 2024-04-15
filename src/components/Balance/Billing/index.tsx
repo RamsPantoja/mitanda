@@ -30,7 +30,9 @@ const Billing = () => {
             {loadingOnboardingState && !getOnboardingError &&
                 <BillingInformationSkeleton />
             }
-
+            { getOnboardingError && !loadingOnboardingState &&
+                <div className="text-red-500">Internal server error</div>
+            }
         </div>
     )
 }
