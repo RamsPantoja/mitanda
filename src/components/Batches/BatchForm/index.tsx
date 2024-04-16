@@ -120,15 +120,15 @@ const BatchForm = () => {
                                     size='md'
                                     step={1}
                                     color="primary"
-                                    label="Asientos"
+                                    label="Participantes"
                                     showSteps={true}
                                     maxValue={10}
-                                    minValue={1}
+                                    minValue={2}
                                     radius='full'
                                     defaultValue={field.value}
                                     className="max-w-md"
                                     formatOptions={{ style: "currency", currency: "MXN" }}
-                                    getValue={(seats) => `${seats.toString()} de 10 Asientos`}
+                                    getValue={(seats) => `${seats.toString()} de 10 participantes`}
                                     onChangeEnd={(value) => {
                                         field.onChange(value);
                                     }}

@@ -9,17 +9,18 @@ import { DateTime } from "luxon"
 type ContributionProgressProps = {
     batch: Batch
     batchRegister: BatchRegister
+    participantsNumber: number
 }
 
-const ContributionProgress = ({ batch, batchRegister }: ContributionProgressProps) => {
+const ContributionProgress = ({ batch, batchRegister, participantsNumber }: ContributionProgressProps) => {
     const contributionGoal = useMemo(() => {
         if (batch) {
             const contributionAmount = parseFloat(batch.contributionAmount);
-            return batch.seats * contributionAmount;
+            return participantsNumber * contributionAmount;
         } else {
             return 0;
         }
-    }, [batch]);
+    }, [participantsNumber, batch]);
 
     const contributionGoalFormatted = useMemo(() => {
         return numericFormatter(contributionGoal.toString(), {

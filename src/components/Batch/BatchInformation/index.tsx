@@ -88,10 +88,11 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                         }
                     </div>
                     {
-                        currentBatchRegister &&
+                        currentBatchRegister && participantIds &&
                         <ContributionProgress
                             batch={batch}
                             batchRegister={currentBatchRegister}
+                            participantsNumber={participantIds.length}
                         />
                     }
                 </Fragment>
