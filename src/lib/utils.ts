@@ -22,7 +22,7 @@ export const mapSkeletons = ({ numberOfSkeletons, skeleton }: MapSkeletonsProps)
 }
 
 export const getPublicBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_VERCEL_URL) return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL;
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
