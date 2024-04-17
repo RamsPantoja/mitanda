@@ -12,6 +12,7 @@ import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
 import { DateTime, type DurationLike } from "luxon";
 import type StripeService from "./stripe";
+import { type BatchContribution } from "./batchContribution";
 
 type BatchServiceContructor = {
     ctx: TRPCContext
@@ -31,7 +32,7 @@ type BatchContributionInput = {
     userId: string
     paymentId: string
     amount: number | null
-    batchRegisterId?: string
+    batchRegisterIds?: string
     batchId?: string
 }
 
@@ -372,7 +373,7 @@ class BatchService {
             userId,
             paymentId,
             amount,
-            batchRegisterId,
+            batchRegisterIds,
             batchId
         } = input;
 
@@ -384,13 +385,15 @@ class BatchService {
             return add.toString();
         };
 
-        const contribution = await this.ctx.db.transaction(async (tx) => {
-            if (!batchRegisterId) {
+        const contributions = await this.ctx.db.transaction(async (tx) => {
+            if (!batchRegisterIds) {
                 throw new TRPCError({
                     code: "CONFLICT",
                     message: 'BatchRegisterId was not provided',
                 });
             }
+
+            const batchRegisterIdsParsed = JSON.parse(batchRegisterIds) as string[];
 
             if (!batchId) {
                 throw new TRPCError({
@@ -399,45 +402,52 @@ class BatchService {
                 });
             }
 
-            const batchRegister = await tx.query.batchRegisters.findFirst({
-                where: (batchRegisters, { eq }) => {
-                    return eq(batchRegisters.id, batchRegisterId)
+            const createdContributions: BatchContribution[] = [];
+
+            for (const id of batchRegisterIdsParsed) {
+                const batchRegister = await tx.query.batchRegisters.findFirst({
+                    where: (batchRegisters, { eq }) => {
+                        return eq(batchRegisters.id, id)
+                    }
+                });
+
+                if (!batchRegister) {
+                    throw new TRPCError({
+                        code: "CONFLICT",
+                        message: 'BatchRegister not found',
+                    });
                 }
-            });
 
-            if (!batchRegister) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchRegister not found',
-                });
+                const [batchContribution] = await tx.insert(batchContributions).values({
+                    userId,
+                    amount: amount !== null ? (amount / 100).toString() : "0",
+                    batchRegisterId: id,
+                    paymentId,
+                    batchId
+                }).returning();
+
+                if (!batchContribution) {
+                    throw new TRPCError({
+                        code: "CONFLICT",
+                        message: 'Batch Contribution was not created',
+                    });
+                }
+
+                await tx.update(batchRegisters)
+                    .set({
+                        contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
+                        updatedAt: new Date(),
+                        withdraw: false
+                    })
+                    .where(eq(batchRegisters.id, id));
+
+                createdContributions.push(batchContribution);
             }
 
-            const [batchContribution] = await tx.insert(batchContributions).values({
-                userId,
-                amount: amount !== null ? (amount / 100).toString() : "0",
-                batchRegisterId,
-                paymentId,
-                batchId
-            }).returning();
-
-            if (!batchContribution) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'Batch Contribution was not created',
-                });
-            }
-
-            await tx.update(batchRegisters)
-                .set({
-                    contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
-                    updatedAt: new Date()
-                })
-                .where(eq(batchRegisters.id, batchRegisterId));
-
-            return batchContribution;
+            return createdContributions;
         });
 
-        return contribution;
+        return contributions;
     }
 
     public async finish(batchId: string) {

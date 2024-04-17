@@ -7,6 +7,10 @@ import { DateTime } from "luxon";
 import { usePathname, useRouter } from "next/navigation";
 import { getPublicBaseUrl } from "@/lib/utils";
 import { type StripeItem } from "@/server/services/stripe";
+import { type BatchRegister } from "@/server/services/batchRegister";
+import { type BatchContribution } from "@/server/services/batchContribution";
+
+type BatchRegisterWithContributions = BatchRegister & { batchContributions: BatchContribution[] };
 
 const useBatchInformationLogic = () => {
     const pathname = usePathname();
@@ -15,6 +19,23 @@ const useBatchInformationLogic = () => {
     const { batch, participantIds } = useBatchStore((state) => state);
     const { data: session } = useSession();
     const [canContribute, setCanContribute] = useState<boolean>(true);
+
+    const previousBatchRegistersWithoutUserContribution = useMemo(() => {
+        if (batch) {
+            return batch.batchRegisters.reduce<BatchRegisterWithContributions[]>((acc, item) => {
+                const endDate = DateTime.fromJSDate(item.endDate);
+                const userContribution = item.batchContributions.find((item) => item.userId === session?.user.id);
+
+                if (DateTime.now() > endDate && !userContribution) {
+                    acc = [...acc, item];
+                }
+
+                return acc;
+            }, []);
+        } else {
+            return [];
+        }
+    }, [batch, session]);
 
     const currentBatchRegister = useMemo(() => {
         return batch?.batchRegisters.find((register) => {
@@ -106,11 +127,20 @@ const useBatchInformationLogic = () => {
 
     const onContribute = () => {
         if (batch && currentBatchRegister) {
-            const items: StripeItem[] = [{
-                unitPrice: parseFloat(batch.contributionAmount),
-                quantity: 1,
-                concept: `Ronda ${currentBatchRegister.batchNumber}`
-            }];
+            const items: StripeItem[] = [
+                {
+                    unitPrice: parseFloat(batch.contributionAmount),
+                    quantity: 1,
+                    concept: `Ronda ${currentBatchRegister.batchNumber}`,
+                },
+                ...previousBatchRegistersWithoutUserContribution.map((item) => {
+                    return {
+                        unitPrice: parseFloat(batch.contributionAmount),
+                        quantity: 1,
+                        concept: `Ronda ${item.batchNumber}`,
+                    }
+                })
+            ];
 
             batchPaymentLinkData({
                 data: {
@@ -120,13 +150,15 @@ const useBatchInformationLogic = () => {
                     successUrl: `${getPublicBaseUrl()}${pathname}`,
                     metadata: {
                         userId: session?.user.id,
-                        batchRegisterId: currentBatchRegister.id,
+                        batchRegisterIds: [
+                            currentBatchRegister.id,
+                            ...previousBatchRegistersWithoutUserContribution.map((item) => item.id)
+                        ],
                         paymentCase: "BATCH",
-                        items,
                         batchId: batch.id
                     }
                 }
-            })
+            });
         }
     };
 

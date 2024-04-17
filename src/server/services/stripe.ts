@@ -45,9 +45,8 @@ type CreatePaymentInput = {
 
 export type MetadataPayment = {
     userId?: string
-    batchRegisterId?: string
+    batchRegisterIds?: string
     paymentCase?: PaymentCase
-    items?: string
     batchId?: string
 }
 
@@ -199,9 +198,30 @@ class StripeService {
         });
     }
 
+    private computeFee(items: StripeItem[]): number {
+        const percentFee = 0.04;
+        const totalPrice = items.reduce<number>((acc, item) => {
+            return acc + (item.unitPrice * item.quantity);
+        }, 0);
+
+        if (totalPrice && totalPrice >= 0) {
+            return totalPrice * percentFee;
+        } else {
+            return 0;
+        }
+    }
+
     public async createPaymentLink(config: PaymentLinkConfig) {
         const customer = await this.stripe.customers.create();
-        const listItems = this.parseStripeItems(config.items, config.currency);
+        const fee = this.computeFee(config.items);
+
+        const itemsWithFee: StripeItem[] = [...config.items, {
+            unitPrice: fee,
+            concept: "Cargo por servicio",
+            quantity: 1
+        }];
+
+        const listItems = this.parseStripeItems(itemsWithFee, config.currency);
 
         const session = await this.stripe.checkout.sessions.create({
             line_items: listItems,
@@ -254,7 +274,7 @@ class StripeService {
         const {
             userId,
             paymentCase,
-            batchRegisterId,
+            batchRegisterIds,
             batchId
         } = data.metadata as MetadataPayment;
 
@@ -285,7 +305,7 @@ class StripeService {
                         userId: userId,
                         paymentId: payment.id,
                         amount: data.amount,
-                        batchRegisterId,
+                        batchRegisterIds,
                         batchId
                     });
                 }

@@ -56,9 +56,8 @@ export const finishBatchInputSchema = z.object({
 
 const metadataSchema = z.object({
   userId: z.string().optional(),
-  batchRegisterId: z.string(),
+  batchRegisterIds: z.array(z.string()).min(1).transform((val) => JSON.stringify(val)),
   paymentCase: z.enum(paymentCaseEnum.enumValues),
-  items: z.array(stripeItemSchema).transform((val) => JSON.stringify(val)),
   batchId: z.string()
 });
 
