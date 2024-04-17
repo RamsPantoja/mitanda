@@ -1,7 +1,7 @@
 import { MitandaButton } from "@/components/common/MitandaButton";
 import { BuildingLibraryIcon } from "@heroicons/react/24/outline";
 import UseBillingLogic from "./useBillingLogic";
-import BillingInformationSkeleton from "./BillingSkeleton/billingInformationSkeleton";
+import BillingInformationSkeleton from "./BillingSkeleton/";
 
 const Billing = () => {
     const {

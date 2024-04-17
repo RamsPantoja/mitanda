@@ -1,11 +1,16 @@
 import { type Session } from "next-auth";
-import { type batchRegisters } from '../db/schema';
+import { type batchRegisters, type frequencyEnum, type batchRegisterStatusEnum} from '../db/schema';
 import { type TRPCContext } from "../trpc";
-import { and, eq, lte } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 type BatchRegisterServiceContructor = {
     ctx: TRPCContext
+}
+
+type Batch = {
+    batch: {
+        name: string
+    }
 }
 
 export type BatchRegister = typeof batchRegisters.$inferSelect;
@@ -21,16 +26,21 @@ class BatchRegisterService {
         return data;
     }
 
-    async searchEnableWithdrawals(session: Session): Promise<unknown> {
-        console.log(new Date())
-
+    async searchEnableWithdrawals(session: Session): Promise<BatchRegister []> {
         const enableWithdrawals = await this.ctx.db.query.batchRegisters.findMany({
-            where: ((batchRegisters, {eq, and, lt}) => and(eq(batchRegisters.recipientId, session.user.id),lt(batchRegisters.endDate,new Date())))            
+            where: ((batchRegisters, { eq, and, lt }) => and(eq(batchRegisters.recipientId, session.user.id), lt(batchRegisters.endDate, new Date()))),
+            with: {
+                batch: {
+                    columns: {
+                        name: true
+                    }
+                }
+            }
         })
 
-        if(!enableWithdrawals){
+        if (!enableWithdrawals) {
             throw new TRPCError({
-                code:'NOT_FOUND',
+                code: 'NOT_FOUND',
                 message: 'User dont have enable withdrawals'
             })
         }
