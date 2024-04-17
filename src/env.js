@@ -55,12 +55,8 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_INVITE_LINK_SECRET: z
-      .string()
-      .refine(
-        (str) => !str.includes("YOUR_INVITE_LINK_SECRET"),
-        "You forgot to add the invite link client secret"
-      ),
+    NEXT_PUBLIC_INVITE_LINK_SECRET: z.string(),
+    NEXT_PUBLIC_BASE_URL: z.string()
   },
 
   /**
@@ -76,7 +72,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NEXT_PUBLIC_INVITE_LINK_SECRET: process.env.NEXT_PUBLIC_INVITE_LINK_SECRET,
     INVITE_LINK_SECRET: process.env.INVITE_LINK_SECRET,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

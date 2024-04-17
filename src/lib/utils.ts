@@ -1,3 +1,4 @@
+import { env } from "@/env"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { z } from "zod"
@@ -22,7 +23,7 @@ export const mapSkeletons = ({ numberOfSkeletons, skeleton }: MapSkeletonsProps)
 }
 
 export const getPublicBaseUrl = () => {
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL;
+  if (env.NEXT_PUBLIC_BASE_URL) return env.NEXT_PUBLIC_BASE_URL;
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
