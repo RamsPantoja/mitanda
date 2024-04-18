@@ -24,7 +24,7 @@ class BatchRegisterService {
 
     async searchEnableWithdrawals(session: Session): Promise<BatchRegisterWithBatch[]> {
         const enableWithdrawals = await this.ctx.db.query.batchRegisters.findMany({
-            where: ((batchRegisters, { eq, and, lt }) => and(eq(batchRegisters.recipientId, session.user.id), lt(batchRegisters.endDate, new Date()))),
+            where: ((batchRegisters, { eq, and, lt, ne }) => and(eq(batchRegisters.recipientId, session.user.id), lt(batchRegisters.endDate, new Date()), ne(batchRegisters.contributionAmount, '0'))),
             with: {
                 batch: {
                     columns: {
