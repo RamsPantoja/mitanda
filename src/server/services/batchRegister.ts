@@ -2,13 +2,13 @@ import { type Session } from "next-auth";
 import { type batchRegisters } from '../db/schema';
 import { type TRPCContext } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { type Batch } from "./batch";
 
 type BatchRegisterServiceContructor = {
     ctx: TRPCContext
 }
 
 type BatchRegisterWithBatch = BatchRegister & { batch: { name: string } }
-
 export type BatchRegister = typeof batchRegisters.$inferSelect;
 
 class BatchRegisterService {
