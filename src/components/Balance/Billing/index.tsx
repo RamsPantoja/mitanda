@@ -10,8 +10,12 @@ const Billing = () => {
         onboardingStateData,
         getOnboardingError,
         loadingOnboardingState,
-        onboardingState
+        onboardingState,
+        loadingStripeFlow,
+        dashboardLinkIsPending
     } = UseBillingLogic()
+
+    console.log(loadingStripeFlow, dashboardLinkIsPending)
 
     return (
         <div className='flex flex-col gap-2'>
@@ -24,13 +28,13 @@ const Billing = () => {
                         variant='secondary'
                         onClick={onboardingState ? () => { createStripeDashboardLink() } : () => { stripeFlowMutation() }}
                         startIcon={<BuildingLibraryIcon className="h-4 w-4 text-whiteMain" />}
-                    >{onboardingState ? 'Ir a dashboard' : 'Agregar datos bancarios'}</MitandaButton>
+                    >{loadingStripeFlow || dashboardLinkIsPending ? 'loading...' : onboardingState ? 'Ir a dashboard' : 'Agregar datos bancarios'}</MitandaButton>
                 </>
             }
             {loadingOnboardingState && !getOnboardingError &&
                 <BillingInformationSkeleton />
             }
-            { getOnboardingError && !loadingOnboardingState &&
+            {getOnboardingError && !loadingOnboardingState &&
                 <div className="text-red-500">Internal server error</div>
             }
         </div>

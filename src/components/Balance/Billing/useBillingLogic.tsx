@@ -45,6 +45,8 @@ const useBillingLogic = () => {
     getOnboardingError,
     loadingOnboardingState,
     onboardingState,
+    loadingStripeFlow,
+    dashboardLinkIsPending
   }
 }
 
