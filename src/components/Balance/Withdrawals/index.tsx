@@ -10,24 +10,29 @@ const Withdrawals = () => {
   } = useWithdrawalLOgic()
 
   return (
-    <div className="flex flex-row flex-wrap w-1/2 gap-4 content-start justify-start">
+    <div className="flex flex-row flex-wrap w-full gap-4 content-start justify-start">
       {!withdrawalError && !loadingWithdrawals &&
         withdrawalData?.map((withdrawal, index) => {
           return (
             <WithdrawalCard
               key={index}
-              batchName={withdrawal.batch?.name}//TODO check problem with return item from server, 
+              batchName={withdrawal.batch.name}
               amount={parseInt(withdrawal.contributionAmount)}
             />
           )
         })
       }
-      {loadingWithdrawals && !withdrawalError && true
-        //TODO PUT ESKELETON
+      {loadingWithdrawals && !withdrawalError &&
+        <>
+          <WithdrawalCardSkeleton />
+          <WithdrawalCardSkeleton />
+          <WithdrawalCardSkeleton />
+          <WithdrawalCardSkeleton />
+          <WithdrawalCardSkeleton />
+        </>
       }
-      {
-      <WithdrawalCardSkeleton/>
-        //TODO PUT ERROR MESSAGE
+      {withdrawalError && !loadingWithdrawals &&
+        <div>Internal Server Error</div>
       }
     </div>
   )
