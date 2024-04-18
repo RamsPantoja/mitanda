@@ -186,7 +186,7 @@ export const contractsRelations = relations(contracts, ({ many }) => ({
 }));
 
 export const usersToContracts = createTable(
-  "users_to_contracts",
+  "user_to_contract",
   {
     userId: uuid("userId")
       .notNull()
@@ -215,7 +215,7 @@ export const usersToContractsRelations = relations(usersToContracts, ({ one }) =
 }));
 
 export const usersToBatches = createTable(
-  "users_to_batches",
+  "user_to_batch",
   {
     userId: uuid("userId")
       .notNull()
@@ -307,7 +307,7 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one, many })
   batchContributions: many(batchContributions)
 }));
 
-export const paymentCaseEnum = pgEnum('frequency', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
+export const paymentCaseEnum = pgEnum('paymentCase', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
 
 export const payments = createTable(
   "payment",
@@ -335,7 +335,7 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 }));
 
 export const batchContributions = createTable(
-  "batch_contributions",
+  "batch_contribution",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
     userId: uuid("userId")
@@ -378,3 +378,90 @@ export const batchContributionsRelations = relations(batchContributions, ({ one 
     references: [batchRegisters.id]
   }),
 }));
+
+export const nofitications = createTable(
+  "notification",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    content: text("content").notNull(),
+    iconUrl: text("iconUrl").notNull(),
+    link: text("link").notNull(),
+    seen: boolean("seen").notNull().default(false),
+    receiverId: uuid("receiverId")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const nofiticationsRelations = relations(nofitications, ({ one }) => ({
+  receiver: one(users, {
+    fields: [nofitications.receiverId],
+    references: [users.id]
+  })
+}))
+
+export const batchRequestTypeEnum = pgEnum('type', ["START", "PAUSE", 'ACTIVATE', 'FINISH']);
+export const batchRequestStatusEnum = pgEnum('status', ["SENT", "ACCEPTED"]);
+
+export const batchRequests = createTable(
+  "batch_request",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    batchId: uuid("batchId")
+      .notNull()
+      .references(() => batches.id),
+    type: batchRequestTypeEnum("type").notNull(),
+    status: batchRequestStatusEnum("status").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const batchRequestsRelations = relations(batchRequests, ({ one, many }) => ({
+  batch: one(batches, {
+    fields: [batchRequests.batchId],
+    references: [batches.id]
+  }),
+  batchRequestsToUsers: many(batchRequestsToUsers)
+}))
+
+export const batchRequestsToUsers = createTable(
+  "batch_request_to_user",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    batchRequestId: uuid("batchRequestId")
+      .notNull()
+      .references(() => users.id),
+    check: boolean("check").notNull().default(false),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const batchRequestsToUsersRelations = relations(batchRequestsToUsers, ({ one }) => ({
+  user: one(users, {
+    fields: [batchRequestsToUsers.userId],
+    references: [users.id]
+  }),
+  batchRequest: one(batchRequests, {
+    fields: [batchRequestsToUsers.batchRequestId],
+    references: [batchRequests.id]
+  }),
+}))
