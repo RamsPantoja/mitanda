@@ -7,7 +7,7 @@ const Withdrawals = () => {
     withdrawalData,
     withdrawalError,
     loadingWithdrawals
-  } = useWithdrawalLOgic()
+  } = useWithdrawalLOgic();
 
   return (
     <div className="flex flex-row flex-wrap w-1/2 gap-4 content-start justify-start">
@@ -16,7 +16,7 @@ const Withdrawals = () => {
           return (
             <WithdrawalCard
               key={index}
-              batchName={withdrawal.batch?.name}//TODO check problem with return item from server, 
+              batchName={withdrawal.batch.name}//TODO check problem with return item from server, 
               amount={parseInt(withdrawal.contributionAmount)}
             />
           )

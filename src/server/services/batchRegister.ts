@@ -1,18 +1,14 @@
 import { type Session } from "next-auth";
-import { type batchRegisters, type frequencyEnum, type batchRegisterStatusEnum} from '../db/schema';
+import { type batchRegisters } from '../db/schema';
 import { type TRPCContext } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { type Batch } from "./batch";
 
 type BatchRegisterServiceContructor = {
     ctx: TRPCContext
 }
 
-type Batch = {
-    batch: {
-        name: string
-    }
-}
-
+type BatchRegisterWithBatch = BatchRegister & { batch: { name: string } }
 export type BatchRegister = typeof batchRegisters.$inferSelect;
 
 class BatchRegisterService {
@@ -26,7 +22,7 @@ class BatchRegisterService {
         return data;
     }
 
-    async searchEnableWithdrawals(session: Session): Promise<BatchRegister []> {
+    async searchEnableWithdrawals(session: Session): Promise<BatchRegisterWithBatch[]> {
         const enableWithdrawals = await this.ctx.db.query.batchRegisters.findMany({
             where: ((batchRegisters, { eq, and, lt }) => and(eq(batchRegisters.recipientId, session.user.id), lt(batchRegisters.endDate, new Date()))),
             with: {
