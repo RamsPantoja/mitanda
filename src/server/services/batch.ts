@@ -31,7 +31,6 @@ type StartBatchInput = z.infer<typeof startBatchInputSchema>
 type BatchContributionInput = {
     userId: string
     paymentId: string
-    amount: number | null
     batchRegisterIds?: string
     batchId?: string
 }
@@ -372,7 +371,6 @@ class BatchService {
         const {
             userId,
             paymentId,
-            amount,
             batchRegisterIds,
             batchId
         } = input;
@@ -402,6 +400,19 @@ class BatchService {
                 });
             }
 
+            const batch = await tx.query.batches.findFirst({
+                where: (batches, { eq }) => {
+                    return eq(batches.id, batchId)
+                }
+            });
+
+            if (!batch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not found',
+                });
+            }
+
             const createdContributions: BatchContribution[] = [];
 
             for (const id of batchRegisterIdsParsed) {
@@ -414,13 +425,13 @@ class BatchService {
                 if (!batchRegister) {
                     throw new TRPCError({
                         code: "CONFLICT",
-                        message: 'BatchRegister not found',
+                        message: 'Batch Register not found',
                     });
                 }
 
                 const [batchContribution] = await tx.insert(batchContributions).values({
                     userId,
-                    amount: amount !== null ? (amount / 100).toString() : "0",
+                    amount: batch.contributionAmount,
                     batchRegisterId: id,
                     paymentId,
                     batchId

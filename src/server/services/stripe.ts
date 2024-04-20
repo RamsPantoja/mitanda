@@ -304,7 +304,6 @@ class StripeService {
                     await batchService.batchContribution({
                         userId: userId,
                         paymentId: payment.id,
-                        amount: data.amount,
                         batchRegisterIds,
                         batchId
                     });
