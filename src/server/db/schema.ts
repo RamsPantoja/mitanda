@@ -12,6 +12,7 @@ import {
   uuid,
   boolean,
 } from "drizzle-orm/pg-core";
+import { register } from "module";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -51,7 +52,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     references: [stripeAccounts.userId]
   }),
   payments: many(payments),
-  batchContributions: many(batchContributions)
+  batchContributions: many(batchContributions),
+  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const accounts = createTable(
@@ -163,7 +165,8 @@ export const batchesRelations = relations(batches, ({ one, many }) => ({
     references: [users.id]
   }),
   batchRegisters: many(batchRegisters),
-  batchContributions: many(batchContributions)
+  batchContributions: many(batchContributions),
+  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const contracts = createTable(
@@ -304,7 +307,8 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one, many })
     fields: [batchRegisters.recipientId],
     references: [users.id]
   }),
-  batchContributions: many(batchContributions)
+  batchContributions: many(batchContributions),
+  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const paymentCaseEnum = pgEnum('paymentCase', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
@@ -465,3 +469,34 @@ export const batchRequestsToUsersRelations = relations(batchRequestsToUsers, ({ 
     references: [batchRequests.id]
   }),
 }))
+
+export const withdrawalsLog = createTable(
+  'withdrawal_logs',
+  {
+    id: uuid('id').notNull().primaryKey().defaultRandom(),
+    userId: uuid('userId').notNull().references(() => users.id),
+    amount: numeric('amount').notNull(),
+    batchRegisterId: uuid('batchRegisterId').notNull().references(() => batchRegisters.id),
+    batchId: uuid('batchId').notNull().references(() => batches.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    })
+  }
+)
+
+export const withdrawalRelations = relations(withdrawalsLog, ({ one }) => ({
+  user: one(users, {
+    fields: [withdrawalsLog.userId],
+    references: [users.id]
+  }),
+  register: one(batchRegisters, {
+    fields: [withdrawalsLog.batchRegisterId],
+    references: [batchRegisters.id]
+  }),
+  batch: one(batches, {
+    fields: [withdrawalsLog.batchId],
+    references: [batches.id]
+  })
+}))
+
+//TODO add relations to users, batches, batchregisters

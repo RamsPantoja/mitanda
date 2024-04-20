@@ -8,6 +8,7 @@ import UserToBatchService from "./userToBatch";
 import { type TRPCContext } from "../trpc";
 import BatchContributionService from "./batchContribution";
 import BatchRegisterService from "./batchRegister";
+import WithdrawalService from './withdrawals';
 
 
 export type ServicesContext = {
@@ -19,7 +20,8 @@ export type ServicesContext = {
     stripeService: StripeService
     userToBatch: UserToBatchService
     batchContribution: BatchContributionService,
-    batchRegisterService: BatchRegisterService
+    batchRegisterService: BatchRegisterService,
+    withdrawalService: WithdrawalService
 }
 
 export type ServicesConfig = {
@@ -36,7 +38,8 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         stripeService: new StripeService({ ctx }),
         userToBatch: new UserToBatchService({ ctx }),
         batchContribution: new BatchContributionService({ ctx }),
-        batchRegisterService: new BatchRegisterService({ctx})
+        batchRegisterService: new BatchRegisterService({ ctx }),
+        withdrawalService: new WithdrawalService({ ctx }),
     }
 }
 export default Services;
