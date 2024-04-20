@@ -1,16 +1,19 @@
 
 type WithdrawalProps = {
-  batchName: string, 
+  batchName: string,
   amount: number,
+  withdrawalId: string,
+  onClick: (id: string) => void
 }
 
-const WithdrawalCard = ({amount, batchName}: WithdrawalProps) => {
+const WithdrawalCard = ({ amount, batchName, withdrawalId, onClick }: WithdrawalProps) => {
   return (
     <div className="flex flex-col gap-1 bg-blackNormal h-fit w-[calc(95%/5)] min-w-[150px] rounded-md p-2 m-0">
       <div className="text-whiteMain font-black text-xl">{`${amount} MXN`}</div>
       <div className="text-whiteMain font-thin text-sm">{batchName}</div>
-      <button 
-      className="inline-flex items-center justify-center whitespace-nowrap
+      <button
+        onClick={() => { onClick(withdrawalId) }}
+        className="inline-flex items-center justify-center whitespace-nowrap
                  text-sm font-medium ring-offset-background transition-colors
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                  focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50

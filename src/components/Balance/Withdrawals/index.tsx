@@ -6,7 +6,8 @@ const Withdrawals = () => {
   const {
     withdrawalData,
     withdrawalError,
-    loadingWithdrawals
+    loadingWithdrawals,
+    doWithdrawal
   } = useWithdrawalLOgic();
 
   return (
@@ -16,6 +17,8 @@ const Withdrawals = () => {
           return (
             <WithdrawalCard
               key={index}
+              onClick={doWithdrawal}
+              withdrawalId={withdrawal.id}
               batchName={withdrawal.batch.name}//TODO check problem with return item from server, 
               amount={parseInt(withdrawal.contributionAmount)}
             />

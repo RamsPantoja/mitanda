@@ -1,8 +1,8 @@
 import { type Session } from "next-auth";
-import { type batchRegisters } from '../db/schema';
+import { batchRegisters } from '../db/schema';
 import { type TRPCContext } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { type Batch } from "./batch";
+import { and, eq } from "drizzle-orm";
 
 type BatchRegisterServiceContructor = {
     ctx: TRPCContext
@@ -42,6 +42,15 @@ class BatchRegisterService {
         }
 
         return enableWithdrawals
+    }
+
+    async updateContributionAmount(session: Session, withdrawalId: string): Promise<BatchRegister[]> {
+        const updateContributionAmount = await this.ctx.db.update(batchRegisters)
+                .set({contributionAmount: '0'})
+                .where(and(eq(batchRegisters.id, withdrawalId), eq(batchRegisters.recipientId, session.user.id)))
+                .returning()
+           //TODO unit testing
+        return updateContributionAmount
     }
 }
 
