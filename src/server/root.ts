@@ -5,6 +5,7 @@ import { userToBatchRouter } from "./routers/userToBatch";
 import { batchContributionRouter } from "./routers/batchContribution";
 import { type inferRouterOutputs } from "@trpc/server";
 import { batchRegisterRouter } from "./routers/batchRegister";
+import { batchRequestRouter } from "./routers/batchRequest";
 import { withdrawalsRouter } from "./routers/withdrawals";
 
 /**
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   userToBatch: userToBatchRouter,
   batchContribution: batchContributionRouter,
   batchRegisters: batchRegisterRouter,
+  batchRequest: batchRequestRouter,
   withdrawal: withdrawalsRouter,
 });
 
