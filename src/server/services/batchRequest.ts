@@ -71,7 +71,7 @@ class BatchRequestService {
         if (usersList && batch) {
             await mailService.send({
                 to: usersList.map((item) => item.email),
-                from: "no-replay@mitanda.xyz",
+                from: 'Mitanda <no-reply@mitanda.xyz>',
                 subject: "Solicitud para iniciar tanda",
                 html: initBatchEmail({
                     batchName: batch.name,

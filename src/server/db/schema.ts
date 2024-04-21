@@ -12,7 +12,6 @@ import {
   uuid,
   boolean,
 } from "drizzle-orm/pg-core";
-import { register } from "module";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -126,7 +125,7 @@ export const verificationTokens = createTable(
 );
 
 export const frequencyEnum = pgEnum('frequency', ['WEEKLY', 'MONTHLY', 'BIWEEKLY']);
-export const batchStatusEnum = pgEnum('status', ["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINISHED']);
+export const batchStatusEnum = pgEnum('batch_status', ["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINISHED']);
 
 export const batches = createTable(
   "batch",
@@ -271,7 +270,7 @@ export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
   })
 }));
 
-export const batchRegisterStatusEnum = pgEnum("status", ["NOT_STARTED", "IN_PROGRESS", "FINISHED"]);
+export const batchRegisterStatusEnum = pgEnum("batch_register_status", ["NOT_STARTED", "IN_PROGRESS", "FINISHED"]);
 
 export const batchRegisters = createTable(
   "batch_register",
@@ -311,7 +310,7 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one, many })
   withdrawalsLog: many(withdrawalsLog)
 }));
 
-export const paymentCaseEnum = pgEnum('paymentCase', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
+export const paymentCaseEnum = pgEnum('payment_case', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
 
 export const payments = createTable(
   "payment",
@@ -410,8 +409,8 @@ export const nofiticationsRelations = relations(nofitications, ({ one }) => ({
   })
 }))
 
-export const batchRequestTypeEnum = pgEnum('type', ["START", "PAUSE", 'ACTIVATE', 'FINISH']);
-export const batchRequestStatusEnum = pgEnum('status', ["SENT", "ACCEPTED"]);
+export const batchRequestTypeEnum = pgEnum("batch_request_type", ["START", "PAUSE", 'ACTIVATE', 'FINISH']);
+export const batchRequestStatusEnum = pgEnum("batch_request_status", ["SENT", "ACCEPTED"]);
 
 export const batchRequests = createTable(
   "batch_request",
@@ -448,7 +447,7 @@ export const batchRequestsToUsers = createTable(
       .references(() => users.id),
     batchRequestId: uuid("batchRequestId")
       .notNull()
-      .references(() => users.id),
+      .references(() => batchRequests.id),
     check: boolean("check").notNull().default(false),
     createdAt: timestamp('createdAt', {
       mode: 'date'
