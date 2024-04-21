@@ -7,6 +7,9 @@ import ContributionProgress from "../ContributionProgress"
 import { Card } from "@/components/ui/card"
 import TimerComponent from "@/components/common/Timer"
 import { DateTime } from "luxon"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import CustomAlertDialog from "@/components/common/AlertDialog"
 
 type BatchInformationProps = {
     batchIsLoading: boolean
@@ -15,8 +18,6 @@ type BatchInformationProps = {
 
 const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProps) => {
     const {
-        startBatchIsPending,
-        startBatchMutation,
         currentBatchRegister,
         batch,
         session,
@@ -24,7 +25,11 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         setCanContribute,
         batchPaymentLinkIsPending,
         onContribute,
-        participantIds
+        participantIds,
+        setDisplayAlertForInitBatch,
+        displayAlertForInitBatch,
+        startBatchRequestIsPending,
+        startBatchRequestMutation
     } = useBatchInformationLogic();
 
     if (batchIsLoading) {
@@ -52,17 +57,44 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                         </div>
                         {
                             batch.status === "NOT_STARTED" && batch.userId === session?.user.id && participantIds &&
-                            <MitandaButton
-                                onClick={() => {
-                                    startBatchMutation({
-                                        batchId: batch.id,
-                                        participantIds
-                                    })
-                                }}
-                                isPending={startBatchIsPending}
-                            >
-                                Iniciar tanda
-                            </MitandaButton>
+                            <div className="flex items-center gap-2">
+                                <CustomAlertDialog
+                                    cancelText="Cancelar"
+                                    actionText="Iniciar"
+                                    title="Iniciar tanda"
+                                    description={`Estás a punto de iniciar la tanda. Puedes cancelar esta operación si así lo deseas.`}
+                                    onCancel={() => {
+                                        setDisplayAlertForInitBatch(false);
+                                    }}
+                                    onAction={() => {
+                                        startBatchRequestMutation({
+                                            batchId: batch.id,
+                                            participantIds
+                                        })
+                                    }}
+                                    isPending={startBatchRequestIsPending}
+                                    open={displayAlertForInitBatch}
+                                />
+                                <MitandaButton
+                                    disabled={participantIds.length < 2}
+                                    onClick={() => {
+                                        setDisplayAlertForInitBatch(true);
+                                    }}
+                                >
+                                    Iniciar tanda
+                                </MitandaButton>
+                                {
+                                    participantIds.length < 2 &&
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <InformationCircleIcon className="h-6 w-6 text-grayMain" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className=" bg-blackMain border-none max-w-60">
+                                            <p className="text-whiteMain">Para iniciar la tanda, al menos 2 participantes son necesarios</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                }
+                            </div>
                         }
                         {
                             batch.status === "IN_PROGRESS" && currentBatchRegister &&

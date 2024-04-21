@@ -498,5 +498,3 @@ export const withdrawalRelations = relations(withdrawalsLog, ({ one }) => ({
     references: [batches.id]
   })
 }))
-
-//TODO add relations to users, batches, batchregisters

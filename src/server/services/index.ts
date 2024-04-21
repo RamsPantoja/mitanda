@@ -10,6 +10,7 @@ import BatchContributionService from "./batchContribution";
 import BatchRegisterService from "./batchRegister";
 import BatchRequestService from "./batchRequest";
 import WithdrawalService from './withdrawals';
+import MailService from "./mail";
 
 
 export type ServicesContext = {
@@ -20,10 +21,11 @@ export type ServicesContext = {
     sessionService: SessionService
     stripeService: StripeService
     userToBatch: UserToBatchService
-    batchContribution: BatchContributionService,
-    batchRegisterService: BatchRegisterService,
-    batchRequestService: BatchRequestService,
+    batchContribution: BatchContributionService
+    batchRegisterService: BatchRegisterService
+    batchRequestService: BatchRequestService
     withdrawalService: WithdrawalService
+    mailService: MailService
 }
 
 export type ServicesConfig = {
@@ -41,8 +43,9 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         userToBatch: new UserToBatchService({ ctx }),
         batchContribution: new BatchContributionService({ ctx }),
         batchRegisterService: new BatchRegisterService({ ctx }),
-        batchRequestService: new BatchRequestService({  ctx }),
-        withdrawalService: new WithdrawalService({ ctx  }),
+        batchRequestService: new BatchRequestService({ ctx }),
+        withdrawalService: new WithdrawalService({ ctx }),
+        mailService: new MailService({ ctx })
     }
 }
 

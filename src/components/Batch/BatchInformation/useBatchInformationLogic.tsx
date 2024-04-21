@@ -19,6 +19,7 @@ const useBatchInformationLogic = () => {
     const { batch, participantIds } = useBatchStore((state) => state);
     const { data: session } = useSession();
     const [canContribute, setCanContribute] = useState<boolean>(true);
+    const [displayAlertForInitBatch, setDisplayAlertForInitBatch] = useState<boolean>(false);
 
     const previousBatchRegistersWithoutUserContribution = useMemo(() => {
         if (batch) {
@@ -51,10 +52,9 @@ const useBatchInformationLogic = () => {
         });
     }, [batch]);
 
-    const { mutate: startBatchMutation, isPending: startBatchIsPending } = api.batch.startBatch.useMutation({
+    const { mutate: startBatchRequestMutation, isPending: startBatchRequestIsPending } = api.batchRequest.startBatchRequest.useMutation({
         onSuccess: async () => {
-            toast.success("Muy bien! La tanda ha comenzado.")
-            await utils.batch.batchById.invalidate();
+            toast.success("La solicitud para iniciar la tanda ha sido enviada a todos los participantes")
         },
         onError: (error) => {
             toast.error("Algo salió mal!", {
@@ -148,6 +148,7 @@ const useBatchInformationLogic = () => {
                     currency: "MXN",
                     cancelUrl: `${getPublicBaseUrl()}${pathname}`,
                     successUrl: `${getPublicBaseUrl()}${pathname}`,
+                    connectedAccountId: "",//TODO add the connected account id for user
                     metadata: {
                         userId: session?.user.id,
                         batchRegisterIds: [
@@ -163,8 +164,6 @@ const useBatchInformationLogic = () => {
     };
 
     return {
-        startBatchIsPending,
-        startBatchMutation,
         currentBatchRegister,
         batch,
         session,
@@ -173,7 +172,11 @@ const useBatchInformationLogic = () => {
         batchPaymentLinkData,
         batchPaymentLinkIsPending,
         onContribute,
-        participantIds
+        participantIds,
+        setDisplayAlertForInitBatch,
+        displayAlertForInitBatch,
+        startBatchRequestIsPending,
+        startBatchRequestMutation
     }
 }
 

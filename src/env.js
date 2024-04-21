@@ -46,7 +46,8 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_INVITE_LINK_SECRET"),
         "You forgot to add the invite link client secret"
       ),
-    STRIPE_SECRET_KEY: z.string()
+    STRIPE_SECRET_KEY: z.string(),
+    RESEND_KEY: z.string()
   },
 
   /**
@@ -73,7 +74,8 @@ export const env = createEnv({
     NEXT_PUBLIC_INVITE_LINK_SECRET: process.env.NEXT_PUBLIC_INVITE_LINK_SECRET,
     INVITE_LINK_SECRET: process.env.INVITE_LINK_SECRET,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    RESEND_KEY: process.env.RESEND_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

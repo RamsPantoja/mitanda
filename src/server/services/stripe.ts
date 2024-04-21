@@ -21,11 +21,12 @@ type StripeFlowObject = {
 }
 
 type PaymentLinkConfig = {
-    items: StripeItem[];
-    currency: string;
-    cancelUrl: string;
-    successUrl: string;
-    metadata: MetadataPayment;
+    items: StripeItem[]
+    currency: string
+    cancelUrl: string
+    successUrl: string
+    metadata: MetadataPayment
+    connectedAccountId: string
 }
 
 type ProcessPaymentInput = {
@@ -96,7 +97,7 @@ class StripeService {
     async createStripeConnectAccount(): Promise<Stripe.Account> {
         try {
             const newAccount = await this.stripe.accounts.create({
-                type: 'express'
+                type: "standard"
             })
 
             return newAccount
@@ -235,6 +236,12 @@ class StripeService {
                     bank_transfer: {
                         type: 'mx_bank_transfer'
                     }
+                }
+            },
+            payment_intent_data: {
+                application_fee_amount: fee,
+                transfer_data: {
+                    destination: config.connectedAccountId
                 }
             },
             success_url: config.successUrl,

@@ -67,6 +67,7 @@ export const batchPaymentLinkInputSchema = z.object({
     currency: z.string(),
     cancelUrl: z.string(),
     successUrl: z.string(),
+    connectedAccountId: z.string(),
     metadata: metadataSchema
   })
 });
