@@ -2,7 +2,6 @@ import { batchContributions, batchRegisters, batches, contracts, usersToBatches,
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
-    type startBatchInputSchema,
     type batchPaymentLinkInputSchema,
     type createBatchInputSchema,
     type whereInputBatchSchema
@@ -10,7 +9,6 @@ import {
 import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
-import { DateTime, type DurationLike } from "luxon";
 import type StripeService from "./stripe";
 import { type BatchContribution } from "./batchContribution";
 
@@ -20,13 +18,9 @@ type BatchServiceContructor = {
 
 export type NewBatch = typeof batches.$inferInsert;
 export type Batch = typeof batches.$inferSelect;
-type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
-
-
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
-type StartBatchInput = z.infer<typeof startBatchInputSchema>
 
 type BatchContributionInput = {
     userId: string
@@ -240,124 +234,6 @@ class BatchService {
         });
 
         return newUserToBatch;
-    }
-
-    private buildBatchRegisters(batch: Batch, participantIds: string[]) {
-        const registers: BatchRegisterInsert[] = [];
-
-        const shuffle = (array: string[]) => {
-            return array.sort(() => Math.random() - 0.5);
-        };
-
-        const participantIdsSuffle = shuffle(participantIds);
-
-        const getTimeFactor = (): DurationLike => {
-            switch (batch.frequency) {
-                case "WEEKLY":
-                    return {
-                        week: 1
-                    }
-                case "BIWEEKLY":
-                    return {
-                        weeks: 2
-                    }
-                case "MONTHLY":
-                    return {
-                        month: 1
-                    }
-                default:
-                    return {};
-            }
-        }
-
-        for (let i = 0; i < participantIdsSuffle.length; i++) {
-            const accumulator: BatchRegisterInsert[] = [...registers];
-            const previousElement = accumulator[i - 1];
-            const participantId = participantIdsSuffle[i];
-
-            if (!participantId) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'ParticipantID not provided',
-                });
-            }
-
-            if (previousElement) {
-                registers.push({
-                    batchId: batch.id,
-                    frequency: batch.frequency,
-                    startDate: previousElement.endDate,
-                    endDate: DateTime.fromJSDate(previousElement.endDate).plus(getTimeFactor()).toJSDate(),
-                    batchNumber: i + 1,
-                    recipientId: participantId
-                });
-            } else {
-                registers.push({
-                    batchId: batch.id,
-                    frequency: batch.frequency,
-                    startDate: DateTime.now().toJSDate(),
-                    endDate: DateTime.now().plus(getTimeFactor()).toJSDate(),
-                    batchNumber: i + 1,
-                    recipientId: participantId
-                });
-            }
-        }
-
-        return registers;
-    }
-
-    public async startBatch(input: StartBatchInput) {
-        const {
-            batchId,
-            participantIds
-        } = input;
-
-        const batch = this.ctx.db.transaction(async (tx) => {
-            const batch = await tx.query.batches.findFirst({
-                where: (batches, { eq }) => {
-                    return and(
-                        eq(batches.id, batchId),
-                    )
-                }
-            });
-
-            if (!batch) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'Batch not found',
-                });
-            };
-
-            if (batch.status === 'IN_PROGRESS') {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'The batch already has been initialized',
-                });
-            }
-
-            const batchRegistersToInsert = this.buildBatchRegisters(batch, participantIds);
-
-            await tx.insert(batchRegisters).values(batchRegistersToInsert);
-
-            const [updatedBatch] = await tx.update(batches)
-                .set({
-                    status: "IN_PROGRESS",
-                    updatedAt: new Date()
-                })
-                .where(eq(batches.id, batchId))
-                .returning();
-
-            if (!updatedBatch) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'The batch may not have started correctly',
-                });
-            }
-
-            return updatedBatch;
-        });
-
-        return batch;
     }
 
     public async batchPaymentLink(input: BatchPaymentLinkInput, stripeService: StripeService) {
