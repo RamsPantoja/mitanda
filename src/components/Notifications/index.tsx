@@ -6,11 +6,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-
-
+import NotificationCard from "./NotificationCard";
 
 const Notifications = () => {
-
     const {
 
     } = useNotificationsLogic();
@@ -26,9 +24,21 @@ const Notifications = () => {
                     <BellIcon className="w-4 h-4 text-whiteMain" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent>Place content for the popover here.</PopoverContent>
-        </Popover>
-
+            <PopoverContent className="max-h-[--radix-popover-content-available-height] overflow-auto p-0">
+                <NotificationCard
+                    link="/dashboard/batches"
+                    iconUrl=""
+                    seen={false}
+                    content="<p><strong>Ram's tanda</strong> This is a notification for you!</p>"
+                />
+                <NotificationCard
+                    link="/dashboard/batches"
+                    iconUrl=""
+                    seen={false}
+                    content="<p><strong>Test tanda</strong> ha sido iniciada!</p>"
+                />
+            </PopoverContent>
+        </Popover >
     )
 }
 
