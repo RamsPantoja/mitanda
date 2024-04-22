@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type NotificationCardProps = {
@@ -9,7 +10,7 @@ type NotificationCardProps = {
 
 const NotificationCard = ({ content, link, iconUrl, seen }: NotificationCardProps) => {
     return (
-        <a href={link} className="flex gap-2 w-full p-4 bg-grayStrong hover:bg-blackNormal cursor-pointer">
+        <Link href={link} className="flex gap-2 w-full p-4 bg-blackNormal hover:bg-blackMain cursor-pointer">
             <Avatar className="w-7 h-7">
                 <AvatarImage src={iconUrl} />
                 <AvatarFallback>P</AvatarFallback>
@@ -28,7 +29,7 @@ const NotificationCard = ({ content, link, iconUrl, seen }: NotificationCardProp
                     </div>
                 }
             </div>
-        </a>
+        </Link>
     )
 }
 

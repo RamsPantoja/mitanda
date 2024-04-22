@@ -82,7 +82,7 @@ const Sidebar = ({ session }: SidebarProps) => {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <span>
-                                    <Notifications />
+                                    <Notifications session={session} />
                                 </span>
                             </TooltipTrigger>
                             <TooltipContent className=" bg-blackMain border-none max-w-60">

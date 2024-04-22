@@ -20,6 +20,7 @@ import useBatchCardLogic from "./useBatchCardLogic";
 import { type BatchStatus } from "@/lib/enum";
 import CustomAlertDialog from "@/components/common/AlertDialog";
 import TruncatedTooltip from "@/components/common/TruncatedTooltip";
+import Link from "next/link";
 
 export type BatchCardProps = {
     batchName: string
@@ -112,12 +113,12 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                     }
                 </div>
                 <div className="flex flex-col gap-1 h-full">
-                    <a href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm underline flex max-w-max">
+                    <Link href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm underline flex max-w-max">
                         <TruncatedTooltip
                             tooltipContent={<p className="text-whiteMain font-normal" >{batchName}</p>}
                             text={batchName}
                         />
-                    </a>
+                    </Link>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
