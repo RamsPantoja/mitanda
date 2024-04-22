@@ -1,17 +1,25 @@
 "use client"
 
-import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon, BellIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import SibedarItem from "./SidebarItem";
 import { signOut } from "next-auth/react"
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { type Session } from "next-auth";
+import Notifications from "../Notifications";
+import CustomAlertDialog from "../common/AlertDialog";
+import useSidebarLogic from "./useSidebarLogic";
 
 type SidebarProps = {
     session: Session
 }
 
 const Sidebar = ({ session }: SidebarProps) => {
+    const {
+        displaySignOutAlert,
+        setDisplaySignOutAlert
+    } = useSidebarLogic();
+
     return (
         <nav className="flex w-full h-full flex-col gap-4">
             <ul className="flex flex-col w-full h-full">
@@ -40,22 +48,29 @@ const Sidebar = ({ session }: SidebarProps) => {
                     <p className="text-whiteMain text-xs truncate">{session.user.name}</p>
                 </div>
                 <div className="flex items-center">
+                    <CustomAlertDialog
+                        cancelText="Cancelar"
+                        actionText="Confirmar"
+                        title="Cerrar sesión"
+                        description={"¡Atención! ¿Estás seguro de que quieres cerrar sesión?"}
+                        onCancel={() => {
+                            setDisplaySignOutAlert(false);
+                        }}
+                        onAction={() => signOut({ callbackUrl: '/sign_in' })}
+                        isPending={false}
+                        open={displaySignOutAlert}
+                    />
                     <Button
                         className=" h-8 m-w-8 p-0 hover:bg-blackMain"
                         variant='ghost'
                         size='icon'
-                        onClick={() => signOut({ callbackUrl: '/sign_in' })}
+                        onClick={() => {
+                            setDisplaySignOutAlert(true);
+                        }}
                     >
                         <ArrowLeftEndOnRectangleIcon className="w-4 h-4 text-whiteMain" />
                     </Button>
-                    <Button
-                        className=" h-8 m-w-8 p-0 hover:bg-blackMain"
-                        variant='ghost'
-                        size='icon'
-                        onClick={() => signOut({ callbackUrl: '/sign_in' })}
-                    >
-                        <BellIcon className="w-4 h-4 text-whiteMain" />
-                    </Button>
+                    <Notifications />
                 </div>
             </div>
         </nav>

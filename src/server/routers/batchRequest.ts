@@ -1,4 +1,4 @@
-import { startBatchRequestInputSchema } from '../schema/batchRequest';
+import { startBatchRequestInputSchema, whereBatchRequestInputSchema } from '../schema/batchRequest';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const batchRequestRouter = createTRPCRouter({
@@ -7,7 +7,12 @@ export const batchRequestRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             return await ctx.services({ ctx }).batchRequestService.start(
                 input,
-                ctx.services({ ctx }).mailService
+                ctx.services({ ctx }).mailService,
             );
+        }),
+    batchRequest: protectedProcedure
+        .input(whereBatchRequestInputSchema)
+        .query(async ({ ctx, input }) => {
+            return await ctx.services({ ctx }).batchRequestService.getBatchRequest(input);
         })
 });

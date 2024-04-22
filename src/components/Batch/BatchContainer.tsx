@@ -7,6 +7,7 @@ import ContributionRegister from "./ContributionRegister";
 import useBatchContainerLogic from "./useBatchContainerLogic";
 import { SessionProvider } from "next-auth/react";
 import { TooltipProvider } from "../ui/tooltip";
+import BatchRequestDialog from "./BatchRequestDialog";
 
 type BatchContainerProps = {
     session: Session
@@ -22,6 +23,7 @@ const BatchContainer = ({ session }: BatchContainerProps) => {
         <SessionProvider session={session}>
             <TooltipProvider delayDuration={300}>
                 <div className="flex flex-col gap-2 w-full">
+                    <BatchRequestDialog />
                     <BatchInformation
                         batchIsError={batchIsError}
                         batchIsLoading={batchIsLoading}

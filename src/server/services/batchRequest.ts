@@ -1,6 +1,6 @@
 import { type z } from "zod";
 import { type TRPCContext } from "../trpc";
-import { type startBatchRequestInputSchema } from "../schema/batchRequest";
+import { type whereBatchRequestInputSchema, type startBatchRequestInputSchema } from "../schema/batchRequest";
 import { batchRequests, batchRequestsToUsers } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import type MailService from "./mail";
@@ -13,6 +13,7 @@ type BatchRequestServiceContructor = {
 
 type StartBatchRequestInput = z.infer<typeof startBatchRequestInputSchema>
 type BatchRequestToUserInsert = typeof batchRequestsToUsers.$inferInsert
+type WhereBatchRequestInput = z.infer<typeof whereBatchRequestInputSchema>
 
 class BatchRequestService {
     ctx: TRPCContext
@@ -21,11 +22,50 @@ class BatchRequestService {
         this.ctx = ctx;
     }
 
-    async start(input: StartBatchRequestInput, mailService: MailService) {
+    public async getBatchRequest(whereInput: WhereBatchRequestInput) {
+        const {
+            type,
+            status,
+            batchId
+        } = whereInput;
+
+        const batchRequest = await this.ctx.db.query.batchRequests.findFirst({
+            where: (batchRequests, { eq, and }) => {
+                return and(
+                    eq(batchRequests.batchId, batchId),
+                    status ? eq(batchRequests.status, status) : undefined,
+                    type ? eq(batchRequests.type, type) : undefined
+                );
+            },
+            with: {
+                batchRequestsToUsers: true
+            }
+        });
+
+        return batchRequest;
+    }
+
+    public async start(input: StartBatchRequestInput, mailService: MailService) {
         const {
             batchId,
             participantIds,
         } = input;
+
+        const batchRequest = await this.ctx.db.query.batchRequests.findFirst({
+            where: (batchRequests, { eq, and }) => {
+                return and(
+                    eq(batchRequests.status, "SENT"),
+                    eq(batchRequests.type, "START")
+                );
+            },
+        });
+
+        if (batchRequest) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'Already exist a batch request to init the batch',
+            });
+        }
 
         const startBatchRequest = await this.ctx.db.transaction(async (tx) => {
             const [createdBatchRequest] = await tx.insert(batchRequests).values({
@@ -45,6 +85,7 @@ class BatchRequestService {
                 return {
                     userId: item,
                     batchRequestId: createdBatchRequest.id,
+                    check: item === this.ctx.session?.user.id
                 }
             });
 

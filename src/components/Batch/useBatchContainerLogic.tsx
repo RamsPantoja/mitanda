@@ -12,7 +12,7 @@ const useBatchContainerLogic = () => {
             batchId: params.id as string,
         }
     );
-    
+
     useEffect(() => {
         if (batchData) {
             setBatch(batchData);
