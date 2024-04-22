@@ -6,7 +6,9 @@ const BatchRequestDialog = () => {
     const {
         displayBatchRequestDialog,
         setDisplayBatchRequestDialog,
-        batchRequestData
+        batchRequestData,
+        checkStartBatchRequestMutation,
+        checkStartBatchRequestIsPending
     } = useBatchRequestLogic();
 
     return (
@@ -22,9 +24,13 @@ const BatchRequestDialog = () => {
                         setDisplayBatchRequestDialog(false);
                     }}
                     onAction={() => {
-                        console.log("Acepto")
+                        checkStartBatchRequestMutation({
+                            batchId: batchRequestData.batchId,
+                            participantIds: batchRequestData.batchRequestsToUsers.map((item) => item.userId),
+                            batchRequestId: batchRequestData.id
+                        })
                     }}
-                    isPending={false}
+                    isPending={checkStartBatchRequestIsPending}
                     open={displayBatchRequestDialog}
                 />
             }

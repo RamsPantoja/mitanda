@@ -4,12 +4,15 @@ import { type whereBatchRequestInputSchema, type startBatchRequestInputSchema, t
 import { batchRegisters, batchRequests, batchRequestsToUsers, batches } from "../db/schema";
 import { TRPCError } from "@trpc/server";
 import type MailService from "./mail";
-import initBatchEmail from "../emails/initBatch";
+import startBatchRequestEmail from "../emails/startBatchRequest";
 import { env } from "@/env";
 import { and, eq } from "drizzle-orm";
 import { type Session } from "next-auth";
 import { type Batch } from "./batch";
 import { DateTime, type DurationLike } from "luxon";
+import type NotificationService from "./notification";
+import { type NotificationInsert } from "./notification";
+import startedBatchEmail from "../emails/started_batch";
 
 type BatchRequestServiceContructor = {
     ctx: TRPCContext
@@ -18,8 +21,14 @@ type BatchRequestServiceContructor = {
 type StartBatchRequestInput = z.infer<typeof startBatchRequestInputSchema>
 type BatchRequestToUserInsert = typeof batchRequestsToUsers.$inferInsert
 type WhereBatchRequestInput = z.infer<typeof whereBatchRequestInputSchema>
-type CheckStartBatchRequestInput = z.infer<typeof checkStartBatchRequestInputSchema>
+type CheckStartBatchRequestInputSchema = z.infer<typeof checkStartBatchRequestInputSchema>
 type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
+type CheckStartBatchRequestInput = {
+    checkStartBatchRequestInputSchema: CheckStartBatchRequestInputSchema
+    session: Session
+    notificationService: NotificationService
+    mailService: MailService
+}
 
 class BatchRequestService {
     ctx: TRPCContext
@@ -120,7 +129,7 @@ class BatchRequestService {
                 to: usersList.map((item) => item.email),
                 from: 'Mitanda <no-reply@mitanda.xyz>',
                 subject: "Solicitud para iniciar tanda",
-                html: initBatchEmail({
+                html: startBatchRequestEmail({
                     batchName: batch.name,
                     link: `${env.NEXTAUTH_URL}/dashboard/batches/batch/${batchId}`
                 })
@@ -194,12 +203,21 @@ class BatchRequestService {
         return registers;
     }
 
-    public async checkStartBatchRequest(input: CheckStartBatchRequestInput, user: Session) {
+    public async checkStartBatchRequest(input: CheckStartBatchRequestInput) {
         const {
-            batchRequestId,
-            batchId,
-            participantIds
+            checkStartBatchRequestInputSchema,
+            session,
+            notificationService,
+            mailService
         } = input;
+
+        const batch = await this.ctx.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return and(
+                    eq(batches.id, checkStartBatchRequestInputSchema.batchId),
+                )
+            }
+        });
 
         const result = await this.ctx.db.transaction(async (tx) => {
             //Updating the check param with the current user that accepts the batch request
@@ -209,15 +227,15 @@ class BatchRequestService {
                 })
                 .where(
                     and(
-                        eq(batchRequestsToUsers.batchRequestId, batchRequestId),
-                        eq(batchRequestsToUsers.userId, user.user.id)
+                        eq(batchRequestsToUsers.batchRequestId, checkStartBatchRequestInputSchema.batchRequestId),
+                        eq(batchRequestsToUsers.userId, session.user.id)
                     )
                 );
 
             //Getting all batchRequestToUsers records with the batchRequestId param
             const batchRequestsToUsersList = await tx.query.batchRequestsToUsers.findMany({
                 where: (batchRequestsToUsers, { eq }) => {
-                    return eq(batchRequestsToUsers.batchRequestId, batchRequestId)
+                    return eq(batchRequestsToUsers.batchRequestId, checkStartBatchRequestInputSchema.batchRequestId)
                 }
             });
 
@@ -234,7 +252,7 @@ class BatchRequestService {
                     .set({
                         status: "ACCEPTED"
                     })
-                    .where(eq(batchRequests.id, batchRequestId))
+                    .where(eq(batchRequests.id, checkStartBatchRequestInputSchema.batchRequestId))
                     .returning();
 
                 if (!batchRequest) {
@@ -243,14 +261,6 @@ class BatchRequestService {
                         message: 'Batch Request was not updated to "Accepted" status',
                     });
                 }
-
-                const batch = await tx.query.batches.findFirst({
-                    where: (batches, { eq }) => {
-                        return and(
-                            eq(batches.id, batchId),
-                        )
-                    }
-                });
 
                 if (!batch) {
                     throw new TRPCError({
@@ -267,7 +277,7 @@ class BatchRequestService {
                 }
 
                 //Method to build the Batch registers that will be inserted 
-                const batchRegistersToInsert = this.buildBatchRegisters(batch, participantIds);
+                const batchRegistersToInsert = this.buildBatchRegisters(batch, checkStartBatchRequestInputSchema.participantIds);
 
                 await tx.insert(batchRegisters).values(batchRegistersToInsert);
 
@@ -277,7 +287,7 @@ class BatchRequestService {
                         status: "IN_PROGRESS",
                         updatedAt: new Date()
                     })
-                    .where(eq(batches.id, batchId))
+                    .where(eq(batches.id, checkStartBatchRequestInputSchema.batchId))
                     .returning();
 
                 if (!updatedBatch) {
@@ -289,8 +299,37 @@ class BatchRequestService {
 
                 return batchRequest;
             }
-
         });
+
+        //If result is different of undefined means that the batch has been started and send notifications
+        if (result && batch) {
+            const notifications: NotificationInsert[] = checkStartBatchRequestInputSchema.participantIds.map((item) => {
+                return {
+                    link: `/dashboard/batches/batch/${batch.id}`,
+                    iconUrl: "",
+                    receiverId: item,
+                    content: `<p>La tanda <strong>${batch.name}</strong> ha sido iniciada!</p>`
+                }
+            });
+
+            await notificationService.create(notifications);
+
+            const usersList = await this.ctx.db.query.users.findMany({
+                where: (users, { inArray }) => {
+                    return inArray(users.id, checkStartBatchRequestInputSchema.participantIds)
+                }
+            });
+
+            await mailService.send({
+                to: usersList.map((item) => item.email),
+                from: 'Mitanda <no-reply@mitanda.xyz>',
+                subject: "Tanda iniciada",
+                html: startedBatchEmail({
+                    batchName: batch.name,
+                    link: `${env.NEXTAUTH_URL}/dashboard/batches/batch/${batch.id}`
+                })
+            })
+        }
 
         return result;
     }

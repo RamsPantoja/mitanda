@@ -11,6 +11,7 @@ import BatchRegisterService from "./batchRegister";
 import BatchRequestService from "./batchRequest";
 import WithdrawalService from './withdrawals';
 import MailService from "./mail";
+import NotificationService from "./notification";
 
 
 export type ServicesContext = {
@@ -26,6 +27,7 @@ export type ServicesContext = {
     batchRequestService: BatchRequestService
     withdrawalService: WithdrawalService
     mailService: MailService
+    notificationService: NotificationService
 }
 
 export type ServicesConfig = {
@@ -45,7 +47,8 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         batchRegisterService: new BatchRegisterService({ ctx }),
         batchRequestService: new BatchRequestService({ ctx }),
         withdrawalService: new WithdrawalService({ ctx }),
-        mailService: new MailService({ ctx })
+        mailService: new MailService({ ctx }),
+        notificationService: new NotificationService({ ctx })
     }
 }
 

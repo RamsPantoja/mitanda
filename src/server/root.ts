@@ -7,6 +7,7 @@ import { type inferRouterOutputs } from "@trpc/server";
 import { batchRegisterRouter } from "./routers/batchRegister";
 import { batchRequestRouter } from "./routers/batchRequest";
 import { withdrawalsRouter } from "./routers/withdrawals";
+import { notificationRouter } from "./routers/notification";
 
 /**
  * This is the primary router for your server.
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   batchRegisters: batchRegisterRouter,
   batchRequest: batchRequestRouter,
   withdrawal: withdrawalsRouter,
+  notification: notificationRouter
 });
 
 export const createCaller = (ctx: TRPCContext) => {

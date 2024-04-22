@@ -382,7 +382,7 @@ export const batchContributionsRelations = relations(batchContributions, ({ one 
   }),
 }));
 
-export const nofitications = createTable(
+export const notifications = createTable(
   "notification",
   {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
@@ -402,9 +402,9 @@ export const nofitications = createTable(
   }
 );
 
-export const nofiticationsRelations = relations(nofitications, ({ one }) => ({
+export const notificationsRelations = relations(notifications, ({ one }) => ({
   receiver: one(users, {
-    fields: [nofitications.receiverId],
+    fields: [notifications.receiverId],
     references: [users.id]
   })
 }))

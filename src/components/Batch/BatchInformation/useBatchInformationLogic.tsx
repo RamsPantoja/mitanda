@@ -54,7 +54,7 @@ const useBatchInformationLogic = () => {
 
     const { mutate: startBatchRequestMutation, isPending: startBatchRequestIsPending } = api.batchRequest.startBatchRequest.useMutation({
         onSuccess: async () => {
-            toast.success("La solicitud para iniciar la tanda ha sido enviada a todos los participantes")
+            toast.success("La solicitud para iniciar la tanda ha sido enviada a todos los participantes.")
         },
         onError: (error) => {
             toast.error("Algo salió mal!", {

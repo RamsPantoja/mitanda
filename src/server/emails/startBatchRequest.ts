@@ -3,7 +3,7 @@ type InitBatchEmailProps = {
     link: string
 }
 
-const initBatchEmail = ({ batchName, link }: InitBatchEmailProps) => {
+const startBatchRequestEmail = ({ batchName, link }: InitBatchEmailProps) => {
     return (
         `
         <!DOCTYPE html>
@@ -59,4 +59,4 @@ const initBatchEmail = ({ batchName, link }: InitBatchEmailProps) => {
     )
 }
 
-export default initBatchEmail;
+export default startBatchRequestEmail;
