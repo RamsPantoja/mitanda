@@ -1,4 +1,4 @@
-import { notificationsByUserInputSchema } from "../schema/notification";
+import { markAsSeenInputSchema, notificationsByUserInputSchema } from "../schema/notification";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const notificationRouter = createTRPCRouter({
@@ -6,5 +6,10 @@ export const notificationRouter = createTRPCRouter({
         .input(notificationsByUserInputSchema)
         .query(async ({ ctx, input }) => {
             return await ctx.services({ ctx }).notificationService.getNotificationsByUserId(input.userId);
+        }),
+    markAsSeen: protectedProcedure
+        .input(markAsSeenInputSchema)
+        .mutation(async ({ ctx, input }) => {
+            return await ctx.services({ ctx }).notificationService.markAsSeen(input);
         }),
 });

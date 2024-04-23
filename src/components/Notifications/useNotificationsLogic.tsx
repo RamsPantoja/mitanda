@@ -10,10 +10,19 @@ const useNotificationsLogic = ({ session }: UseNotificationsLogicProps) => {
         userId: session.user.id
     });
 
+    const { mutate: markAsSeenMutation } = api.notification.markAsSeen.useMutation();
+
+    const onSeeNotification = (notificationId: string) => {
+        markAsSeenMutation({
+            notificationId
+        });
+    }
+
     return {
         notificationsData,
         notificationsIsLoading,
-        notificationsError
+        notificationsError,
+        onSeeNotification
     }
 }
 

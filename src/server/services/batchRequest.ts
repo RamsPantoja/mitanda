@@ -23,6 +23,7 @@ type BatchRequestToUserInsert = typeof batchRequestsToUsers.$inferInsert
 type WhereBatchRequestInput = z.infer<typeof whereBatchRequestInputSchema>
 type CheckStartBatchRequestInputSchema = z.infer<typeof checkStartBatchRequestInputSchema>
 type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
+
 type CheckStartBatchRequestInput = {
     checkStartBatchRequestInputSchema: CheckStartBatchRequestInputSchema
     session: Session
@@ -56,6 +57,10 @@ class BatchRequestService {
                 batchRequestsToUsers: true
             }
         });
+
+        if (!batchRequest) {
+            return null;
+        }
 
         return batchRequest;
     }

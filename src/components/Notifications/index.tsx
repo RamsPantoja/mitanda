@@ -21,7 +21,8 @@ const Notifications = ({ session }: NotificationsProps) => {
     const {
         notificationsData,
         notificationsIsLoading,
-        notificationsError
+        notificationsError,
+        onSeeNotification
     } = useNotificationsLogic({ session });
 
     const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <NotificationSkeletonCard /> });
@@ -50,10 +51,13 @@ const Notifications = ({ session }: NotificationsProps) => {
                         return (
                             <NotificationCard
                                 key={item.id}
+                                id={item.id}
                                 link={item.link}
                                 iconUrl={item.iconUrl}
                                 seen={item.seen}
                                 content={item.content}
+                                createdAt={item.createdAt}
+                                onSee={onSeeNotification}
                             />
                         )
                     })
