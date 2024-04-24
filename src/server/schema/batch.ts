@@ -67,7 +67,12 @@ export const batchPaymentLinkInputSchema = z.object({
     currency: z.string(),
     cancelUrl: z.string(),
     successUrl: z.string(),
-    recipientId: z.string(),
     metadata: metadataSchema
   })
+});
+
+export const addBatchContributionInputSchema = z.object({
+  userId: z.string(),
+  batchRegisterId: z.string(),
+  batchId: z.string()
 });

@@ -4,6 +4,7 @@ import {
 } from "@/server/trpc";
 
 import {
+  addBatchContributionInputSchema,
   batchByIdInputSchema,
   batchPaymentLinkInputSchema,
   batchesInputSchema,
@@ -55,6 +56,11 @@ export const batchRouter = createTRPCRouter({
     .input(finishBatchInputSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).batchService.finish(input.batchId);
+    }),
+  addBatchContribution: protectedProcedure
+    .input(addBatchContributionInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.services({ ctx }).batchService.addBatchContribution(input);
     }),
     batchJoinInfo: protectedProcedure
     .input(batchByIdInputSchema)

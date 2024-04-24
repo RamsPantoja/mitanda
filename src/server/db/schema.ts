@@ -50,7 +50,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [stripeAccounts.userId]
   }),
-  payments: many(payments),
+  // payments: many(payments),
   batchContributions: many(batchContributions),
   withdrawalsLog: many(withdrawalsLog)
 }));
@@ -313,30 +313,30 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one, many })
 
 export const paymentCaseEnum = pgEnum('payment_case', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
 
-export const payments = createTable(
-  "payment",
-  {
-    id: uuid("id").notNull().primaryKey().defaultRandom(),
-    userId: uuid("userId")
-      .notNull()
-      .references(() => users.id),
-    checkoutSessionId: text("checkoutSessionId").notNull(),
-    paymentCase: paymentCaseEnum("paymentCase").notNull(),
-    createdAt: timestamp('createdAt', {
-      mode: 'date'
-    }).notNull().defaultNow(),
-    updatedAt: timestamp('updatedAt', {
-      mode: 'date'
-    }).notNull().defaultNow(),
-  }
-);
+// export const payments = createTable(
+//   "payment",
+//   {
+//     id: uuid("id").notNull().primaryKey().defaultRandom(),
+//     userId: uuid("userId")
+//       .notNull()
+//       .references(() => users.id),
+//     checkoutSessionId: text("checkoutSessionId").notNull(),
+//     paymentCase: paymentCaseEnum("paymentCase").notNull(),
+//     createdAt: timestamp('createdAt', {
+//       mode: 'date'
+//     }).notNull().defaultNow(),
+//     updatedAt: timestamp('updatedAt', {
+//       mode: 'date'
+//     }).notNull().defaultNow(),
+//   }
+// );
 
-export const paymentsRelations = relations(payments, ({ one }) => ({
-  user: one(users, {
-    fields: [payments.userId],
-    references: [users.id]
-  })
-}));
+// export const paymentsRelations = relations(payments, ({ one }) => ({
+//   user: one(users, {
+//     fields: [payments.userId],
+//     references: [users.id]
+//   })
+// }));
 
 export const batchContributions = createTable(
   "batch_contribution",
@@ -352,9 +352,9 @@ export const batchContributions = createTable(
       .notNull()
       .references(() => batchRegisters.id),
     amount: numeric('amount').notNull(),
-    paymentId: uuid("paymentId")
-      .notNull()
-      .references(() => payments.id),
+    // paymentId: uuid("paymentId")
+    //   .notNull()
+    //   .references(() => payments.id),
     createdAt: timestamp('createdAt', {
       mode: 'date'
     }).notNull().defaultNow(),
@@ -369,10 +369,10 @@ export const batchContributionsRelations = relations(batchContributions, ({ one 
     fields: [batchContributions.userId],
     references: [users.id]
   }),
-  payment: one(payments, {
-    fields: [batchContributions.paymentId],
-    references: [payments.id]
-  }),
+  // payment: one(payments, {
+  //   fields: [batchContributions.paymentId],
+  //   references: [payments.id]
+  // }),
   batch: one(batches, {
     fields: [batchContributions.batchId],
     references: [batches.id]

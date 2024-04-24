@@ -8,6 +8,7 @@ import ContributionRegisterSkeleton from "./ContributionRegisterSkeleton";
 import useBatchStore from "../useBatchStore";
 import FeedbackMessage from "@/components/common/FeedbackMessage";
 import { mapSkeletons } from "@/lib/utils";
+import CustomAlertDialog from "@/components/common/AlertDialog";
 
 type ContributionRegisterProps = {
     batchIsLoading: boolean
@@ -18,7 +19,10 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
     const {
         participantsData,
         participantsIsLoading,
-        participantsIsError
+        participantsIsError,
+        onCheckContribution,
+        displayCheckContributionDialog,
+        setDisplayCheckContributionDialog
     } = useContributionRegisterLogic();
 
     const { batch } = useBatchStore((state) => state);
@@ -45,6 +49,18 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
                 participantsIsError &&
                 <FeedbackMessage status="ERROR" message="Algo salio mal! No se pueden obtener las contribuciones." />
             }
+            <CustomAlertDialog
+                cancelText="Cancelar"
+                actionText="Confirmar"
+                title="Cerrar sesión"
+                description={"¡Atención! ¿Estás seguro de que quieres cerrar sesión?"}
+                onCancel={() => {
+                    setDisplayCheckContributionDialog(false);
+                }}
+                onAction={() => console.log("")}
+                isPending={false}
+                open={displayCheckContributionDialog}
+            />
             {
                 batch &&
                 batch.status === 'IN_PROGRESS' &&
@@ -58,6 +74,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
                                 <ContributionRegisterCard
                                     key={item.userId}
                                     user={item.user}
+                                    onCheck={onCheckContribution}
                                 />
                             )
                         })

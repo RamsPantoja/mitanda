@@ -9,11 +9,15 @@ type ParticipantCardProps = {
     user: User
     session: Session
     ownerId: string
+    turn: number
 }
 
-const ParticipantCard = ({ user, session, ownerId }: ParticipantCardProps) => {
+const ParticipantCard = ({ user, session, ownerId, turn }: ParticipantCardProps) => {
     return (
         <Card className="flex gap-2 items-center w-full p-2">
+            {
+                turn && <span className="text-xl text-grayMain font-black mr-2">{turn}</span>
+            }
             <Avatar>
                 <AvatarImage src={user.image!} />
                 <AvatarFallback>P</AvatarFallback>
