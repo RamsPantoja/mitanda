@@ -96,7 +96,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                                 }
                             </div>
                         }
-                        {
+                        {/* {
                             batch.status === "IN_PROGRESS" && currentBatchRegister &&
                             <div className="flex flex-col gap-2 items-end">
                                 <MitandaButton
@@ -117,7 +117,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                                     />
                                 }
                             </div>
-                        }
+                        } */}
                     </div>
                     {
                         currentBatchRegister && participantIds &&

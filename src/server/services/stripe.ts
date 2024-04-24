@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
 import { type PaymentCase } from "@/lib/enum";
 import type BatchService from "./batch";
+import { env } from "@/env";
 
 
 type AccountServiceContructor = {
@@ -20,7 +21,7 @@ type StripeFlowObject = {
     stripeAccountDB?: object
 }
 
-type PaymentLinkConfig = {
+type ContributionPaymentLinkConfig = {
     items: StripeItem[]
     currency: string
     cancelUrl: string
@@ -58,7 +59,7 @@ type RelationInputSchema = z.infer<typeof stripeRelationIdInputSchema>
 
 class StripeService {
     ctx: TRPCContext
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+    stripe = new Stripe(env.STRIPE_SECRET_KEY)
 
     constructor({ ctx }: AccountServiceContructor) {
         this.ctx = ctx;
@@ -95,27 +96,19 @@ class StripeService {
     }
 
     async createStripeConnectAccount(): Promise<Stripe.Account> {
-        try {
-            const newAccount = await this.stripe.accounts.create({
-                type: "standard"
-            })
+        const newAccount = await this.stripe.accounts.create({
+            type: "express",
+        })
 
-            return newAccount
-
-        } catch (error) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Internal server error'
-            })
-        }
+        return newAccount
     }
 
     async newAccountLink(accountId: string): Promise<Stripe.AccountLink> {
         const accountLink = await this.stripe.accountLinks.create({
             account: accountId,
-            refresh_url: 'http://localhost:3000/api/stripe/connect/refresh_link',
-            return_url: 'http://localhost:3000/dashboard/balance',
-            type: 'account_onboarding',
+            refresh_url: `${env.NEXTAUTH_URL}/api/stripe/connect/refresh_link`,
+            return_url: `${env.NEXTAUTH_URL}/dashboard/balance`,
+            type: "account_onboarding",
         });
 
         if (!accountLink) {
@@ -212,7 +205,7 @@ class StripeService {
         }
     }
 
-    public async createPaymentLink(config: PaymentLinkConfig) {
+    public async createContributionPaymentLink(config: ContributionPaymentLinkConfig) {
         const customer = await this.stripe.customers.create();
         const fee = this.computeFee(config.items);
 

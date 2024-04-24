@@ -148,7 +148,7 @@ const useBatchInformationLogic = () => {
                     currency: "MXN",
                     cancelUrl: `${getPublicBaseUrl()}${pathname}`,
                     successUrl: `${getPublicBaseUrl()}${pathname}`,
-                    connectedAccountId: "",//TODO add the connected account id for user
+                    recipientId: currentBatchRegister.recipientId,
                     metadata: {
                         userId: session?.user.id,
                         batchRegisterIds: [

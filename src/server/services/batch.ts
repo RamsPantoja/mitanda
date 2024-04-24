@@ -238,7 +238,28 @@ class BatchService {
 
     public async batchPaymentLink(input: BatchPaymentLinkInput, stripeService: StripeService) {
         const { data } = input;
-        const paymentLink = await stripeService.createPaymentLink(data);
+
+        const recipientStripeAccount = await this.ctx.db.query.stripeAccounts.findFirst({
+            where: (stripeAccounts, { eq }) => {
+                return eq(stripeAccounts.userId, data.recipientId);
+            }
+        });
+
+        if (!recipientStripeAccount) {
+            throw new TRPCError({
+                code: "NOT_FOUND",
+                message: 'Stripe account for recipient wat not found',
+            });
+        }
+
+        const paymentLink = await stripeService.createContributionPaymentLink({
+            connectedAccountId: recipientStripeAccount.accountId,
+            items: data.items,
+            cancelUrl: data.cancelUrl,
+            successUrl: data.successUrl,
+            currency: data.currency,
+            metadata: data.metadata
+        });
 
         return paymentLink;
     }

@@ -23,12 +23,12 @@ const Billing = () => {
                 <>
                     <p className="text-sm text-whiteMain font-bold">Información de facturación</p>
                     <MitandaButton
-                        className=" w-fit"
-                        size='sm'
-                        variant='secondary'
+                        isPending={loadingStripeFlow || dashboardLinkIsPending}
                         onClick={onboardingState ? () => { createStripeDashboardLink() } : () => { stripeFlowMutation() }}
-                        startIcon={<BuildingLibraryIcon className="h-4 w-4 text-whiteMain" />}
-                    >{loadingStripeFlow || dashboardLinkIsPending ? 'loading...' : onboardingState ? 'Ir a dashboard' : 'Agregar datos bancarios'}</MitandaButton>
+                        startIcon={<BuildingLibraryIcon className="h-6 w-6 text-blackMain" />}
+                    >
+                        {onboardingState ? 'Ir a dashboard' : 'Agregar datos bancarios'}
+                    </MitandaButton>
                 </>
             }
             {loadingOnboardingState && !getOnboardingError &&

@@ -26,7 +26,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
     const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <ContributionRegisterSkeleton /> });
 
     return (
-        <Card className="flex flex-col gap-2 flex-[0.5] overflow-hidden">
+        <Card className="flex flex-col gap-2 h-full overflow-hidden">
             <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
             {
                 (participantsIsLoading || batchIsLoading) && skeletons.map((skeleton, index) => {

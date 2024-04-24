@@ -28,13 +28,10 @@ const BatchContainer = ({ session }: BatchContainerProps) => {
                         batchIsError={batchIsError}
                         batchIsLoading={batchIsLoading}
                     />
-                    <div className="flex flex-col gap-2 w-full flex-1">
-                        <ContributionRegister
-                            batchIsError={batchIsError}
-                            batchIsLoading={batchIsLoading}
-                        />
-                        <ContributionHistory />
-                    </div>
+                    <ContributionRegister
+                        batchIsError={batchIsError}
+                        batchIsLoading={batchIsLoading}
+                    />
                 </div>
             </TooltipProvider>
         </SessionProvider>
