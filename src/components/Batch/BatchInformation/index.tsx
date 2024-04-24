@@ -5,8 +5,8 @@ import FeedbackMessage from "@/components/common/FeedbackMessage"
 import { Fragment } from "react"
 import ContributionProgress from "../ContributionProgress"
 import { Card } from "@/components/ui/card"
-import TimerComponent from "@/components/common/Timer"
-import { DateTime } from "luxon"
+// import TimerComponent from "@/components/common/Timer"
+// import { DateTime } from "luxon"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import CustomAlertDialog from "@/components/common/AlertDialog"
@@ -21,10 +21,10 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         currentBatchRegister,
         batch,
         session,
-        canContribute,
-        setCanContribute,
-        batchPaymentLinkIsPending,
-        onContribute,
+        // canContribute,
+        // setCanContribute,
+        // batchPaymentLinkIsPending,
+        // onContribute,
         participantIds,
         setDisplayAlertForInitBatch,
         displayAlertForInitBatch,

@@ -2,6 +2,7 @@ import { batchContributions, batchRegisters, batches, contracts, usersToBatches,
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
+    type addBatchContributionInputSchema,
     type batchPaymentLinkInputSchema,
     type createBatchInputSchema,
     type whereInputBatchSchema
@@ -10,7 +11,7 @@ import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
 import type StripeService from "./stripe";
-import { type BatchContribution } from "./batchContribution";
+// import { type BatchContribution } from "./batchContribution";
 
 type BatchServiceContructor = {
     ctx: TRPCContext
@@ -21,13 +22,13 @@ export type Batch = typeof batches.$inferSelect;
 type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
+type AddBatchContributionInput = z.infer<typeof addBatchContributionInputSchema>
 
-type BatchContributionInput = {
-    userId: string
-    paymentId: string
-    batchRegisterIds?: string
-    batchId?: string
-}
+// type BatchContributionInput = {
+//     userId: string
+//     batchRegisterIds?: string
+//     batchId?: string
+// }
 
 class BatchService {
     ctx: TRPCContext
@@ -239,21 +240,7 @@ class BatchService {
     public async batchPaymentLink(input: BatchPaymentLinkInput, stripeService: StripeService) {
         const { data } = input;
 
-        const recipientStripeAccount = await this.ctx.db.query.stripeAccounts.findFirst({
-            where: (stripeAccounts, { eq }) => {
-                return eq(stripeAccounts.userId, data.recipientId);
-            }
-        });
-
-        if (!recipientStripeAccount) {
-            throw new TRPCError({
-                code: "NOT_FOUND",
-                message: 'Stripe account for recipient wat not found',
-            });
-        }
-
-        const paymentLink = await stripeService.createContributionPaymentLink({
-            connectedAccountId: recipientStripeAccount.accountId,
+        const paymentLink = await stripeService.createPaymentLink({
             items: data.items,
             cancelUrl: data.cancelUrl,
             successUrl: data.successUrl,
@@ -264,12 +251,11 @@ class BatchService {
         return paymentLink;
     }
 
-    public async batchContribution(input: BatchContributionInput) {
+    public async addBatchContribution(input: AddBatchContributionInput) {
         const {
             userId,
-            paymentId,
-            batchRegisterIds,
-            batchId
+            batchId,
+            batchRegisterId
         } = input;
 
         const addNumber = (numberOne: string, numberTwo: string): string => {
@@ -280,23 +266,7 @@ class BatchService {
             return add.toString();
         };
 
-        const contributions = await this.ctx.db.transaction(async (tx) => {
-            if (!batchRegisterIds) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchRegisterId was not provided',
-                });
-            }
-
-            const batchRegisterIdsParsed = JSON.parse(batchRegisterIds) as string[];
-
-            if (!batchId) {
-                throw new TRPCError({
-                    code: "CONFLICT",
-                    message: 'BatchId was not provided',
-                });
-            }
-
+        const contribution = await this.ctx.db.transaction(async (tx) => {
             const batch = await tx.query.batches.findFirst({
                 where: (batches, { eq }) => {
                     return eq(batches.id, batchId)
@@ -310,53 +280,140 @@ class BatchService {
                 });
             }
 
-            const createdContributions: BatchContribution[] = [];
+            const batchRegister = await tx.query.batchRegisters.findFirst({
+                where: (batchRegisters, { eq }) => {
+                    return eq(batchRegisters.id, batchRegisterId)
+                }
+            });
 
-            for (const id of batchRegisterIdsParsed) {
-                const batchRegister = await tx.query.batchRegisters.findFirst({
-                    where: (batchRegisters, { eq }) => {
-                        return eq(batchRegisters.id, id)
-                    }
+            if (!batchRegister) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch Register not found',
                 });
-
-                if (!batchRegister) {
-                    throw new TRPCError({
-                        code: "CONFLICT",
-                        message: 'Batch Register not found',
-                    });
-                }
-
-                const [batchContribution] = await tx.insert(batchContributions).values({
-                    userId,
-                    amount: batch.contributionAmount,
-                    batchRegisterId: id,
-                    paymentId,
-                    batchId
-                }).returning();
-
-                if (!batchContribution) {
-                    throw new TRPCError({
-                        code: "CONFLICT",
-                        message: 'Batch Contribution was not created',
-                    });
-                }
-
-                await tx.update(batchRegisters)
-                    .set({
-                        contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
-                        updatedAt: new Date(),
-                        withdraw: false
-                    })
-                    .where(eq(batchRegisters.id, id));
-
-                createdContributions.push(batchContribution);
             }
 
-            return createdContributions;
+            const [batchContribution] = await tx.insert(batchContributions).values({
+                userId,
+                amount: batch.contributionAmount,
+                batchRegisterId,
+                batchId
+            }).returning();
+
+            if (!batchContribution) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch Contribution was not created',
+                });
+            }
+
+            await tx.update(batchRegisters)
+                .set({
+                    contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
+                    updatedAt: new Date(),
+                    withdraw: false
+                })
+                .where(eq(batchRegisters.id, batchRegisterId));
+
+            return batchContribution;
         });
 
-        return contributions;
+        return contribution;
     }
+
+    // public async batchContribution(input: BatchContributionInput) {
+    //     const {
+    //         userId,
+    //         paymentId,
+    //         batchRegisterIds,
+    //         batchId
+    //     } = input;
+
+    //     const addNumber = (numberOne: string, numberTwo: string): string => {
+    //         const parseNumberOne: number = parseFloat(numberOne);
+    //         const parseNumberTwo: number = parseFloat(numberTwo);
+    //         const add: number = parseNumberOne + parseNumberTwo;
+
+    //         return add.toString();
+    //     };
+
+    //     const contributions = await this.ctx.db.transaction(async (tx) => {
+    //         if (!batchRegisterIds) {
+    //             throw new TRPCError({
+    //                 code: "CONFLICT",
+    //                 message: 'BatchRegisterId was not provided',
+    //             });
+    //         }
+
+    //         const batchRegisterIdsParsed = JSON.parse(batchRegisterIds) as string[];
+
+    //         if (!batchId) {
+    //             throw new TRPCError({
+    //                 code: "CONFLICT",
+    //                 message: 'BatchId was not provided',
+    //             });
+    //         }
+
+    //         const batch = await tx.query.batches.findFirst({
+    //             where: (batches, { eq }) => {
+    //                 return eq(batches.id, batchId)
+    //             }
+    //         });
+
+    //         if (!batch) {
+    //             throw new TRPCError({
+    //                 code: "CONFLICT",
+    //                 message: 'Batch not found',
+    //             });
+    //         }
+
+    //         const createdContributions: BatchContribution[] = [];
+
+    //         for (const id of batchRegisterIdsParsed) {
+    //             const batchRegister = await tx.query.batchRegisters.findFirst({
+    //                 where: (batchRegisters, { eq }) => {
+    //                     return eq(batchRegisters.id, id)
+    //                 }
+    //             });
+
+    //             if (!batchRegister) {
+    //                 throw new TRPCError({
+    //                     code: "CONFLICT",
+    //                     message: 'Batch Register not found',
+    //                 });
+    //             }
+
+    //             const [batchContribution] = await tx.insert(batchContributions).values({
+    //                 userId,
+    //                 amount: batch.contributionAmount,
+    //                 batchRegisterId: id,
+    //                 paymentId,
+    //                 batchId
+    //             }).returning();
+
+    //             if (!batchContribution) {
+    //                 throw new TRPCError({
+    //                     code: "CONFLICT",
+    //                     message: 'Batch Contribution was not created',
+    //                 });
+    //             }
+
+    //             await tx.update(batchRegisters)
+    //                 .set({
+    //                     contributionAmount: addNumber(batchRegister.contributionAmount, batchContribution.amount),
+    //                     updatedAt: new Date(),
+    //                     withdraw: false
+    //                 })
+    //                 .where(eq(batchRegisters.id, id));
+
+    //             createdContributions.push(batchContribution);
+    //         }
+
+    //         return createdContributions;
+    //     });
+
+    //     return contributions;
+    // }
 
     public async finish(batchId: string) {
         await this.ctx.db.update(batches)

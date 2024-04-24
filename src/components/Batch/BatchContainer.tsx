@@ -2,7 +2,7 @@
 
 import { type Session } from "next-auth";
 import BatchInformation from "./BatchInformation";
-import ContributionHistory from "./ContributionHistory";
+// import ContributionHistory from "./ContributionHistory";
 import ContributionRegister from "./ContributionRegister";
 import useBatchContainerLogic from "./useBatchContainerLogic";
 import { SessionProvider } from "next-auth/react";

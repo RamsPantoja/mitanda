@@ -16,7 +16,7 @@ const useBatchInformationLogic = () => {
     const pathname = usePathname();
     const router = useRouter();
     const utils = api.useUtils();
-    const { batch, participantIds } = useBatchStore((state) => state);
+    const { batch, participantIds, setCurrentBatchRegisterId } = useBatchStore((state) => state);
     const { data: session } = useSession();
     const [canContribute, setCanContribute] = useState<boolean>(true);
     const [displayAlertForInitBatch, setDisplayAlertForInitBatch] = useState<boolean>(false);
@@ -102,6 +102,7 @@ const useBatchInformationLogic = () => {
 
     useEffect(() => {
         if (currentBatchRegister) {
+            setCurrentBatchRegisterId(currentBatchRegister.id);
             const startDate = DateTime.fromJSDate(currentBatchRegister.startDate);
             const nowDate = DateTime.now()
             const diffInDays = nowDate.diff(startDate, "days").toObject();
@@ -114,7 +115,7 @@ const useBatchInformationLogic = () => {
                 setCanContribute(false);
             }
         }
-    }, [currentBatchRegister, session]);
+    }, [currentBatchRegister, session, setCurrentBatchRegisterId]);
 
     //Finish the batch if all batch registers have expired and the batch has "InProgress" status
     useEffect(() => {
@@ -148,7 +149,6 @@ const useBatchInformationLogic = () => {
                     currency: "MXN",
                     cancelUrl: `${getPublicBaseUrl()}${pathname}`,
                     successUrl: `${getPublicBaseUrl()}${pathname}`,
-                    recipientId: currentBatchRegister.recipientId,
                     metadata: {
                         userId: session?.user.id,
                         batchRegisterIds: [

@@ -4,8 +4,10 @@ import { api } from "@/trpc/react"
 import ParticipantSkeleton from "./ParticipantSkeleton";
 import { useParams } from "next/navigation";
 import ParticipantCard from "./ParticipantCard";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { type Session } from "next-auth";
+
+type BatchTurn = Record<string, number>
 
 type ParticipantsProps = {
     session: Session
@@ -23,9 +25,22 @@ const Participants = ({ session }: ParticipantsProps) => {
         }
     );
 
+    const batchTurnByUser = useMemo(() => {
+        if (batchData) {
+            return batchData.batchRegisters.reduce<BatchTurn>((obj, item) => {
+                obj = {
+                    ...obj,
+                    [item.recipientId]: item.batchNumber
+                };
+
+                return obj;
+            }, {});
+        }
+    }, [batchData]);
+
     return (
         <div className="flex flex-col gap-2 h-full">
-            <p className="text-lg font-bold text-whiteMain">Participantes</p>
+            <p className="text-lg font-bold text-whiteMain">Participantes y turnos</p>
             <div className="h-full flex flex-col">
                 {
                     (participantsIsLoading || batchIsLoading) &&
@@ -44,6 +59,7 @@ const Participants = ({ session }: ParticipantsProps) => {
                     !batchIsError &&
                     !participantsIsLoading &&
                     !participantsIsError &&
+                    batchTurnByUser &&
                     participantsData?.map((item) => {
                         return (
                             <ParticipantCard
@@ -51,6 +67,7 @@ const Participants = ({ session }: ParticipantsProps) => {
                                 user={item.user}
                                 session={session}
                                 ownerId={batchData.userId}
+                                turn={batchTurnByUser[item.userId]!}
                             />
                         )
                     })

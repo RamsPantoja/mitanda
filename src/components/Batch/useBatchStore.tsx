@@ -7,6 +7,8 @@ type BatchState = {
     setBatch: (batch: BatchByIdQueryType) => void
     setParticipantIds: (ids: string[]) => void
     participantIds: string[] | null
+    currentBatchRegisterId: string | null
+    setCurrentBatchRegisterId: (id: string) => void
 }
 
 const useBatchStore = create<BatchState>()((set) => ({
@@ -14,6 +16,8 @@ const useBatchStore = create<BatchState>()((set) => ({
     setBatch: (batch) => set(() => ({ batch })),
     participantIds: null,
     setParticipantIds: (ids) => set(() => ({ participantIds: ids })),
+    currentBatchRegisterId: null,
+    setCurrentBatchRegisterId: (id) => set(() => ({ currentBatchRegisterId: id }))
 }))
 
 export default useBatchStore;
