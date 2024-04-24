@@ -66,24 +66,22 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                 open={displayDeleteBatchAlert}
             />
             <div className="p-4 rounded-md bg-blackNormal max-w-40 min-w-40 min-h-48 max-h-48 flex flex-col gap-1">
-                <div className="flex w-full items-center justify-between gap-2">
-                    <div>
-                        {
-                            ownerId === session?.user.id &&
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className=" flex items-center justify-center">
-                                        <KeyIcon className="h-4 w-4 text-greenMain" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent className=" bg-blackMain border-none">
-                                    <p className="text-whiteMain">Esta tanda te pertenece</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        }
-                    </div>
+                <div className="flex w-full items-center justify-between gap-2 min-h-8">
                     {
                         ownerId === session?.user.id &&
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className=" flex items-center justify-center">
+                                    <KeyIcon className="h-4 w-4 text-greenMain" />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className=" bg-blackMain border-none">
+                                <p className="text-whiteMain">Esta tanda te pertenece</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    }
+                    {
+                        ownerId === session?.user.id && status === "NOT_STARTED" &&
                         <DropdownMenu>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -97,17 +95,14 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                             </Tooltip>
                             <DropdownMenuContent
                             >
-                                {
-                                    status === 'NOT_STARTED' &&
-                                    <DropdownMenuItem
-                                        onSelect={() => {
-                                            setDisplayDeleteBatchAlert(true);
-                                        }}
-                                    >
-                                        <TrashIcon className="mr-2 h-4 w-4" />
-                                        Eliminar
-                                    </DropdownMenuItem>
-                                }
+                                <DropdownMenuItem
+                                    onSelect={() => {
+                                        setDisplayDeleteBatchAlert(true);
+                                    }}
+                                >
+                                    <TrashIcon className="mr-2 h-4 w-4" />
+                                    Eliminar
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     }
@@ -123,10 +118,6 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                    <div className="flex flex-col">
-                        <p className="text-grayMain text-xs">Próximo pago:</p>
-                        <span className="text-xs text-greenMain font-bold ">11/02/2024</span>
-                    </div>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button

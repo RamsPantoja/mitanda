@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import CustomAlertDialog from "@/components/common/AlertDialog"
+import { numericFormatter } from "react-number-format"
 
 type BatchInformationProps = {
     batchIsLoading: boolean
@@ -32,6 +33,7 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         startBatchRequestMutation
     } = useBatchInformationLogic();
 
+
     if (batchIsLoading) {
         return (
             <BatchInformationSkeleton />
@@ -53,6 +55,9 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                     <div className="flex gap-2 p-4 justify-between items-center sticky top-0 z-[1] bg-blackLigth">
                         <div className="flex flex-col gap-2">
                             <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
+                            <span className="text-greenMain text-base font-bold">
+                                MX${numericFormatter(batch.contributionAmount, { thousandSeparator: ',' })} de contribución
+                            </span>
                             <p className=" text-grayMain text-base">¡No olvides que en una tanda, todos ponemos confianza y esfuerzo!</p>
                         </div>
                         {
