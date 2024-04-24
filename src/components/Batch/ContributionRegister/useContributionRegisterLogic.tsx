@@ -1,7 +1,9 @@
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useBatchStore from "../useBatchStore";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export type CheckContributionData = {
     userId: string
@@ -11,14 +13,32 @@ export type CheckContributionData = {
 
 const useContributionRegisterLogic = () => {
     const params = useParams();
-    const setParticipantIds = useBatchStore((state) => state.setParticipantIds);
+    const utils = api.useUtils();
+    const { batch, setParticipantIds } = useBatchStore((state) => state);
+    const [checkContributionData, setCheckContributionData] = useState<CheckContributionData | null>(null);
+    const [displayCheckContributionDialog, setDisplayCheckContributionDialog] = useState<boolean>(false);
+    const { data: session } = useSession();
+
     const { data: participantsData, isLoading: participantsIsLoading, isError: participantsIsError } = api.userToBatch.getParticipantsFromBatch.useQuery({
         batchId: params.id as string
     });
-    const [checkContributionData, setCheckContributionData] = useState<CheckContributionData | null>(null);
-    const [displayCheckContributionDialog, setDisplayCheckContributionDialog] = useState<boolean>(false);
 
-    console.log(checkContributionData);
+    const { mutate: addBatchContributionMutation, isPending: addBatchContributionIsPending } = api.batch.addBatchContribution.useMutation({
+        onSuccess: async () => {
+            toast.success("El registro se agrego correctamente!");
+            setDisplayCheckContributionDialog(false);
+            await utils.batch.batchById.invalidate();
+        },
+        onError: (error) => {
+            toast.error("Algo salió mal!", {
+                description: error.message,
+                action: {
+                    label: 'Enviar reporte',
+                    onClick: () => console.log("R")
+                },
+            })
+        }
+    });
 
     useEffect(() => {
         if (participantsData) {
@@ -31,13 +51,31 @@ const useContributionRegisterLogic = () => {
         setDisplayCheckContributionDialog(true);
     }
 
+    const onAddBatchContribution = () => {
+        if (checkContributionData) {
+            addBatchContributionMutation(checkContributionData);
+        }
+    }
+
+    const canEdit = useMemo(() => {
+        if (batch?.userId === session?.user.id) {
+            return true;
+        }
+
+        return false;
+    }, [batch, session])
+
     return {
         participantsData,
         participantsIsLoading,
         participantsIsError,
         onCheckContribution,
         displayCheckContributionDialog,
-        setDisplayCheckContributionDialog
+        setDisplayCheckContributionDialog,
+        addBatchContributionIsPending,
+        onAddBatchContribution,
+        batch,
+        canEdit
     }
 }
 

@@ -5,7 +5,6 @@ import useContributionRegisterLogic from "./useContributionRegisterLogic";
 import { Fragment } from "react";
 import ContributionRegisterCard from "./ContributionRegisterCard";
 import ContributionRegisterSkeleton from "./ContributionRegisterSkeleton";
-import useBatchStore from "../useBatchStore";
 import FeedbackMessage from "@/components/common/FeedbackMessage";
 import { mapSkeletons } from "@/lib/utils";
 import CustomAlertDialog from "@/components/common/AlertDialog";
@@ -22,16 +21,19 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
         participantsIsError,
         onCheckContribution,
         displayCheckContributionDialog,
-        setDisplayCheckContributionDialog
+        setDisplayCheckContributionDialog,
+        addBatchContributionIsPending,
+        onAddBatchContribution,
+        batch,
+        canEdit
     } = useContributionRegisterLogic();
-
-    const { batch } = useBatchStore((state) => state);
 
     const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <ContributionRegisterSkeleton /> });
 
     return (
         <Card className="flex flex-col gap-2 h-full overflow-hidden">
             <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
+            <span className="text-grayMain text-sm">Dá click en el icóno de billete para registrar la contribución del participante.</span>
             {
                 (participantsIsLoading || batchIsLoading) && skeletons.map((skeleton, index) => {
                     return <Fragment key={index}>
@@ -52,13 +54,13 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
             <CustomAlertDialog
                 cancelText="Cancelar"
                 actionText="Confirmar"
-                title="Cerrar sesión"
-                description={"¡Atención! ¿Estás seguro de que quieres cerrar sesión?"}
+                title="Registrar contribución"
+                description={"¡Atención! ¿Estás seguro de que quieres registrar la contribución del participante?"}
                 onCancel={() => {
                     setDisplayCheckContributionDialog(false);
                 }}
-                onAction={() => console.log("")}
-                isPending={false}
+                onAction={onAddBatchContribution}
+                isPending={addBatchContributionIsPending}
                 open={displayCheckContributionDialog}
             />
             {
@@ -75,6 +77,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
                                     key={item.userId}
                                     user={item.user}
                                     onCheck={onCheckContribution}
+                                    canEdit={canEdit}
                                 />
                             )
                         })

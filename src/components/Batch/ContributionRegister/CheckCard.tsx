@@ -11,19 +11,23 @@ type CheckCardProps = {
     batchId: string
     userId: string
     onCheck: (input: CheckContributionData) => void
+    canEdit: boolean
 }
 
-const CheckCard = ({ status, batchNumber, batchRegisterId, batchId, userId, onCheck }: CheckCardProps) => {
+const CheckCard = ({ status, batchNumber, batchRegisterId, batchId, userId, onCheck, canEdit }: CheckCardProps) => {
     const { currentBatchRegisterId } = useBatchStore((state) => state);
-    
+
     return (
         <Card className="flex flex-col gap-1 items-center justify-center">
             <span className="text-xs text-grayMain text-nowrap font-bold">{batchNumber}</span>
             {
-                status === "SUCCESS" && <BanknotesIcon className="h-6 w-6 text-green-500" />
+                status === "SUCCESS" &&
+                <div className="h-10 w-10 flex items-center justify-center">
+                    <BanknotesIcon className="h-6 w-6 text-green-500" />
+                </div>
             }
             {
-                status === "DEFAULT" &&
+                status === "DEFAULT" && canEdit &&
                 <Button
                     size="icon"
                     variant="ghost"
@@ -35,10 +39,16 @@ const CheckCard = ({ status, batchNumber, batchRegisterId, batchId, userId, onCh
                         })
                     }}
                     disabled={currentBatchRegisterId !== batchRegisterId}
-                    className={" text-gray-500 hover:text-whiteMain"}
+                    className={" text-gray-500 hover:text-whiteMain p-0"}
                 >
                     <BanknotesIcon className="h-6 w-6" />
                 </Button>
+            }
+            {
+                status === "DEFAULT" && !canEdit &&
+                <div className="h-10 w-10 flex items-center justify-center">
+                    <BanknotesIcon className="h-6 w-6 text-gray-500" />
+                </div>
             }
         </Card>
     )

@@ -9,9 +9,10 @@ import { type CheckContributionData } from "./useContributionRegisterLogic";
 type ContributionRegisterCardProps = {
     user: User
     onCheck: (input: CheckContributionData) => void
+    canEdit: boolean
 }
 
-const ContributionRegisterCard = ({ user, onCheck }: ContributionRegisterCardProps) => {
+const ContributionRegisterCard = ({ user, onCheck, canEdit }: ContributionRegisterCardProps) => {
     const { batch } = useBatchStore((state) => state);
 
     const registers = useMemo(() => {
@@ -46,7 +47,7 @@ const ContributionRegisterCard = ({ user, onCheck }: ContributionRegisterCardPro
                 <span className="text-xs text-grayMain text-nowrap font-bold ml-4 pt-2">Turnos</span>
                 <div className="flex items-center w-full flex-wrap">
                     {
-                        registers.map((register) => {
+                        registers.sort((a, b) => a.batchNumber - b.batchNumber).map((register) => {
                             return (
                                 <CheckCard
                                     key={register.id.concat(user.id)}
@@ -56,6 +57,7 @@ const ContributionRegisterCard = ({ user, onCheck }: ContributionRegisterCardPro
                                     batchId={register.batchId}
                                     userId={user.id}
                                     onCheck={onCheck}
+                                    canEdit={canEdit}
                                 />
                             )
                         })
