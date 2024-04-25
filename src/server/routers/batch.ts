@@ -62,4 +62,9 @@ export const batchRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).batchService.addBatchContribution(input);
     }),
+    batchJoinInfo: protectedProcedure
+    .input(batchByIdInputSchema)
+    .query(async ({ctx, input}) => {
+      return await ctx.services({ctx}).batchService.joinToBatchInfo(input.batchId)
+    } )
 });

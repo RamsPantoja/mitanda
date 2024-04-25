@@ -1,4 +1,4 @@
-import { batchContributions, batchRegisters, batches, contracts, usersToBatches, usersToContracts } from "../db/schema";
+import { batchContributions, batchRegisters, batches, contracts, usersToBatches, usersToContracts } from '../db/schema';
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
@@ -422,6 +422,31 @@ class BatchService {
                 updatedAt: new Date()
             })
             .where(eq(batches.id, batchId));
+    }
+
+    //get info to see if user can join to the batch
+    public async joinToBatchInfo(batchId: string): Promise<Batch | null> {
+        const batchInfoToJoin = await this.ctx.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return eq(batches.id, batchId)
+            },
+            with: {
+                usersToBatches: {
+                    where: (usersToBatches, { eq }) => {
+                        return eq(usersToBatches.batchId, batchId)
+                    }
+                }
+            }
+        })
+
+        if (!batchInfoToJoin) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'Batch not found'
+            })
+        }
+
+        return batchInfoToJoin
     }
 }
 

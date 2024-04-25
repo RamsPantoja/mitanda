@@ -164,6 +164,8 @@ export const batchesRelations = relations(batches, ({ one, many }) => ({
   }),
   batchRegisters: many(batchRegisters),
   batchContributions: many(batchContributions),
+  withdrawalsLog: many(withdrawalsLog),
+  usersToBatches: many(usersToBatches)
 }));
 
 export const contracts = createTable(
