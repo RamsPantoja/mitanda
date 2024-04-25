@@ -52,7 +52,6 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   }),
   // payments: many(payments),
   batchContributions: many(batchContributions),
-  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const accounts = createTable(
@@ -165,7 +164,6 @@ export const batchesRelations = relations(batches, ({ one, many }) => ({
   }),
   batchRegisters: many(batchRegisters),
   batchContributions: many(batchContributions),
-  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const contracts = createTable(
@@ -307,35 +305,34 @@ export const batchRegistersRelations = relations(batchRegisters, ({ one, many })
     references: [users.id]
   }),
   batchContributions: many(batchContributions),
-  withdrawalsLog: many(withdrawalsLog)
 }));
 
 export const paymentCaseEnum = pgEnum('payment_case', ["BATCH", "CROWDFUNDING", "SUSCRIPTION"]);
 
-// export const payments = createTable(
-//   "payment",
-//   {
-//     id: uuid("id").notNull().primaryKey().defaultRandom(),
-//     userId: uuid("userId")
-//       .notNull()
-//       .references(() => users.id),
-//     checkoutSessionId: text("checkoutSessionId").notNull(),
-//     paymentCase: paymentCaseEnum("paymentCase").notNull(),
-//     createdAt: timestamp('createdAt', {
-//       mode: 'date'
-//     }).notNull().defaultNow(),
-//     updatedAt: timestamp('updatedAt', {
-//       mode: 'date'
-//     }).notNull().defaultNow(),
-//   }
-// );
+export const payments = createTable(
+  "payment",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    checkoutSessionId: text("checkoutSessionId").notNull(),
+    paymentCase: paymentCaseEnum("paymentCase").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
 
-// export const paymentsRelations = relations(payments, ({ one }) => ({
-//   user: one(users, {
-//     fields: [payments.userId],
-//     references: [users.id]
-//   })
-// }));
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  user: one(users, {
+    fields: [payments.userId],
+    references: [users.id]
+  })
+}));
 
 export const batchContributions = createTable(
   "batch_contribution",
@@ -497,3 +494,32 @@ export const withdrawalRelations = relations(withdrawalsLog, ({ one }) => ({
     references: [batches.id]
   })
 }))
+
+export const paymentsToBatches = createTable(
+  "payment_to_batch",
+  {
+    paymentId: uuid("paymentId")
+      .notNull()
+      .references(() => payments.id),
+    batchId: uuid("batchId")
+      .notNull()
+      .references(() => batches.id),
+  },
+  (t) => ({
+    pk: primaryKey({
+      name: "paymentId_batchId",
+      columns: [t.paymentId, t.batchId]
+    }),
+  })
+);
+
+export const paymentsToBatchesRelations = relations(paymentsToBatches, ({ one }) => ({
+  payment: one(payments, {
+    fields: [paymentsToBatches.paymentId],
+    references: [payments.id]
+  }),
+  batch: one(batches, {
+    fields: [paymentsToBatches.batchId],
+    references: [batches.id]
+  }),
+}));
