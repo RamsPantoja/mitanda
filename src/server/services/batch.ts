@@ -23,6 +23,7 @@ type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
 type AddBatchContributionInput = z.infer<typeof addBatchContributionInputSchema>
+type JoinToBatchInfo = Batch & {usersToBatches: {userId: string, batchId: string}[]}
 
 // type BatchContributionInput = {
 //     userId: string
@@ -425,7 +426,7 @@ class BatchService {
     }
 
     //get info to see if user can join to the batch
-    public async joinToBatchInfo(batchId: string): Promise<Batch | null> {
+    public async joinToBatchInfo(batchId: string): Promise<JoinToBatchInfo | null> {
         const batchInfoToJoin = await this.ctx.db.query.batches.findFirst({
             where: (batches, { eq }) => {
                 return eq(batches.id, batchId)

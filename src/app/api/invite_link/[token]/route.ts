@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { createTRPCContext } from "@/server/trpc";
 import { createCaller } from "@/server/root";
+import { usersToBatches } from '../../../../server/db/schema';
 
 const createContext = async (req: NextRequest) => {
   return createTRPCContext({
@@ -42,9 +43,23 @@ const handler = async (
 
   if (dataToken?.batchId) {
     await getUserSession(params.token);
+
+    const batchJoinInfo = await caller.batch.batchJoinInfo({
+      batchId: dataToken.batchId as string
+    })
+
+    const batchStatus = batchJoinInfo?.status
+
+    console.log(batchJoinInfo?.status, batchJoinInfo?.usersToBatches.length)
+
+    batchJoinInfo ? batchStatus === "IN_PROGRESS" || batchStatus === 'FINISHED' || batchStatus === 'PAUSED' ? redirect('/joinToBatchError/BATCH_ONPROGRESS')
+      : batchJoinInfo.usersToBatches.length === batchJoinInfo.seats ? redirect('/joinToBatchError/MAX_USERS') : null
+      : null
+
     const addUserToBatch = await caller.batch.addUserToBatch({
       batchId: dataToken.batchId as string
     });
+
 
     if (addUserToBatch) {
       redirect(`/dashboard/batches/batch/${addUserToBatch.batchId}`);

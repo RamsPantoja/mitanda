@@ -16,8 +16,8 @@ enum JoinErrorProps {
 export default function JoinToBatchError() {
   const joinToBatchError = useParams<{ error: JoinErrorProps }>()
 
-  const message = joinToBatchError.error === JoinErrorProps.limit ? 'La tanda a la que te intentas unir ya alcanzo el numero maximo de participantes'
-    : joinToBatchError.error === JoinErrorProps.batchStarted ? 'La tanda ya ha sido iniciada, no puedes unirte' : null
+  const message = joinToBatchError.error === JoinErrorProps.limit ? ' here La tanda a la que te intentas unir ya alcanzo el numero maximo de participantes'
+    : joinToBatchError.error === JoinErrorProps.batchStarted ? ' La tanda ya ha sido iniciada, pausada o finalizada, no es posible unirte' : null
 
   return (
     <div className='flex flex-col gap-4 w-full h-svh bg-blackMain border-2 items-center p-4'>
