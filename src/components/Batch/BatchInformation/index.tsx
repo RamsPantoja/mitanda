@@ -29,8 +29,8 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         participantIds,
         setDisplayAlertForInitBatch,
         displayAlertForInitBatch,
-        startBatchRequestIsPending,
-        startBatchRequestMutation
+        startBatchIsPending,
+        startBatchMutation,
     } = useBatchInformationLogic();
 
 
@@ -65,19 +65,19 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                             <div className="flex items-center gap-2">
                                 <CustomAlertDialog
                                     cancelText="Cancelar"
-                                    actionText="Enviar"
-                                    title="Solicitud para iniciar tanda"
-                                    description={`Estás a punto de enviar una solicitud a todos los participantes para inciar la tanda. Puedes cancelar esta operación si así lo deseas.`}
+                                    actionText="Iniciar"
+                                    title="Iniciar tanda"
+                                    description={`Estás a punto de inciar la tanda. Puedes cancelar esta operación si así lo deseas.`}
                                     onCancel={() => {
                                         setDisplayAlertForInitBatch(false);
                                     }}
                                     onAction={() => {
-                                        startBatchRequestMutation({
+                                        startBatchMutation({
                                             batchId: batch.id,
                                             participantIds
                                         })
                                     }}
-                                    isPending={startBatchRequestIsPending}
+                                    isPending={startBatchIsPending}
                                     open={displayAlertForInitBatch}
                                 />
                                 <MitandaButton

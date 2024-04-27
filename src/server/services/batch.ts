@@ -2,6 +2,7 @@ import { batchContributions, batchRegisters, batches, contracts, usersToBatches,
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
+    type startBatchInputSchema,
     type addBatchContributionInputSchema,
     type batchPaymentLinkInputSchema,
     type createBatchInputSchema,
@@ -11,6 +12,12 @@ import { type Session } from "next-auth";
 import { and, eq, like } from "drizzle-orm";
 import { type TRPCContext } from "../trpc";
 import type StripeService from "./stripe";
+import type NotificationService from './notification';
+import type MailService from './mail';
+import { DateTime, type DurationLike } from 'luxon';
+import { type NotificationInsert } from './notification';
+import startedBatchEmail from '../emails/started_batch';
+import { env } from '@/env';
 // import { type BatchContribution } from "./batchContribution";
 
 type BatchServiceContructor = {
@@ -23,7 +30,15 @@ type CreateBatchInput = z.infer<typeof createBatchInputSchema>
 type WhereInputBatch = z.infer<typeof whereInputBatchSchema>
 type BatchPaymentLinkInput = z.infer<typeof batchPaymentLinkInputSchema>
 type AddBatchContributionInput = z.infer<typeof addBatchContributionInputSchema>
-type JoinToBatchInfo = Batch & {usersToBatches: {userId: string, batchId: string}[]}
+type JoinToBatchInfo = Batch & { usersToBatches: { userId: string, batchId: string }[] }
+type StartBatchInputSchema = z.infer<typeof startBatchInputSchema>
+type BatchRegisterInsert = typeof batchRegisters.$inferInsert;
+
+type StartBatchRequestInput = {
+    startBatchInputSchema: StartBatchInputSchema
+    notificationService: NotificationService
+    mailService: MailService
+}
 
 // type BatchContributionInput = {
 //     userId: string
@@ -448,6 +463,176 @@ class BatchService {
         }
 
         return batchInfoToJoin
+    }
+
+    private buildBatchRegisters(batch: Batch, participantIds: string[]) {
+        const registers: BatchRegisterInsert[] = [];
+
+        const shuffle = (array: string[]): string[] => {
+            // Create a copy of the array to avoid modifying the original
+            const shuffledArray = [...array];
+
+            let currentIndex = shuffledArray.length;
+            let randomIndex;
+
+            // While there are elements remaining to shuffle
+            while (currentIndex !== 0) {
+                // Pick a remaining element
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+
+                // Swap the current element with the random element
+                [shuffledArray[currentIndex] as unknown, shuffledArray[randomIndex] as unknown] = [
+                    shuffledArray[randomIndex],
+                    shuffledArray[currentIndex],
+                ];
+            }
+
+            return shuffledArray;
+        };
+
+        const participantIdsSuffle = shuffle(participantIds);
+
+        const getTimeFactor = (): DurationLike => {
+            switch (batch.frequency) {
+                case "WEEKLY":
+                    return {
+                        week: 1
+                    }
+                case "BIWEEKLY":
+                    return {
+                        weeks: 2
+                    }
+                case "MONTHLY":
+                    return {
+                        month: 1
+                    }
+                default:
+                    return {};
+            }
+        }
+
+        for (let i = 0; i < participantIdsSuffle.length; i++) {
+            const accumulator: BatchRegisterInsert[] = [...registers];
+            const previousElement = accumulator[i - 1];
+            const participantId = participantIdsSuffle[i];
+
+            if (!participantId) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'ParticipantID not provided',
+                });
+            }
+
+            if (previousElement) {
+                registers.push({
+                    batchId: batch.id,
+                    frequency: batch.frequency,
+                    startDate: previousElement.endDate,
+                    endDate: DateTime.fromJSDate(previousElement.endDate).plus(getTimeFactor()).toJSDate(),
+                    batchNumber: i + 1,
+                    recipientId: participantId
+                });
+            } else {
+                registers.push({
+                    batchId: batch.id,
+                    frequency: batch.frequency,
+                    startDate: DateTime.now().toJSDate(),
+                    endDate: DateTime.now().plus(getTimeFactor()).toJSDate(),
+                    batchNumber: i + 1,
+                    recipientId: participantId
+                });
+            }
+        }
+
+        return registers;
+    }
+
+    public async startBatch(input: StartBatchRequestInput) {
+        const {
+            startBatchInputSchema,
+            notificationService,
+            mailService
+        } = input;
+
+        const batch = await this.ctx.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return and(
+                    eq(batches.id, startBatchInputSchema.batchId),
+                )
+            }
+        });
+
+        const result = await this.ctx.db.transaction(async (tx) => {
+            if (!batch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not found',
+                });
+            };
+
+            if (batch.status === 'IN_PROGRESS') {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'The batch already has been initialized',
+                });
+            }
+
+            //Method to build the Batch registers that will be inserted 
+            const batchRegistersToInsert = this.buildBatchRegisters(batch, startBatchInputSchema.participantIds);
+
+            await tx.insert(batchRegisters).values(batchRegistersToInsert);
+
+            //Updating the batch to InProgress status, then the batch has been started
+            const [updatedBatch] = await tx.update(batches)
+                .set({
+                    status: "IN_PROGRESS",
+                    updatedAt: new Date()
+                })
+                .where(eq(batches.id, startBatchInputSchema.batchId))
+                .returning();
+
+            if (!updatedBatch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'The batch may not have started correctly',
+                });
+            }
+
+            return updatedBatch;
+        });
+
+        //If result is different of undefined means that the batch has been started and send notifications
+        if (result && batch) {
+            const notifications: NotificationInsert[] = startBatchInputSchema.participantIds.map((item) => {
+                return {
+                    link: `/dashboard/batches/batch/${batch.id}`,
+                    iconUrl: "",
+                    receiverId: item,
+                    content: `<p>La tanda <strong>${batch.name}</strong> ha sido iniciada!</p>`
+                }
+            });
+
+            await notificationService.create(notifications);
+
+            const usersList = await this.ctx.db.query.users.findMany({
+                where: (users, { inArray }) => {
+                    return inArray(users.id, startBatchInputSchema.participantIds)
+                }
+            });
+
+            await mailService.send({
+                to: usersList.map((item) => item.email),
+                from: 'Mitanda <no-reply@mitanda.xyz>',
+                subject: "Tanda iniciada",
+                html: startedBatchEmail({
+                    batchName: batch.name,
+                    link: `${env.NEXTAUTH_URL}/dashboard/batches/batch/${batch.id}`
+                })
+            });
+        }
+
+        return result;
     }
 }
 

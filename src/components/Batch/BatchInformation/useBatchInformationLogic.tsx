@@ -52,9 +52,11 @@ const useBatchInformationLogic = () => {
         });
     }, [batch]);
 
-    const { mutate: startBatchRequestMutation, isPending: startBatchRequestIsPending } = api.batchRequest.startBatchRequest.useMutation({
+    const { mutate: startBatchMutation, isPending: startBatchIsPending } = api.batch.startBatch.useMutation({
         onSuccess: async () => {
-            toast.success("La solicitud para iniciar la tanda ha sido enviada a todos los participantes.")
+            toast.success("Genial! La tanda ha iniciado.");
+            setDisplayAlertForInitBatch(false);
+            await utils.batch.batchById.invalidate(); 
         },
         onError: (error) => {
             toast.error("Algo salió mal!", {
@@ -175,8 +177,8 @@ const useBatchInformationLogic = () => {
         participantIds,
         setDisplayAlertForInitBatch,
         displayAlertForInitBatch,
-        startBatchRequestIsPending,
-        startBatchRequestMutation
+        startBatchIsPending,
+        startBatchMutation
     }
 }
 

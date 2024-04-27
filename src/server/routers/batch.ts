@@ -12,6 +12,7 @@ import {
   deleteBatchInputSchema,
   finishBatchInputSchema,
   ownBatchesInputSchema,
+  startBatchInputSchema,
   userToBatchInputSchema
 } from "../schema/batch";
 
@@ -62,9 +63,18 @@ export const batchRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.services({ ctx }).batchService.addBatchContribution(input);
     }),
-    batchJoinInfo: protectedProcedure
+  batchJoinInfo: protectedProcedure
     .input(batchByIdInputSchema)
-    .query(async ({ctx, input}) => {
-      return await ctx.services({ctx}).batchService.joinToBatchInfo(input.batchId)
-    } )
+    .query(async ({ ctx, input }) => {
+      return await ctx.services({ ctx }).batchService.joinToBatchInfo(input.batchId)
+    }),
+  startBatch: protectedProcedure
+    .input(startBatchInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.services({ ctx }).batchService.startBatch({
+        startBatchInputSchema: input,
+        notificationService: ctx.services({ ctx }).notificationService,
+        mailService: ctx.services({ ctx }).mailService,
+      });
+    }),
 });
