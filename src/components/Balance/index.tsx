@@ -1,17 +1,15 @@
 "use client"
 
-import Billing from "./Billing";
 import CurrentBalance from "./CurrentBalance";
-import Withdrawals from "./Withdrawals";
+import BatchRegisterList from "./BatchRegisterList";
 
 const BalanceContainer = () => {
     return (
-        <div className="flex flex-row gap-4 w-full ">
-            <div className="flex flex-col gap-4 w-1/5">
+        <div className="flex flex-col gap-2 w-full ">
+            <div className="flex flex-row flex-wrap gap-2">
                 <CurrentBalance />
-                <Billing />
             </div>
-            <Withdrawals/>
+            <BatchRegisterList />
         </div>
     )
 }

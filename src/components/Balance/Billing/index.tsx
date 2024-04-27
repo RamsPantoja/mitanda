@@ -7,7 +7,6 @@ const Billing = () => {
     const {
         stripeFlowMutation,
         createStripeDashboardLink,
-        onboardingStateData,
         getOnboardingError,
         loadingOnboardingState,
         onboardingState,
