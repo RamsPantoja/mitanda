@@ -60,7 +60,6 @@ const handler = async (
       batchId: dataToken.batchId as string
     });
 
-
     if (addUserToBatch) {
       redirect(`/dashboard/batches/batch/${addUserToBatch.batchId}`);
     } else {
