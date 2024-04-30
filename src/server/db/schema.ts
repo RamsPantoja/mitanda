@@ -164,7 +164,6 @@ export const batchesRelations = relations(batches, ({ one, many }) => ({
   }),
   batchRegisters: many(batchRegisters),
   batchContributions: many(batchContributions),
-  withdrawalsLog: many(withdrawalsLog),
   usersToBatches: many(usersToBatches)
 }));
 
@@ -466,35 +465,6 @@ export const batchRequestsToUsersRelations = relations(batchRequestsToUsers, ({ 
     fields: [batchRequestsToUsers.batchRequestId],
     references: [batchRequests.id]
   }),
-}))
-
-export const withdrawalsLog = createTable(
-  'withdrawal_logs',
-  {
-    id: uuid('id').notNull().primaryKey().defaultRandom(),
-    userId: uuid('userId').notNull().references(() => users.id),
-    amount: numeric('amount').notNull(),
-    batchRegisterId: uuid('batchRegisterId').notNull().references(() => batchRegisters.id),
-    batchId: uuid('batchId').notNull().references(() => batches.id),
-    createdAt: timestamp('createdAt', {
-      mode: 'date'
-    })
-  }
-)
-
-export const withdrawalRelations = relations(withdrawalsLog, ({ one }) => ({
-  user: one(users, {
-    fields: [withdrawalsLog.userId],
-    references: [users.id]
-  }),
-  register: one(batchRegisters, {
-    fields: [withdrawalsLog.batchRegisterId],
-    references: [batchRegisters.id]
-  }),
-  batch: one(batches, {
-    fields: [withdrawalsLog.batchId],
-    references: [batches.id]
-  })
 }))
 
 export const paymentsToBatches = createTable(
