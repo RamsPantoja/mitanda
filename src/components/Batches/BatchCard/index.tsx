@@ -50,7 +50,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
     } = useBatchCardLogic();
 
     return (
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delayDuration={150}>
             <CustomAlertDialog
                 cancelText="Cancelar"
                 actionText="Eliminar"

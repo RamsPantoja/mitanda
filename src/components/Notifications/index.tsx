@@ -64,12 +64,16 @@ const Notifications = ({ session }: NotificationsProps) => {
                 }
                 {
                     !notificationsIsLoading && !notificationsError && notificationsData?.length === 0 &&
-                    <FeedbackMessage status="INFORMATION" message="No hay contribuciones realizadas" />
+                    <div className="p-4">
+                        <FeedbackMessage status="INFORMATION" message="No hay notificaciones" />
+                    </div>
                 }
                 {
                     !notificationsIsLoading &&
                     notificationsError &&
-                    <FeedbackMessage status="ERROR" message="Algo salio mal! No se pueden obtener las contribuciones." />
+                    <div className="p-4">
+                        <FeedbackMessage status="ERROR" message="Algo salio mal! No se pueden obtener las notificaciones." />
+                    </div>
                 }
             </PopoverContent>
         </Popover >

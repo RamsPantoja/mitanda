@@ -181,10 +181,10 @@ const BatchForm = () => {
                                             <RadioGroupItem value="BIWEEKLY" id="r2" />
                                             <Label className="text-whiteMain" htmlFor="r2">Quincenal</Label>
                                         </div>
-                                        <div className="flex items-center space-x-2">
+                                        {/* <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="MONTHLY" id="r3" />
                                             <Label className="text-whiteMain" htmlFor="r3">Mensual</Label>
-                                        </div>
+                                        </div> */}
                                     </RadioGroup>
                                 )}
                             />
@@ -211,14 +211,14 @@ const BatchForm = () => {
                                 <li>El orden de beneficiario se determinará mediante sorteo y se establecerá al principio de la tanda.</li>
                             </ul>
 
-                            <span className="text-xs text-whiteMain font-bold">Método de Pago:</span>
+                            {/* <span className="text-xs text-whiteMain font-bold">Método de Pago:</span>
                             <ul className="list-disc p-4 text-xs text-whiteMain">
                                 <li>Las contribuciones se realizarán a través de transferencia bancaria ó tarjeta de crédito/débito.</li>
-                            </ul>
+                            </ul> */}
 
                             <span className="text-xs text-whiteMain font-bold">Registro:</span>
                             <ul className="list-disc p-4 text-xs text-whiteMain">
-                                <li>Un registro detallado de las contribuciones y los pagos se mantendrá y estará disponible para todos los participantes.</li>
+                                <li>Un registro detallado de las contribuciones se mantendrá y estará disponible para todos los participantes.</li>
                             </ul>
 
                             <span className="text-xs text-whiteMain font-bold">Consecuencias por Incumplimiento:</span>

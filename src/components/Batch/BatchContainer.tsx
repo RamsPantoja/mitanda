@@ -21,7 +21,7 @@ const BatchContainer = ({ session }: BatchContainerProps) => {
 
     return (
         <SessionProvider session={session}>
-            <TooltipProvider delayDuration={300}>
+            <TooltipProvider delayDuration={150}>
                 <div className="flex flex-col gap-2 w-full">
                     <BatchRequestDialog />
                     <BatchInformation
