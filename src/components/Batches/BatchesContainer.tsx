@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import useBatchesLogic from "./useBatchesLogic";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import FeedbackMessage from "../common/FeedbackMessage";
 
 type BatchesContainerProps = {
     session: Session
@@ -20,7 +21,9 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
         displayOnlyOwnBatches,
         onOwnBatches,
         batchesData,
-        batchesIsLoading
+        batchesIsLoading,
+        ownBatchesError,
+        batchesError
     } = useBatchesLogic();
 
     return (
@@ -68,6 +71,18 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
                                 />
                             )
                         })
+                    }
+                    {
+                        displayOnlyOwnBatches && !ownBatchesIsLoading && !ownBatchesError && ownBatchesData && ownBatchesData.length === 0 &&
+                        <FeedbackMessage status="INFORMATION" message="No hay tandas creadas" />
+                    }
+                    {
+                        !displayOnlyOwnBatches && !batchesIsLoading && !batchesError && batchesData && batchesData.length === 0 &&
+                        <FeedbackMessage status="INFORMATION" message="No hay tandas en las que estés participando." />
+                    }
+                    {
+                        (batchesError ?? ownBatchesError) &&
+                        <FeedbackMessage status="ERROR" message="Algo salio mal! No se pueden obtener las tandas." />
                     }
                 </div>
             </div>

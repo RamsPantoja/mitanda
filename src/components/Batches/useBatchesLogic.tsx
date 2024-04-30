@@ -7,7 +7,7 @@ const useBatchesLogic = () => {
     const [searchBatchName, setSearchBatchName] = useState<string>('')
     const [displayOnlyOwnBatches, setDisplayOnlyOwnBatches] = useState<boolean>(false);
 
-    const { data: ownBatchesData, isLoading: ownBatchesIsLoading } = api.batch.ownBatches.useQuery(
+    const { data: ownBatchesData, isLoading: ownBatchesIsLoading, error: ownBatchesError } = api.batch.ownBatches.useQuery(
         {
             where: {
                 name: searchBatchName
@@ -18,7 +18,7 @@ const useBatchesLogic = () => {
         }
     );
 
-    const { data: batchesData, isLoading: batchesIsLoading } = api.batch.batches.useQuery(
+    const { data: batchesData, isLoading: batchesIsLoading, error: batchesError } = api.batch.batches.useQuery(
         {
             where: {
                 name: searchBatchName
@@ -51,7 +51,9 @@ const useBatchesLogic = () => {
         displayOnlyOwnBatches,
         onOwnBatches,
         batchesData,
-        batchesIsLoading
+        batchesIsLoading,
+        ownBatchesError,
+        batchesError
     }
 }
 
