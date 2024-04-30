@@ -1,4 +1,4 @@
-import { batchContributions, batchRegisters, batches, contracts, usersToBatches, usersToContracts } from '../db/schema';
+import { batchContributions, batchRegisters, batches, contracts, paymentsToBatches, usersToBatches, usersToContracts } from '../db/schema';
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
@@ -45,6 +45,12 @@ type StartBatchRequestInput = {
 //     batchRegisterIds?: string
 //     batchId?: string
 // }
+
+type CreateBatchByPaymentInput = {
+    userId?: string
+    batchData?: string
+    paymentId: string
+}
 
 class BatchService {
     ctx: TRPCContext
@@ -633,6 +639,94 @@ class BatchService {
         }
 
         return result;
+    }
+
+    public async firstBatchByUserId(userId: string) {
+        const userHasBatch = await this.ctx.db.query.batches.findFirst({
+            where: (batches, { eq }) => {
+                return eq(batches.userId, userId)
+            }
+        });
+
+        if (userHasBatch) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public async createBatchByPayment(input: CreateBatchByPaymentInput) {
+        const {
+            paymentId,
+            batchData,
+            userId
+        } = input;
+
+
+        if (!batchData) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'Batch data not provided',
+            });
+        }
+
+        if (!userId) {
+            throw new TRPCError({
+                code: "CONFLICT",
+                message: 'User id not provided',
+            });
+        }
+
+        const batchDataParse = JSON.parse(batchData) as NewBatch;
+
+        const batch = await this.ctx.db.transaction(async (tx) => {
+            const [contract] = await tx.insert(contracts).values({
+                contributionAmount: batchDataParse.contributionAmount.toString(),
+                frequency: batchDataParse.frequency
+            }).returning()
+
+            if (!contract) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Contract not created',
+                });
+            }
+
+            const [batch] = await tx.insert(batches).values({
+                name: batchDataParse.name,
+                contributionAmount: batchDataParse.contributionAmount.toString(),
+                seats: batchDataParse.seats,
+                frequency: batchDataParse.frequency,
+                userId,
+                contractId: contract.id
+            }).returning()
+
+            if (!batch) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: 'Batch not created',
+                });
+            }
+
+            await tx.insert(usersToContracts).values({
+                userId,
+                contractId: contract.id
+            });
+
+            await tx.insert(usersToBatches).values({
+                userId,
+                batchId: batch.id
+            });
+
+            await tx.insert(paymentsToBatches).values({
+                paymentId,
+                batchId: batch.id
+            });
+
+            return batch;
+        })
+
+        return batch;
     }
 }
 

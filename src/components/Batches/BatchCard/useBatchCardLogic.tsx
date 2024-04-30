@@ -22,6 +22,7 @@ const useBatchCardLogic = () => {
             toast.success(`La tanda <<${data?.name}>> ha sido eliminada`);
             await utils.batch.ownBatches.invalidate();
             await utils.batch.batches.invalidate();
+            await utils.batch.needToPayForBatch.invalidate();
             setDisplayDeleteBatchAlert(false);
         },
         onError: (error) => {

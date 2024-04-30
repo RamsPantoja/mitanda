@@ -1,7 +1,7 @@
 import { type stripeItemSchema, type stripeRelationIdInputSchema } from "../schema/stripe";
 import { type z } from "zod";
 import { type Session } from "next-auth";
-import { stripeAccounts } from '../db/schema';
+import { payments, stripeAccounts } from '../db/schema';
 import { TRPCError } from "@trpc/server";
 import { Stripe } from 'stripe'
 import { eq } from "drizzle-orm";
@@ -38,17 +38,18 @@ type ProcessPaymentInput = {
     batchService: BatchService
 }
 
-// type CreatePaymentInput = {
-//     userId: string
-//     checkoutSessionId: string
-//     paymentCase: PaymentCase
-// }
+type CreatePaymentInput = {
+    userId: string
+    checkoutSessionId: string
+    paymentCase: PaymentCase
+}
 
 export type MetadataPayment = {
     userId?: string
     batchRegisterIds?: string
     paymentCase?: PaymentCase
     batchId?: string
+    batchData?: string
 }
 
 export type StripeAccount = typeof stripeAccounts.$inferInsert
@@ -236,29 +237,30 @@ class StripeService {
         };
     }
 
-    // private async createPayment(input: CreatePaymentInput) {
-    //     const [payment] = await this.ctx.db.insert(payments).values({
-    //         userId: input.userId,
-    //         checkoutSessionId: input.checkoutSessionId,
-    //         paymentCase: input.paymentCase,
-    //     }).returning();
+    private async createPayment(input: CreatePaymentInput) {
+        const [payment] = await this.ctx.db.insert(payments).values({
+            userId: input.userId,
+            checkoutSessionId: input.checkoutSessionId,
+            paymentCase: input.paymentCase,
+        }).returning();
 
-    //     if (!payment) {
-    //         throw new TRPCError({
-    //             code: 'CONFLICT',
-    //             message: 'Payment was not created'
-    //         })
-    //     }
+        if (!payment) {
+            throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'Payment was not created'
+            })
+        }
 
-    //     return payment;
-    // }
+        return payment;
+    }
 
     public async processPayment(paymentProcessInput: ProcessPaymentInput) {
-        const { data } = paymentProcessInput;
+        const { data, batchService } = paymentProcessInput;
 
         const {
             userId,
             paymentCase,
+            batchData
         } = data.metadata as MetadataPayment;
 
         if (!userId) {
@@ -275,16 +277,20 @@ class StripeService {
             })
         }
 
-        // const payment = await this.createPayment({
-        //     userId: userId,
-        //     checkoutSessionId: data.id,
-        //     paymentCase: paymentCase
-        // });
+        const payment = await this.createPayment({
+            userId: userId,
+            checkoutSessionId: data.id,
+            paymentCase: paymentCase
+        });
 
         if (paymentCase) {
             switch (paymentCase) {
                 case "BATCH": {
-
+                    await batchService.createBatchByPayment({
+                        batchData,
+                        paymentId: payment.id,
+                        userId
+                    });
                 }
                     break;
                 default:

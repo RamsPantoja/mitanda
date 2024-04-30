@@ -77,4 +77,8 @@ export const batchRouter = createTRPCRouter({
         mailService: ctx.services({ ctx }).mailService,
       });
     }),
+  needToPayForBatch: protectedProcedure
+    .query(async ({ ctx }) => {
+      return await ctx.services({ ctx }).batchService.firstBatchByUserId(ctx.session.user.id);
+    }),
 });

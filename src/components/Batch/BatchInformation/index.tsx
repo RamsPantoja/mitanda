@@ -33,7 +33,6 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         startBatchMutation,
     } = useBatchInformationLogic();
 
-
     if (batchIsLoading) {
         return (
             <BatchInformationSkeleton />

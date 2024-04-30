@@ -145,23 +145,23 @@ const useBatchInformationLogic = () => {
                 })
             ];
 
-            batchPaymentLinkData({
-                data: {
-                    items,
-                    currency: "MXN",
-                    cancelUrl: `${getPublicBaseUrl()}${pathname}`,
-                    successUrl: `${getPublicBaseUrl()}${pathname}`,
-                    metadata: {
-                        userId: session?.user.id,
-                        batchRegisterIds: [
-                            currentBatchRegister.id,
-                            ...previousBatchRegistersWithoutUserContribution.map((item) => item.id)
-                        ],
-                        paymentCase: "BATCH",
-                        batchId: batch.id
-                    }
-                }
-            });
+            // batchPaymentLinkData({
+            //     data: {
+            //         items,
+            //         currency: "MXN",
+            //         cancelUrl: `${getPublicBaseUrl()}${pathname}`,
+            //         successUrl: `${getPublicBaseUrl()}${pathname}`,
+            //         metadata: {
+            //             userId: session?.user.id,
+            //             batchRegisterIds: [
+            //                 currentBatchRegister.id,
+            //                 ...previousBatchRegistersWithoutUserContribution.map((item) => item.id)
+            //             ],
+            //             paymentCase: "BATCH",
+            //             batchId: batch.id
+            //         }
+            //     }
+            // });
         }
     };
 

@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { api } from "@/trpc/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getPublicBaseUrl } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const batchValidationSchema = z
     .object({
@@ -33,6 +36,9 @@ const batchValidationSchema = z
 export type BatchValidationSchema = z.infer<typeof batchValidationSchema>
 
 const useBatchFormLogic = () => {
+    const pathname = usePathname();
+    const { data: session } = useSession();
+    const router = useRouter();
     const utils = api.useUtils();
     const [displayBatchForm, setDisplayBatchForm] = useState<boolean>(false);
     const useFormBatch = useForm<BatchValidationSchema>({
@@ -53,21 +59,60 @@ const useBatchFormLogic = () => {
             toast.success('Tanda creada!');
             await utils.batch.ownBatches.invalidate();
             await utils.batch.batches.invalidate();
+            await utils.batch.needToPayForBatch.invalidate();
         },
         onError: (error) => {
             toast.error(error.message);
         }
     })
 
-    const onCreateBatch = (data: BatchValidationSchema) => {
-        createBatchMutation({
-            batchInput: {
-                name: data.name,
-                contributionAmount: data.contributionAmount,
-                seats: data.seats,
-                frequency: data.frequency
+    const { mutate: batchPaymentLinkMutation, isPending: batchPaymentLinkIsPending } = api.batch.batchPaymentLink.useMutation({
+        onSuccess: async (data) => {
+            if (data.paymentUrl) {
+                router.push(data.paymentUrl);
             }
-        });
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        }
+    });
+
+    const { data: needToPayForBatchData, isLoading: needToPayForBatchIsLoading } = api.batch.needToPayForBatch.useQuery();
+
+    const onCreateBatch = (data: BatchValidationSchema) => {
+        if (needToPayForBatchData) {
+            batchPaymentLinkMutation({
+                data: {
+                    items: [{
+                        unitPrice: 99,
+                        concept: "Creación de tanda",
+                        quantity: 1
+                    }],
+                    currency: "MXN",
+                    cancelUrl: `${getPublicBaseUrl()}${pathname}`,
+                    successUrl: `${getPublicBaseUrl()}${pathname}`,
+                    metadata: {
+                        batchData: {
+                            name: data.name,
+                            contributionAmount: data.contributionAmount,
+                            seats: data.seats,
+                            frequency: data.frequency,
+                        },
+                        paymentCase: "BATCH",
+                        userId: session?.user.id,
+                    }
+                }
+            });
+        } else {
+            createBatchMutation({
+                batchInput: {
+                    name: data.name,
+                    contributionAmount: data.contributionAmount,
+                    seats: data.seats,
+                    frequency: data.frequency
+                }
+            });
+        }
     }
 
     return {
@@ -76,6 +121,9 @@ const useBatchFormLogic = () => {
         displayBatchForm,
         setDisplayBatchForm,
         createBatchMutationIsPending,
+        needToPayForBatchIsLoading,
+        needToPayForBatchData,
+        batchPaymentLinkIsPending
     }
 }
 

@@ -20,8 +20,12 @@ const BatchForm = () => {
         createBatchMutationIsPending,
         onCreateBatch,
         displayBatchForm,
-        setDisplayBatchForm
+        setDisplayBatchForm,
+        needToPayForBatchIsLoading,
+        needToPayForBatchData,
+        batchPaymentLinkIsPending
     } = useBatchFormLogic();
+
     const { register, formState, control, watch, reset } = useFormBatch;
     const watcher = watch();
 
@@ -40,6 +44,7 @@ const BatchForm = () => {
                 <MitandaButton
                     variant='default'
                     startIcon={<PlusCircleIcon className="h-5 w-5 text-blackMain" />}
+                    isPending={needToPayForBatchIsLoading}
                 >Crear</MitandaButton>
             </DialogTrigger>
             <DialogContent
@@ -256,6 +261,13 @@ const BatchForm = () => {
                         {
                             formState.errors.agreeTerms && <ErrorMessageInput status="ERROR" message={formState.errors.agreeTerms.message} />
                         }
+                        {
+                            needToPayForBatchData &&
+                            <div className="flex flex-col items-end justify-center mt-4">
+                                <span className="text-whiteMain font-black">MX$99</span>
+                                <span className="text-xs text-grayMain">IVA incluido</span>
+                            </div>
+                        }
                     </div>
                 </div>
                 <DialogFooter className="flex flex-row items-center justify-between gap-2">
@@ -264,7 +276,23 @@ const BatchForm = () => {
                             Descartar
                         </MitandaButton>
                     </DialogClose>
-                    <MitandaButton onClick={useFormBatch.handleSubmit(onCreateBatch)} size='sm' variant='default' isPending={createBatchMutationIsPending}>Crear tanda</MitandaButton>
+                    {
+                        needToPayForBatchData ?
+                            <MitandaButton
+                                onClick={useFormBatch.handleSubmit(onCreateBatch)}
+                                size='sm'
+                                variant='default'
+                                isPending={batchPaymentLinkIsPending}>
+                                Pagar
+                            </MitandaButton> :
+                            <MitandaButton
+                                onClick={useFormBatch.handleSubmit(onCreateBatch)}
+                                size='sm'
+                                variant='default'
+                                isPending={createBatchMutationIsPending || needToPayForBatchIsLoading}>
+                                Crear tanda
+                            </MitandaButton>
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog>
