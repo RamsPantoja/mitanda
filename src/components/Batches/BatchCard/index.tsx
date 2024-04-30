@@ -1,12 +1,12 @@
 "use client"
 
-import { EllipsisVerticalIcon, ShareIcon, KeyIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { ShareIcon, KeyIcon, CheckIcon } from "@heroicons/react/24/outline";
+// import {
+//     DropdownMenu,
+//     DropdownMenuContent,
+//     DropdownMenuItem,
+//     DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -32,7 +32,7 @@ export type BatchCardProps = {
 }
 
 
-const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id }: BatchCardProps) => {
     const { data: session } = useSession();
 
     const contributionAmountFormatted = numericFormatter(contributionAmount, {
@@ -66,7 +66,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                 open={displayDeleteBatchAlert}
             />
             <div className="p-4 rounded-md bg-blackNormal max-w-40 min-w-40 min-h-48 max-h-48 flex flex-col gap-1">
-                <div className="flex w-full items-center justify-between gap-2 min-h-8">
+                <div className="flex w-full items-center justify-end gap-2 min-h-8">
                     {
                         ownerId === session?.user.id &&
                         <Tooltip>
@@ -80,7 +80,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                             </TooltipContent>
                         </Tooltip>
                     }
-                    {
+                    {/* {
                         ownerId === session?.user.id && status === "NOT_STARTED" &&
                         <DropdownMenu>
                             <Tooltip>
@@ -105,7 +105,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    }
+                    } */}
                 </div>
                 <div className="flex flex-col gap-1 h-full">
                     <Link href={`/dashboard/batches/batch/${id}`} className="text-whiteMain font-bold text-sm underline flex max-w-max">
@@ -117,7 +117,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, status, id }
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-end">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
