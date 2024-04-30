@@ -8,9 +8,10 @@ import { Card } from "@/components/ui/card"
 // import TimerComponent from "@/components/common/Timer"
 // import { DateTime } from "luxon"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import { CheckIcon, InformationCircleIcon, ShareIcon } from "@heroicons/react/24/outline"
 import CustomAlertDialog from "@/components/common/AlertDialog"
 import { numericFormatter } from "react-number-format"
+import { Button } from "@/components/ui/button"
 
 type BatchInformationProps = {
     batchIsLoading: boolean
@@ -31,6 +32,9 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
         displayAlertForInitBatch,
         startBatchIsPending,
         startBatchMutation,
+        handleCopyInviteLink,
+        inviteLinkCopied,
+        setInviteLinkCopied
     } = useBatchInformationLogic();
 
     if (batchIsLoading) {
@@ -53,7 +57,34 @@ const BatchInformation = ({ batchIsError, batchIsLoading }: BatchInformationProp
                 batch && <Fragment>
                     <div className="flex gap-2 p-4 justify-between items-center sticky top-0 z-[1] bg-blackLigth">
                         <div className="flex flex-col gap-2">
-                            <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
+                            <div className="flex items-center gap-2">
+                                <p className=" text-whiteMain text-4xl font-black">{batch.name}</p>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant='ghost'
+                                            className=" h-8 w-8 p-0 hover:bg-blackMain"
+                                            onClick={async () => {
+                                                await handleCopyInviteLink(batch.id);
+                                            }}
+                                            onMouseLeave={() => {
+                                                if (inviteLinkCopied) {
+                                                    setTimeout(() => {
+                                                        setInviteLinkCopied(false);
+                                                    }, 1000);
+                                                }
+                                            }}
+                                        >
+                                            {
+                                                inviteLinkCopied ? <CheckIcon className="h-4 w-4 text-whiteMain" /> : <ShareIcon className="h-4 w-4 text-whiteMain" />
+                                            }
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className=" bg-blackMain border-none">
+                                        <p className="text-whiteMain">Link de invitación</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                             <span className="text-greenMain text-base font-bold">
                                 MX${numericFormatter(batch.contributionAmount, { thousandSeparator: ',' })} de contribución
                             </span>

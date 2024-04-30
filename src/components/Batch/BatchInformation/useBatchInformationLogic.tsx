@@ -4,39 +4,42 @@ import { toast } from "sonner";
 import useBatchStore from "../useBatchStore";
 import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
-import { usePathname, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
+// import { type BatchRegister } from "@/server/services/batchRegister";
+// import { type BatchContribution } from "@/server/services/batchContribution";
+import { useCopyToClipboard } from "usehooks-ts";
+import jwt from "jsonwebtoken";
+import { env } from "@/env";
 import { getPublicBaseUrl } from "@/lib/utils";
-import { type StripeItem } from "@/server/services/stripe";
-import { type BatchRegister } from "@/server/services/batchRegister";
-import { type BatchContribution } from "@/server/services/batchContribution";
 
-type BatchRegisterWithContributions = BatchRegister & { batchContributions: BatchContribution[] };
+// type BatchRegisterWithContributions = BatchRegister & { batchContributions: BatchContribution[] };
 
 const useBatchInformationLogic = () => {
-    const pathname = usePathname();
     const router = useRouter();
     const utils = api.useUtils();
     const { batch, participantIds, setCurrentBatchRegisterId } = useBatchStore((state) => state);
     const { data: session } = useSession();
     const [canContribute, setCanContribute] = useState<boolean>(true);
     const [displayAlertForInitBatch, setDisplayAlertForInitBatch] = useState<boolean>(false);
+    const [copiedText, copy] = useCopyToClipboard();
+    const [inviteLinkCopied, setInviteLinkCopied] = useState<boolean>(false);
 
-    const previousBatchRegistersWithoutUserContribution = useMemo(() => {
-        if (batch) {
-            return batch.batchRegisters.reduce<BatchRegisterWithContributions[]>((acc, item) => {
-                const endDate = DateTime.fromJSDate(item.endDate);
-                const userContribution = item.batchContributions.find((item) => item.userId === session?.user.id);
+    // const previousBatchRegistersWithoutUserContribution = useMemo(() => {
+    //     if (batch) {
+    //         return batch.batchRegisters.reduce<BatchRegisterWithContributions[]>((acc, item) => {
+    //             const endDate = DateTime.fromJSDate(item.endDate);
+    //             const userContribution = item.batchContributions.find((item) => item.userId === session?.user.id);
 
-                if (DateTime.now() > endDate && !userContribution) {
-                    acc = [...acc, item];
-                }
+    //             if (DateTime.now() > endDate && !userContribution) {
+    //                 acc = [...acc, item];
+    //             }
 
-                return acc;
-            }, []);
-        } else {
-            return [];
-        }
-    }, [batch, session]);
+    //             return acc;
+    //         }, []);
+    //     } else {
+    //         return [];
+    //     }
+    // }, [batch, session]);
 
     const currentBatchRegister = useMemo(() => {
         return batch?.batchRegisters.find((register) => {
@@ -56,7 +59,7 @@ const useBatchInformationLogic = () => {
         onSuccess: async () => {
             toast.success("Genial! La tanda ha iniciado.");
             setDisplayAlertForInitBatch(false);
-            await utils.batch.batchById.invalidate(); 
+            await utils.batch.batchById.invalidate();
         },
         onError: (error) => {
             toast.error("Algo salió mal!", {
@@ -130,20 +133,20 @@ const useBatchInformationLogic = () => {
 
     const onContribute = () => {
         if (batch && currentBatchRegister) {
-            const items: StripeItem[] = [
-                {
-                    unitPrice: parseFloat(batch.contributionAmount),
-                    quantity: 1,
-                    concept: `Ronda ${currentBatchRegister.batchNumber}`,
-                },
-                ...previousBatchRegistersWithoutUserContribution.map((item) => {
-                    return {
-                        unitPrice: parseFloat(batch.contributionAmount),
-                        quantity: 1,
-                        concept: `Ronda ${item.batchNumber}`,
-                    }
-                })
-            ];
+            // const items: StripeItem[] = [
+            //     {
+            //         unitPrice: parseFloat(batch.contributionAmount),
+            //         quantity: 1,
+            //         concept: `Ronda ${currentBatchRegister.batchNumber}`,
+            //     },
+            //     ...previousBatchRegistersWithoutUserContribution.map((item) => {
+            //         return {
+            //             unitPrice: parseFloat(batch.contributionAmount),
+            //             quantity: 1,
+            //             concept: `Ronda ${item.batchNumber}`,
+            //         }
+            //     })
+            // ];
 
             // batchPaymentLinkData({
             //     data: {
@@ -165,6 +168,12 @@ const useBatchInformationLogic = () => {
         }
     };
 
+    const handleCopyInviteLink = async (batchId: string) => {
+        const token = jwt.sign({ batchId }, env.NEXT_PUBLIC_INVITE_LINK_SECRET, { expiresIn: "1h" });
+        const copied = await copy(`${getPublicBaseUrl()}/api/invite_link/${token}`);
+        setInviteLinkCopied(copied);
+    }
+
     return {
         currentBatchRegister,
         batch,
@@ -178,7 +187,11 @@ const useBatchInformationLogic = () => {
         setDisplayAlertForInitBatch,
         displayAlertForInitBatch,
         startBatchIsPending,
-        startBatchMutation
+        startBatchMutation,
+        handleCopyInviteLink,
+        copiedText,
+        inviteLinkCopied,
+        setInviteLinkCopied
     }
 }
 

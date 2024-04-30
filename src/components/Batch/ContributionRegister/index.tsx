@@ -65,7 +65,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
             />
             {
                 batch &&
-                batch.status === 'IN_PROGRESS' &&
+                batch.status !== "NOT_STARTED" &&
                 !participantsIsLoading &&
                 !participantsIsError &&
                 participantsData &&
