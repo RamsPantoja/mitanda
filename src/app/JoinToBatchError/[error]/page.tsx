@@ -19,11 +19,11 @@ export default function JoinToBatchError() {
 
   const joinToBatchError = useParams<{ error: JoinErrorProps }>()
 
-  const message = joinToBatchError.error === JoinErrorProps.limit ? ' here La tanda a la que te intentas unir ya alcanzo el numero maximo de participantes'
-    : joinToBatchError.error === JoinErrorProps.batchStarted ? ' La tanda ya ha sido iniciada, pausada o finalizada, no es posible unirte' : null
+  const message = joinToBatchError.error === JoinErrorProps.limit ? 'La tanda a la que te intentas unir ya alcanzo el numero maximo de participantes'
+    : joinToBatchError.error === JoinErrorProps.batchStarted ? 'La tanda ya ha sido iniciada, pausada o finalizada, no es posible unirte' : null
 
   return (
-    <div className='flex flex-col gap-4 w-full h-svh bg-blackMain border-2 justify-center items-center p-4'>
+    <div className='flex flex-col gap-4 w-full h-svh bg-blackMain justify-center items-center p-4'>
       <div>
         <FeedbackMessage
           message={message!}
@@ -32,7 +32,7 @@ export default function JoinToBatchError() {
       </div>
       <MitandaButton
         onClick={onRedirect}>
-        Regresar
+        Ir a inicio
       </MitandaButton>
     </div>
   )

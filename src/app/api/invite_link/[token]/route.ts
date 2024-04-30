@@ -50,25 +50,26 @@ const handler = async (
 
     const batchStatus = batchJoinInfo?.status
 
-    console.log(batchJoinInfo?.status, batchJoinInfo?.usersToBatches.length)
+    if (batchStatus === "IN_PROGRESS" || batchStatus === 'FINISHED' || batchStatus === 'PAUSED') {
+      return redirect('/joinToBatchError/BATCH_ONPROGRESS')
 
-    batchJoinInfo ? batchStatus === "IN_PROGRESS" || batchStatus === 'FINISHED' || batchStatus === 'PAUSED' ? redirect('/joinToBatchError/BATCH_ONPROGRESS')
-      : batchJoinInfo.usersToBatches.length === batchJoinInfo.seats ? redirect('/joinToBatchError/MAX_USERS') : null
-      : null
+    } else if (batchJoinInfo!.usersToBatches.length >= batchJoinInfo!.seats) {
+      return redirect('/joinToBatchError/MAX_USERS')
 
-    const addUserToBatch = await caller.batch.addUserToBatch({
-      batchId: dataToken.batchId as string
-    });
-
-    if (addUserToBatch) {
-      redirect(`/dashboard/batches/batch/${addUserToBatch.batchId}`);
     } else {
-      return NextResponse.json({
-        status: 500,
-        error: "Error on add user method"
+      const addUserToBatch = await caller.batch.addUserToBatch({
+        batchId: dataToken.batchId as string
       });
-    }
 
+      if (addUserToBatch) {
+        redirect(`/dashboard/batches/batch/${addUserToBatch.batchId}`);
+      } else {
+        return NextResponse.json({
+          status: 500,
+          error: "Error on add user method"
+        });
+      }
+    }
   } else {
     return NextResponse.json({
       status: 500,

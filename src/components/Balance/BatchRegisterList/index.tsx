@@ -14,7 +14,7 @@ const BatchRegisterList = () => {
   } = useBatchRegisterLogic();
 
   const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <BatchRegisterCardSkeleton /> });
-
+//TODO revisar el problema con el query y que no llegan los datos al front, revisar si se hace en el back
   return (
     <Card className="w-full h-full gap-2 flex flex-col">
       <p className="text-whiteMain text-lg font-bold">Ganancias por tanda</p>
