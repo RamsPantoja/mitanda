@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, CreditCardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, QuestionMarkCircleIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import SibedarItem from "./SidebarItem";
 import { signOut } from "next-auth/react"
 import { Button } from "../ui/button";
@@ -31,14 +31,14 @@ const Sidebar = ({ session }: SidebarProps) => {
                         href="/dashboard/batches"
                     />
                     <SibedarItem
-                        Icon={CreditCardIcon}
+                        Icon={CurrencyDollarIcon}
                         label="Balance"
                         href="/dashboard/balance"
                     />
                     <SibedarItem
                         Icon={QuestionMarkCircleIcon}
                         label="Ayuda"
-                        href="/dashboard/help"
+                        href="https://heroicons.com/outline"
                     />
                 </ul>
                 <div className="flex flex-row gap-2 justify-between items-center w-full">
