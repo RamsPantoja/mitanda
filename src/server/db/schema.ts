@@ -50,8 +50,9 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [stripeAccounts.userId]
   }),
-  // payments: many(payments),
+  payments: many(payments),
   batchContributions: many(batchContributions),
+  feedbacks: many(feedbacks)
 }));
 
 export const accounts = createTable(
@@ -495,3 +496,27 @@ export const paymentsToBatchesRelations = relations(paymentsToBatches, ({ one })
     references: [batches.id]
   }),
 }));
+
+export const feedbacks = createTable(
+  "feedback",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    content: text("content").notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const feedbackRelations = relations(feedbacks, ({ one }) => ({
+  user: one(users, {
+    fields: [feedbacks.userId],
+    references: [users.id]
+  }),
+}))

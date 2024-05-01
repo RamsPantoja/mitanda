@@ -28,13 +28,13 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
 
     return (
         <SessionProvider session={session}>
-            <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col gap-4 w-full">
                 <BatchMenubar
                     onSearch={onSearchBatch}
                     displayOnlyOwnBatches={displayOnlyOwnBatches}
                     onOwnBatches={onOwnBatches}
                 />
-                <div className="flex flex-row gap-4 flex-wrap overflow-auto">
+                <div className="flex flex-row gap-2 flex-wrap overflow-auto">
                     {
                         (ownBatchesIsLoading || batchesIsLoading) && skeletons.map((skeleton, index) => {
                             return <Fragment key={index}>
