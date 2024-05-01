@@ -19,7 +19,7 @@ export default function JoinToBatchError() {
 
   const joinToBatchError = useParams<{ error: JoinErrorProps }>()
 
-  const message = joinToBatchError.error === JoinErrorProps.limit ? 'La tanda a la que te intentas unir ya alcanzo el numero maximo de participantes'
+  const message = joinToBatchError.error === JoinErrorProps.limit ? 'La tanda que deseas unirte está llena.'
     : joinToBatchError.error === JoinErrorProps.batchStarted ? 'La tanda ya ha sido iniciada, pausada o finalizada, no es posible unirte' : null
 
   return (
