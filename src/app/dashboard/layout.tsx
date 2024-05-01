@@ -26,11 +26,13 @@ export default async function DashboardLayout({
           </div>
         </div>
         <div className="flex w-full h-full">
-          <div className="w-full h-full rounded-md p-4 gap-2 flex overflow-auto bg-blackLigth flex-col">
+          <div className="w-full h-full rounded-md p-4 gap-2 flex bg-blackLigth flex-col">
             <div className="flex items-center justify-end">
               <Feedback session={session} />
             </div>
-            {children}
+            <div className="flex w-full h-full overflow-hidden">
+              {children}
+            </div>
           </div>
         </div>
       </div>

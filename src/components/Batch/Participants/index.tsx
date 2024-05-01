@@ -41,7 +41,7 @@ const Participants = ({ session }: ParticipantsProps) => {
     return (
         <div className="flex flex-col gap-2 h-full">
             <p className="text-lg font-bold text-whiteMain">Participantes y turnos</p>
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col overflow-auto">
                 {
                     (participantsIsLoading || batchIsLoading) &&
                     <Fragment>

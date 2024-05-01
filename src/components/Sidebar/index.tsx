@@ -38,7 +38,7 @@ const Sidebar = ({ session }: SidebarProps) => {
                     <SibedarItem
                         Icon={QuestionMarkCircleIcon}
                         label="Ayuda"
-                        href="https://heroicons.com/outline"
+                        href="https://mitanda.xyz/help"
                     />
                 </ul>
                 <div className="flex flex-row gap-2 justify-between items-center w-full">

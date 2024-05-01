@@ -8,6 +8,8 @@ import ContributionRegisterSkeleton from "./ContributionRegisterSkeleton";
 import FeedbackMessage from "@/components/common/FeedbackMessage";
 import { mapSkeletons } from "@/lib/utils";
 import CustomAlertDialog from "@/components/common/AlertDialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 type ContributionRegisterProps = {
     batchIsLoading: boolean
@@ -31,9 +33,18 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
     const skeletons = mapSkeletons({ numberOfSkeletons: 10, skeleton: <ContributionRegisterSkeleton /> });
 
     return (
-        <Card className="flex flex-col gap-2 h-full overflow-hidden">
-            <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
-            <span className="text-grayMain text-sm">Dá click en el icóno de billete para registrar la contribución del participante.</span>
+        <Card className="flex flex-col gap-2 w-full h-full overflow-hidden">
+            <div className="flex items-center justify-between gap-4">
+                <p className="text-whiteMain text-lg font-bold">Registro de contribuciones</p>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <InformationCircleIcon className="h-6 min-w-6 text-grayMain" />
+                    </TooltipTrigger>
+                    <TooltipContent className=" bg-blackMain border-none max-w-60">
+                        <p className="text-whiteMain">Dá click en el icóno de billete para registrar la contribución del participante.</p>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
             {
                 (participantsIsLoading || batchIsLoading) && skeletons.map((skeleton, index) => {
                     return <Fragment key={index}>
@@ -69,7 +80,7 @@ const ContributionRegister = ({ batchIsError, batchIsLoading }: ContributionRegi
                 !participantsIsLoading &&
                 !participantsIsError &&
                 participantsData &&
-                <div className="h-full flex flex-col overflow-auto">
+                <div className="h-full w-full flex flex-col overflow-auto ">
                     {
                         participantsData?.map((item) => {
                             return (
