@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, QuestionMarkCircleIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftEndOnRectangleIcon, UserGroupIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import SibedarItem from "./SidebarItem";
 import { signOut } from "next-auth/react"
 import { Button } from "../ui/button";
@@ -35,11 +35,11 @@ const Sidebar = ({ session }: SidebarProps) => {
                         label="Balance"
                         href="/dashboard/balance"
                     />
-                    <SibedarItem
+                    {/* <SibedarItem
                         Icon={QuestionMarkCircleIcon}
                         label="Ayuda"
                         href="https://mitanda.xyz/help"
-                    />
+                    /> */}
                 </ul>
                 <div className="flex flex-row gap-2 justify-between items-center w-full">
                     <div className="flex flex-row items-center gap-2 overflow-hidden">
