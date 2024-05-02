@@ -21,7 +21,7 @@ const SignInForm = ({ callbackUrl }: SignInFormProps) => {
     }
 
     return (
-        <Card className="bg-blackNormal max-w-72 border-none">
+        <Card className="bg-blackNormal max-w-72 border-none p-0">
             <CardHeader>
                 <CardTitle>
                     <div className="flex items-center justify-center flex-col gap-4">
@@ -37,7 +37,7 @@ const SignInForm = ({ callbackUrl }: SignInFormProps) => {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-xs text-grayMain">Al crear una cuenta, acepta los Términos de servicio y nuestra Política de privacidad.</p>
+                <p className="text-xs text-grayMain">Al crear una cuenta, acepta los <a className=" underline text-greenMain" target="_blank" href="https://mitanda.xyz/tos">Términos y condiciones</a> y nuestra <a className=" underline text-greenMain" target="_blank" href="https://mitanda.xyz/privacy_policy">Política de privacidad</a>.</p>
             </CardContent>
             <CardFooter className="flex justify-center">
                 <MitandaButton
