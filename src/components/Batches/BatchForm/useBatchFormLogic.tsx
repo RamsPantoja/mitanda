@@ -24,7 +24,7 @@ const batchValidationSchema = z
             .number({
                 required_error: "Campo requerido"
             })
-            .min(1)
+            .min(2)
             .max(10),
         frequency: z
             .enum(frequencyEnum.enumValues, {
@@ -46,7 +46,7 @@ const useBatchFormLogic = () => {
         defaultValues: {
             name: '',
             contributionAmount: 100,
-            seats: 1,
+            seats: 2,
             frequency: "BIWEEKLY",
             agreeTerms: false
         }
