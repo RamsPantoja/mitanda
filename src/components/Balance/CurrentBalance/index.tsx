@@ -16,7 +16,7 @@ const CurrentBalance = () => {
         if (!batchRegistersIsLoading) {
             sumAmounts(batchRegistersData! as [])
         }
-    }, [batchRegistersIsLoading])
+    }, [batchRegistersIsLoading, batchRegistersData])
 
     return (
         <>
