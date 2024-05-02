@@ -84,7 +84,7 @@ const useBatchFormLogic = () => {
             batchPaymentLinkMutation({
                 data: {
                     items: [{
-                        unitPrice: 15,
+                        unitPrice: 99,
                         concept: "Creación de tanda",
                         quantity: 1
                     }],

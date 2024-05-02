@@ -264,7 +264,7 @@ const BatchForm = () => {
                         {
                             needToPayForBatchData &&
                             <div className="flex flex-col items-end justify-center mt-4">
-                                <span className="text-whiteMain font-black">MX$15</span>
+                                <span className="text-whiteMain font-black">MX$99</span>
                                 <span className="text-xs text-grayMain">IVA incluido</span>
                             </div>
                         }
