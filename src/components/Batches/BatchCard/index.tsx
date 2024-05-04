@@ -21,6 +21,7 @@ import { TranslatedBatchStatus, type BatchStatus } from "@/lib/enum";
 import CustomAlertDialog from "@/components/common/AlertDialog";
 import TruncatedTooltip from "@/components/common/TruncatedTooltip";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export type BatchCardProps = {
     batchName: string
@@ -118,7 +119,15 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id, status }
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                    <span className="text-greenMain text-xs font-bold animate-pulse">{TranslatedBatchStatus[status]}</span>
+                    <span
+                        className={cn(
+                            "text-gray-500 text-xs font-bold",
+                            {
+                                "text-yellow-500 animate-pulse": status === "IN_PROGRESS",
+                                "text-green-500": status === "FINISHED"
+                            }
+                        )}
+                    >{TranslatedBatchStatus[status]}</span>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
