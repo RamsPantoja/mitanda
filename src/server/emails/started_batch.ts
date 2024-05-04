@@ -27,7 +27,7 @@ const startedBatchEmail = ({ batchName, link }: StartedBatchEmailProps) => {
               style="padding: 30px;border-radius: 8px 8px 0 0; display: block;margin: 0;position: relative;background-color: #181818;">
               <div class="horizontal__center_img" style="text-align: center; display: inline-block;">
                 <img class="paddind_img"
-                  src="https://firebasestorage.googleapis.com/v0/b/mitanda.appspot.com/o/assets%2Fmitanda-isotipo.png?alt=media&token=a5df715a-5c8a-4dcb-a64a-5198ee1fd050"
+                  src="https://firebasestorage.googleapis.com/v0/b/mitanda.appspot.com/o/assets%2Fmitanda-isotipo.png?alt=media&token=60257f95-a262-4231-b23d-2725b4f38c7b"
                   width="50px" height="auto" alt="isotipo r3d" style="padding: 0 1em;">
                 <p style="color: #ffffff; margin: 0;font-weight: 600; font-size: 20px;">Mitanda</p>
               </div>
