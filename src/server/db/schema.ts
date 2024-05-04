@@ -52,7 +52,9 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   }),
   payments: many(payments),
   batchContributions: many(batchContributions),
-  feedbacks: many(feedbacks)
+  feedbacks: many(feedbacks),
+  messages: many(messages),
+  usersToChats: many(usersToChats)
 }));
 
 export const accounts = createTable(
@@ -517,6 +519,92 @@ export const feedbacks = createTable(
 export const feedbackRelations = relations(feedbacks, ({ one }) => ({
   user: one(users, {
     fields: [feedbacks.userId],
+    references: [users.id]
+  }),
+}))
+
+
+export const chats = createTable(
+  "chat",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    batchId: uuid("batchId")
+      .notNull()
+      .references(() => batches.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const chatRelations = relations(chats, ({ one }) => ({
+  batch: one(batches, {
+    fields: [chats.batchId],
+    references: [batches.id]
+  })
+}))
+
+export const usersToChats = createTable(
+  "userToChat",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    chatId: uuid("chatId")
+      .notNull()
+      .references(() => chats.id),
+  },
+  (t) => ({
+    pk: primaryKey({
+      name: "userId_chatId",
+      columns: [t.userId, t.chatId]
+    }),
+  })
+);
+
+export const usersToChatsRelations = relations(usersToChats, ({ one }) => ({
+  chat: one(chats, {
+    fields: [usersToChats.chatId],
+    references: [chats.id]
+  }),
+  user: one(users, {
+    fields: [usersToChats.userId],
+    references: [users.id]
+  }),
+}))
+
+
+export const messages = createTable(
+  "message",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    message: text("message")
+      .notNull(),
+    chatId: uuid("chatId")
+      .notNull()
+      .references(() => chats.id),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp('createdAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date'
+    }).notNull().defaultNow(),
+  }
+);
+
+export const messageRelations = relations(messages, ({ one }) => ({
+  chat: one(chats, {
+    fields: [messages.chatId],
+    references: [chats.id]
+  }),
+  user: one(users, {
+    fields: [messages.userId],
     references: [users.id]
   }),
 }))

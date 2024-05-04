@@ -12,6 +12,7 @@ import BatchRequestService from "./batchRequest";
 import MailService from "./mail";
 import NotificationService from "./notification";
 import FeedbackService from "./feedback";
+import ChatService from "./chat";
 
 export type ServicesContext = {
     batchService: BatchService
@@ -27,6 +28,7 @@ export type ServicesContext = {
     mailService: MailService
     notificationService: NotificationService
     feedbackService: FeedbackService
+    chatService: ChatService
 }
 
 export type ServicesConfig = {
@@ -47,7 +49,8 @@ const Services = ({ ctx }: ServicesConfig): ServicesContext => {
         batchRequestService: new BatchRequestService({ ctx }),
         mailService: new MailService({ ctx }),
         notificationService: new NotificationService({ ctx }),
-        feedbackService: new FeedbackService({ ctx })
+        feedbackService: new FeedbackService({ ctx }),
+        chatService: new ChatService({ ctx })
     }
 }
 
