@@ -53,6 +53,7 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
                                     ownerId={batch.userId}
                                     status={batch.status}
                                     id={batch.id}
+                                    frequency={batch.frequency}
                                 />
                             )
                         })
@@ -68,6 +69,7 @@ const BatchesContainer = ({ session }: BatchesContainerProps) => {
                                     ownerId={batch.batch.userId}
                                     status={batch.batch.status}
                                     id={batch.batch.id}
+                                    frequency={batch.batch.frequency}
                                 />
                             )
                         })

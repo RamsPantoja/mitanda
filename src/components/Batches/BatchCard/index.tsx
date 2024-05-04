@@ -17,7 +17,7 @@ import {
 import { numericFormatter } from "react-number-format";
 import { useSession } from "next-auth/react";
 import useBatchCardLogic from "./useBatchCardLogic";
-import { TranslatedBatchStatus, type BatchStatus } from "@/lib/enum";
+import { type Frequency, TranslatedBatchStatus, type BatchStatus, TranslatedFrequency } from "@/lib/enum";
 import CustomAlertDialog from "@/components/common/AlertDialog";
 import TruncatedTooltip from "@/components/common/TruncatedTooltip";
 import Link from "next/link";
@@ -30,10 +30,11 @@ export type BatchCardProps = {
     ownerId: string
     status: BatchStatus
     id: string
+    frequency: Frequency
 }
 
 
-const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id, status }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id, status, frequency }: BatchCardProps) => {
     const { data: session } = useSession();
 
     const contributionAmountFormatted = numericFormatter(contributionAmount, {
@@ -117,6 +118,7 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id, status }
                     </Link>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
+                    <p className="text-grayMain text-xs truncate w-fit max-w-full">{TranslatedFrequency[frequency]}</p>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <span
