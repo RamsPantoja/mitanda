@@ -1,4 +1,4 @@
-import { batchContributions, batchRegisters, batches, contracts, paymentsToBatches, usersToBatches, usersToContracts } from '../db/schema';
+import { batchContributions, batchRegisters, batches, chats, contracts, paymentsToBatches, usersToBatches, usersToContracts } from '../db/schema';
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import {
@@ -98,6 +98,10 @@ class BatchService {
                 userId: user.user.id,
                 batchId: batch.id
             });
+
+            await tx.insert(chats).values({
+                batchId: batch.id,
+            }).returning();
 
             return batch;
         })
@@ -721,6 +725,10 @@ class BatchService {
             await tx.insert(paymentsToBatches).values({
                 paymentId,
                 batchId: batch.id
+            });
+
+            await tx.insert(chats).values({
+                batchId: batch.id,
             });
 
             return batch;

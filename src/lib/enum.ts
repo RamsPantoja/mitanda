@@ -15,3 +15,12 @@ export enum TranslatedFrequency {
     BIWEEKLY = "Quincenalmente",
     MONTHLY = "Mensualmente"
 }
+
+["NOT_STARTED", "PAUSED", 'IN_PROGRESS', 'FINISHED']
+
+export enum TranslatedBatchStatus {
+    NOT_STARTED = "No comenzada",
+    PAUSED = "Pausada",
+    IN_PROGRESS = "En progreso",
+    FINISHED = "Terminada"
+}

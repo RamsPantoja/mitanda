@@ -17,7 +17,7 @@ import {
 import { numericFormatter } from "react-number-format";
 import { useSession } from "next-auth/react";
 import useBatchCardLogic from "./useBatchCardLogic";
-import { type BatchStatus } from "@/lib/enum";
+import { TranslatedBatchStatus, type BatchStatus } from "@/lib/enum";
 import CustomAlertDialog from "@/components/common/AlertDialog";
 import TruncatedTooltip from "@/components/common/TruncatedTooltip";
 import Link from "next/link";
@@ -32,7 +32,7 @@ export type BatchCardProps = {
 }
 
 
-const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id }: BatchCardProps) => {
+const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id, status }: BatchCardProps) => {
     const { data: session } = useSession();
 
     const contributionAmountFormatted = numericFormatter(contributionAmount, {
@@ -117,7 +117,8 @@ const BatchCard = ({ batchName, seats, contributionAmount, ownerId, id }: BatchC
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{seats} participantes</p>
                     <p className="text-grayMain text-xs truncate w-fit max-w-full">{contributionAmountFormatted} de contribución</p>
                 </div>
-                <div className="flex w-full items-center justify-end">
+                <div className="flex w-full items-center justify-between">
+                    <span className="text-greenMain text-xs font-bold animate-pulse">{TranslatedBatchStatus[status]}</span>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
