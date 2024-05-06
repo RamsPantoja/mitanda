@@ -80,3 +80,9 @@ export const addBatchContributionInputSchema = z.object({
   batchRegisterId: z.string(),
   batchId: z.string()
 });
+
+export const deleteUserFromBatchInputSchema = z.object({
+  userId: z.string(),
+  batchId: z.string(),
+  contractId: z.string()
+})

@@ -736,6 +736,56 @@ class BatchService {
 
         return batch;
     }
+
+    public async deteleUserFromBatch(userId: string, batchId: string, contractId: string): Promise<unknown> {
+        const deleteUser = await this.ctx.db.transaction(async (tx) => {
+            const userToDeleteFromBatch = await tx.query.usersToBatches.findFirst({
+                where: (usersToBatches, { eq }) => {
+                    return and(
+                        eq(usersToBatches.userId, userId),
+                        eq(usersToBatches.batchId, batchId),
+                    )
+                }
+            });
+
+            if (!userToDeleteFromBatch) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'User not found in batch'
+                })
+            }
+
+            const userToDeleteFromContracts = await tx.query.usersToContracts.findFirst({
+                where: (usersToContracts, { eq }) => {
+                    return and(
+                        eq(usersToContracts.userId, userId),
+                        eq(usersToContracts.contractId, contractId),
+                    )
+                }
+            });
+
+            if (!userToDeleteFromContracts) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Contract of user not found'
+                })
+            }
+
+            await tx.delete(usersToBatches).where(and(
+                eq(usersToBatches.userId, userId),
+                eq(usersToBatches.batchId, batchId),
+            ))
+
+            await tx.delete(usersToContracts).where(and(
+                eq(usersToContracts.userId, userId),
+                eq(usersToContracts.contractId, contractId),
+            ))
+
+            return {userToDeleteFromBatch, userToDeleteFromContracts}
+        })
+
+        return deleteUser
+    }
 }
 
 export default BatchService;

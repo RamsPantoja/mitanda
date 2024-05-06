@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import ParticipantCard from "./ParticipantCard";
 import { Fragment, useMemo } from "react";
 import { type Session } from "next-auth";
+import useParticipantsLogic from "./useParticipantsLogic";
+import CustomAlertDialog from "@/components/common/AlertDialog";
 
 type BatchTurn = Record<string, number>
 
@@ -14,6 +16,15 @@ type ParticipantsProps = {
 }
 
 const Participants = ({ session }: ParticipantsProps) => {
+    const {
+        displayDeleteReuquestDialog,
+        setDisplayDeleteRequestDialog,
+        userId,
+        setUserId,
+        deleteUser,
+        deleteUserIsPeding
+    } = useParticipantsLogic()
+
     const params = useParams()
     const { data: participantsData, isLoading: participantsIsLoading, isError: participantsIsError } = api.userToBatch.getParticipantsFromBatch.useQuery({
         batchId: params.id as string
@@ -68,9 +79,34 @@ const Participants = ({ session }: ParticipantsProps) => {
                                 session={session}
                                 ownerId={batchData.userId}
                                 turn={batchTurnByUser[item.userId]!}
+                                isOwnerLogued={batchData.userId === session.user.id ? true : false}
+                                openDialog={setDisplayDeleteRequestDialog}
+                                batchStatus={batchData.status}
+                                setUserId={setUserId}
                             />
                         )
                     })
+                }
+            </div>
+            <div>
+                {!batchIsLoading && batchData &&
+                    <CustomAlertDialog
+                        cancelText="Descartar"
+                        actionText="Confirmar"
+                        title="Eliminar participante"
+                        description="¿Estás seguro que quieres eliminar este usuario de la tanda?, no podrá volver a unirse una vez iniciada"
+                        onCancel={() => { setDisplayDeleteRequestDialog(false) }}
+                        onAction={() => {
+                            deleteUser({
+                                userId: userId!,
+                                batchId: batchData?.id,
+                                contractId: batchData?.contractId,
+                            })
+                        }}
+                        isPending={deleteUserIsPeding}
+                        open={displayDeleteReuquestDialog}
+                    />
+
                 }
             </div>
         </div>
