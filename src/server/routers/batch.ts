@@ -13,7 +13,8 @@ import {
   finishBatchInputSchema,
   ownBatchesInputSchema,
   startBatchInputSchema,
-  userToBatchInputSchema
+  userToBatchInputSchema,
+  deleteUserFromBatchInputSchema
 } from "../schema/batch";
 
 export const batchRouter = createTRPCRouter({
@@ -81,4 +82,9 @@ export const batchRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       return await ctx.services({ ctx }).batchService.firstBatchByUserId(ctx.session.user.id);
     }),
+    deleteUserFromBatch: protectedProcedure
+    .input(deleteUserFromBatchInputSchema)
+    .mutation(async ({ctx, input}) => {
+      return await ctx.services({ctx}).batchService.deteleUserFromBatch(input.userId, input.batchId, input.contractId)
+    })
 });
